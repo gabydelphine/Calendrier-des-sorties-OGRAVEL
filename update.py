@@ -6,6 +6,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 URL = "https://ogravel.com/calendrier/"
+TODAY = datetime.date.today()
 
 MONTHS = {
     "janvier": 1, "février": 2, "fevrier": 2,
@@ -14,164 +15,132 @@ MONTHS = {
     "septembre": 9, "octobre": 10,
     "novembre": 11, "décembre": 12, "decembre": 12
 }
-
-MONTH_RE = "|".join(MONTHS)
-
-DATE_RE = re.compile(
-    rf"^(\d{{1,2}})(?:\s*[-–]\s*(\d{{1,2}}))?\s+"
-    rf"({MONTH_RE})(?:\s+(20\d{{2}}))?$",
+MONTH_PATTERN = "|".join(MONTHS)
+DATE_PATTERN = re.compile(
+    rf"^(\d{{1,2}}(?:\s*[-–]\s*\d{{1,2}})*)\s+"
+    rf"({MONTH_PATTERN})(?:\s+(20\d{{2}}))?$",
     re.I
 )
 
-today = datetime.date.today()
-
 request = urllib.request.Request(
-    URL,
-    headers={"User-Agent": "Mozilla/5.0"}
+    URL, headers={"User-Agent": "Mozilla/5.0"}
 )
-
 with urllib.request.urlopen(request, timeout=30) as response:
     soup = BeautifulSoup(response.read(), "html.parser")
 
-heading = next(
-    (
-        h for h in soup.find_all(re.compile(r"^h[1-6]$"))
-        if "Les RDV des membres" in h.get_text(" ", strip=True)
-    ),
+lines = [
+    line.strip()
+    for line in soup.get_text("\n", strip=True).splitlines()
+    if line.strip()
+]
+
+start = next(
+    (i for i, line in enumerate(lines)
+     if "Les RDV des membres" in line),
     None
 )
+if start is None:
+    raise RuntimeError("Section des rendez-vous introuvable")
 
-if heading is None:
-    raise RuntimeError("Section Les RDV des membres introuvable")
-
-parts = []
-
-for element in heading.next_elements:
-    if getattr(element, "name", None) in ("h1", "h2") and element is not heading:
+section = lines[start + 1:]
+for i, line in enumerate(section):
+    if line.startswith("Tous droits réservés"):
+        section = section[:i]
         break
 
-    if getattr(element, "name", None) in ("p", "h3", "h4", "h5", "h6"):
-        value = element.get_text(" ", strip=True)
-
-        if value and (not parts or parts[-1] != value):
-            parts.append(value)
-
-if not any(DATE_RE.match(x) for x in parts):
-    txt = heading.parent.get_text("\n", strip=True) if heading.parent else ""
-    parts = [s.strip() for s in txt.splitlines() if s.strip()]
+# Repérer l'année indiquée dans le calendrier.
+explicit_years = [
+    int(m.group(3))
+    for line in section
+    if (m := DATE_PATTERN.fullmatch(line)) and m.group(3)
+]
+default_year = max(explicit_years) if explicit_years else TODAY.year
 
 events = []
-
-for i, value in enumerate(parts):
-    match = DATE_RE.match(value)
-
+for i, line in enumerate(section):
+    match = DATE_PATTERN.fullmatch(line)
     if not match:
         continue
 
-    start_day = int(match.group(1))
-    end_day = int(match.group(2) or start_day)
-    month = MONTHS[match.group(3).lower()]
-    year = int(match.group(4) or today.year)
-
-    if not match.group(4):
-        while True:
-            try:
-                end_date = datetime.date(year, month, end_day)
-            except ValueError:
-                break
-
-            if end_date >= today:
-                break
-
-            year += 1
+    days = [
+        int(value)
+        for value in re.split(r"\s*[-–]\s*", match.group(1))
+    ]
+    month = MONTHS[match.group(2).lower()]
+    year = int(match.group(3) or default_year)
 
     try:
-        start_date = datetime.date(year, month, start_day)
-        end_date = datetime.date(year, month, end_day)
+        first = datetime.date(year, month, days[0])
+        last = datetime.date(year, month, days[-1])
     except ValueError:
         continue
 
-    if end_date < start_date or end_date < today:
+    if last < first or last < TODAY:
         continue
 
     following = []
-
-    for item in parts[i + 1:]:
-        if DATE_RE.match(item):
+    for value in section[i + 1:]:
+        if DATE_PATTERN.fullmatch(value):
             break
-
-        if item not in following:
-            following.append(item)
-
-        if len(following) >= 3:
+        if value not in following:
+            following.append(value)
+        if len(following) >= 2:
             break
 
     location = following[0] if following else ""
-
-    title = (
-        following[1]
-        if len(following) > 1
-        else (following[0] if following else "Sortie ÔGravel")
+    title = following[1] if len(following) > 1 else (
+        following[0] if following else "Sortie ÔGravel"
     )
 
     event = {
-        "date": start_date.isoformat(),
+        "date": first.isoformat(),
         "title": title,
         "location": location
     }
-
-    if end_date != start_date:
-        event["end_date"] = end_date.isoformat()
-
+    if last != first:
+        event["end_date"] = last.isoformat()
     events.append(event)
 
+# Ajouter les grands événements précisément datés.
 text = soup.get_text(" ", strip=True)
-
-surprise_re = re.compile(
-    rf"Ô Gravel Surprise ride #\d+\s+(\d{{1,2}})\s+"
-    rf"({MONTH_RE})\s+(20\d{{2}})",
+surprise = re.compile(
+    rf"(Ô Gravel Surprise ride #\d+)\s+"
+    rf"(\d{{1,2}})\s+({MONTH_PATTERN})\s+(20\d{{2}})",
     re.I
 )
-
-for match in surprise_re.finditer(text):
+for match in surprise.finditer(text):
     try:
         date = datetime.date(
-            int(match.group(3)),
-            MONTHS[match.group(2).lower()],
-            int(match.group(1))
+            int(match.group(4)),
+            MONTHS[match.group(3).lower()],
+            int(match.group(2))
         )
     except ValueError:
         continue
-
-    if date >= today:
+    if date >= TODAY:
         events.append({
             "date": date.isoformat(),
-            "title": match.group(0).split(" " + match.group(1))[0],
+            "title": match.group(1),
             "location": ""
         })
 
 events = sorted(
-    {
-        (e["date"], e["title"]): e
-        for e in events
-    }.values(),
+    {(e["date"], e["title"]): e for e in events}.values(),
     key=lambda e: (e["date"], e["title"])
 )
 
 if not events:
     raise RuntimeError(
-        "Aucun événement futur détecté : ancien calendrier conservé"
+        "Aucun événement futur détecté : données précédentes conservées"
     )
 
 output = {
-    "updated": today.isoformat(),
+    "updated": TODAY.isoformat(),
     "source": URL,
     "events": events
 }
-
 Path(__file__).with_name("events.json").write_text(
     json.dumps(output, ensure_ascii=False, indent=2),
     encoding="utf-8"
 )
-
 print(f"{len(events)} événements futurs enregistrés")
