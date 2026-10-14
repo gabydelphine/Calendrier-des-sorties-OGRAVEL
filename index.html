@@ -20,7 +20,6 @@ body{font:16px system-ui,Arial;background:#f8f6f1;color:#26312b;margin:0}.wrap{m
 <h2>Je souhaite participer</h2>
 <p id="selected"></p>
 <label for="nom">Prénom et nom *</label><input id="nom" required autocomplete="name" maxlength="100">
-<label for="email">Votre adresse e-mail *</label><input id="email" type="email" required autocomplete="email" maxlength="150">
 <label for="distance">Parcours *</label><input id="distance" required maxlength="120" placeholder="Ex. : Special/Family/Distance">
 <label for="message">Message complémentaire (facultatif)</label><textarea id="message" maxlength="1000"></textarea>
 <p class="hint">Votre messagerie s'ouvrira avec un e-mail prérempli. Vous devrez cliquer sur Envoyer.</p>
@@ -39,11 +38,11 @@ document.getElementById('events').innerHTML=html||'Aucune sortie à venir.';docu
 }).catch(()=>document.getElementById('events').textContent='Calendrier momentanément indisponible. Consultez le site officiel.');
 document.getElementById('events').addEventListener('click',ev=>{const b=ev.target.closest('button[data-index]');if(!b)return;active=sorties[Number(b.dataset.index)];if(!active)return;document.getElementById('form').reset();document.getElementById('selected').textContent=active.title+' — '+dateTexte(active.date);document.getElementById('dialog').showModal()});
 document.getElementById('cancel').addEventListener('click',()=>document.getElementById('dialog').close());
-document.getElementById('form').addEventListener('submit',ev=>{ev.preventDefault();if(!active)return;const nom=document.getElementById('nom').value.trim(),email=document.getElementById('email').value.trim(),distance=document.getElementById('distance').value.trim(),message=document.getElementById('message').value.trim();if(!nom||!email||!distance)return;
+document.getElementById('form').addEventListener('submit',ev=>{ev.preventDefault();if(!active)return;const nom=document.getElementById('nom').value.trim(),distance=document.getElementById('distance').value.trim(),message=document.getElementById('message').value.trim();if(!nom||!distance)return;
 const subject='ÔGravel – Souhait de participation – '+active.title;
-const body='Bonjour,\n\nJe souhaite participer à la sortie ÔGravel suivante :\n\nSortie : '+active.title+'\nDate : '+dateTexte(active.date)+'\nLieu : '+(active.location||'Non précisé')+'\n\nNom du participant : '+nom+'\nAdresse e-mail : '+email+'\nFormule / distance souhaitée : '+distance+(message?'\n\nMessage complémentaire : '+message:'')+'\n\nMerci de prendre en compte mon intention de participation.\n\nSportivement,\n'+nom;
+const body='Bonjour,\n\nJe souhaite participer à la sortie ÔGravel suivante :\n\nSortie : '+active.title+'\nDate : '+dateTexte(active.date)+'\nLieu : '+(active.location||'Non précisé')+'\n\nNom du participant : '+nom+'\nFormule / distance souhaitée : '+distance+(message?'\n\nMessage complémentaire : '+message:'')+'\n\nMerci de prendre en compte mon intention de participation.\n\nSportivement,\n'+nom;
 document.getElementById('dialog').close();
-window.location.href='mailto:thierry.schiavi@aliceadsl.fr?cc='+encodeURIComponent(email)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+window.location.href='mailto:thierry.schiavi@aliceadsl.fr?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
 });
 </script>
 </body>
