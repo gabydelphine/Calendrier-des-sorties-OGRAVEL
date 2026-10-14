@@ -1,0 +1,66 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//OGravel//Calendrier sorties//FR
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:ÔGravel — Prochaines sorties
+X-WR-CALDESC:Sorties officielles ÔGravel. Horaires communiqués par l’as
+ sociation.
+REFRESH-INTERVAL;VALUE=DURATION:PT12H
+X-PUBLISHED-TTL:PT12H
+BEGIN:VEVENT
+UID:285b6f136d6e0839cf97bdf2@ogravel.com
+DTSTAMP:20261014T214609Z
+DTSTART;VALUE=DATE:20261017
+DTEND;VALUE=DATE:20261018
+SUMMARY:Ô Gravel Surprise ride #8
+LOCATION:
+DESCRIPTION:Horaires et précisions communiqués par l’association ÔGrav
+ el.\nhttps://ogravel.com/calendrier/
+URL:https://ogravel.com/calendrier/
+END:VEVENT
+BEGIN:VEVENT
+UID:2eeb4a81d4991dcd1a38569f@ogravel.com
+DTSTAMP:20261014T214609Z
+DTSTART;VALUE=DATE:20261024
+DTEND;VALUE=DATE:20261025
+SUMMARY:Challenges 2000 m ou 3000 m
+LOCATION:Villeneuve\, Couserans
+DESCRIPTION:Horaires et précisions communiqués par l’association ÔGrav
+ el.\nhttps://ogravel.com/calendrier/
+URL:https://ogravel.com/calendrier/
+END:VEVENT
+BEGIN:VEVENT
+UID:b1bc28d07196c85be7dbd7f6@ogravel.com
+DTSTAMP:20261014T214609Z
+DTSTART;VALUE=DATE:20261114
+DTEND;VALUE=DATE:20261115
+SUMMARY:Special rides Pech-David
+LOCATION:Pech-David
+DESCRIPTION:Horaires et précisions communiqués par l’association ÔGrav
+ el.\nhttps://ogravel.com/calendrier/
+URL:https://ogravel.com/calendrier/
+END:VEVENT
+BEGIN:VEVENT
+UID:a352920315898d47a78369f8@ogravel.com
+DTSTAMP:20261014T214609Z
+DTSTART;VALUE=DATE:20261124
+DTEND;VALUE=DATE:20261125
+SUMMARY:Special ride Super Lune
+LOCATION:Toulouse
+DESCRIPTION:Horaires et précisions communiqués par l’association ÔGrav
+ el.\nhttps://ogravel.com/calendrier/
+URL:https://ogravel.com/calendrier/
+END:VEVENT
+BEGIN:VEVENT
+UID:8066e3bffdce9b565b9f012d@ogravel.com
+DTSTAMP:20261014T214609Z
+DTSTART;VALUE=DATE:20261219
+DTEND;VALUE=DATE:20261220
+SUMMARY:Pèlerinage en Montagne Noire
+LOCATION:Saint-Papoul
+DESCRIPTION:Horaires et précisions communiqués par l’association ÔGrav
+ el.\nhttps://ogravel.com/calendrier/
+URL:https://ogravel.com/calendrier/
+END:VEVENT
+END:VCALENDAR
