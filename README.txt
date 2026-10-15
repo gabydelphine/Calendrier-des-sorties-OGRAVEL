@@ -1,28 +1,25 @@
 ÔGRAVEL — SYNTHÈSE DES PROCHAINES SORTIES
 
-Cette page récupère les rendez-vous du calendrier officiel https://ogravel.com/calendrier/
-Sans accès à l'administration du site ÔGravel.
+Page publique : https://gabydelphine.github.io/Calendrier-des-sorties-OGRAVEL/
+Abonnement agenda (téléphone, Google Agenda, Outlook) :
+  https://gabydelphine.github.io/Calendrier-des-sorties-OGRAVEL/ogravel.ics
 
-MISE EN LIGNE (une seule fois)
-1. Créer un compte GitHub gratuit si nécessaire.
-2. Créer un dépôt PUBLIC nommé « ogravel-sorties ».
-3. Y déposer index.html, update.py, et le dossier .github/workflows/update.yml
-   (respecter le dossier caché .github et son arborescence).
-4. Dans le dépôt, ouvrir Actions > « Actualiser le calendrier ÔGravel » > Run workflow.
-5. Vérifier qu'un fichier events.json a été créé.
-6. Dans Settings > Pages, sélectionner « Deploy from a branch », branche main, dossier /(root).
-7. Après publication, la page sera à une adresse du type
-   https://VOTRE-IDENTIFIANT.github.io/ogravel-sorties/
-8. Copier cette adresse dans les Annonces WhatsApp et épingler le message.
+D'OÙ VIENNENT LES DATES
+Le robot lit le calendrier officiel https://ogravel.com/calendrier/
+(rubrique « Les RDV des membres » + les « Surprise ride » datées),
+sans accès à l'administration du site ÔGravel.
 
-MISE À JOUR
-Le robot tente une actualisation tous les jours à 05:15 UTC.
-En cas d'échec, la dernière liste valide reste publiée.
-Le calendrier officiel peut changer de structure : dans ce cas, adapter update.py.
-Les événements dont l'année n'est pas précisée sont interprétés comme étant de l'année courante.
-Les dates sur plusieurs jours sont affichées par leur premier jour.
-GitHub peut désactiver les tâches planifiées d'un dépôt public inactif : vérifier périodiquement l'onglet Actions.
+FONCTIONNEMENT
+- Tous les jours à 05:15 UTC (workflow « Actualiser le calendrier ÔGravel ») :
+  update.py écrit events.json, puis generer_ics.py écrit ogravel.ics.
+- Seules les sorties à venir sont gardées.
+- Année manquante : le calendrier étant chronologique, une date dont le mois
+  recule (décembre → janvier) passe à l'année suivante.
+- Les sorties sur plusieurs jours apparaissent sur toute leur durée dans l'agenda.
+- En cas d'échec (site indisponible, structure modifiée), la dernière liste
+  valide reste publiée. GitHub envoie alors un e-mail d'échec du workflow.
 
-IMPORTANT
-La page n'est PAS encore en ligne. Un compte GitHub et la publication initiale sont nécessaires.
-La lecture automatique du site doit être testée une fois en ligne.
+À SURVEILLER
+- Si ogravel.com change la présentation de sa page, adapter update.py.
+- Le bouton « Je souhaite participer » prépare un e-mail à l'adresse inscrite
+  dans index.html.
