@@ -32,7 +32,9 @@ def main():
               'REFRESH-INTERVAL;VALUE=DURATION:PT12H','X-PUBLISHED-TTL:PT12H']
     for event in data.get('events', []):
         debut = date.fromisoformat(event['date'])
-        fin = debut + timedelta(days=1)
+        # Sorties sur plusieurs jours (week-end) : DTEND est exclusif en iCalendar.
+        dernier = date.fromisoformat(event['end_date']) if event.get('end_date') else debut
+        fin = max(dernier, debut) + timedelta(days=1)
         titre = event.get('title','Sortie ÔGravel')
         lieu = event.get('location','')
         cle = f'{debut.isoformat()}|{titre}|{lieu}'
