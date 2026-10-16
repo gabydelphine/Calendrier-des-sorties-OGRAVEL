@@ -1,7 +1,7 @@
 name: Actualiser le calendrier ÔGravel
 on:
   schedule:
-    - cron: '15 5 * * *'
+    - cron: '15 5,10,16,20 * * *'  # 7h15, 12h15, 18h15, 22h15 (heure d'été ; une heure plus tôt en hiver)
   workflow_dispatch:
 permissions:
   contents: write
