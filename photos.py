@@ -14,7 +14,7 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parent
 CONFIG = BASE / "app" / "config.json"
 SORTIE = BASE / "app" / "photos.json"
-MAXI = 60  # nombre de photos gardées pour le carrousel
+MAXI = 400  # nombre de photos gardées (galerie et carrousel)
 PARIS = datetime.timezone(datetime.timedelta(hours=2))
 
 
@@ -39,7 +39,17 @@ def sorties_connues():
     return liste
 
 
-def sortie_du_jour(date, sorties):
+def titres_manuels():
+    """Titres donnés à la main pour les jours sans sortie au calendrier (photos-titres.json)."""
+    try:
+        return json.loads((BASE / "photos-titres.json").read_text(encoding="utf-8")).get("titres", {})
+    except (OSError, ValueError):
+        return {}
+
+
+def sortie_du_jour(date, sorties, manuels=None):
+    if manuels and manuels.get(date):
+        return manuels[date]
     for debut, fin, titre in sorties:
         if debut <= date <= (fin or debut):
             return titre
@@ -92,13 +102,16 @@ def main():
 
     # Tri par date (les plus récentes d'abord) et association à la sortie du jour.
     sorties = sorties_connues()
+    manuels = titres_manuels()
     for p in photos:
         if p.get("date"):
-            titre = sortie_du_jour(p["date"], sorties)
+            titre = sortie_du_jour(p["date"], sorties, manuels)
             if titre:
                 p["sortie"] = titre
     photos.sort(key=lambda p: p.get("date", ""), reverse=True)
     print(f"{sum(1 for p in photos if p.get('date'))} photos datées, {sum(1 for p in photos if p.get('sortie'))} rattachées à une sortie")
+    inconnues = sorted({p["date"] for p in photos if p.get("date") and not p.get("sortie")}, reverse=True)
+    print("Jours sans sortie connue :", ", ".join(inconnues) or "aucun")
     SORTIE.write_text(json.dumps({
         "updated": datetime.date.today().isoformat(),
         "album": album,
