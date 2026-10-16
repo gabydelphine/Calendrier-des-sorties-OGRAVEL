@@ -1,0 +1,30 @@
+{
+  "updated": "2026-10-16T15:40+02:00",
+  "source": "https://www.helloasso.com/associations/o-gravel",
+  "_aide": "Saisi à la main tant que HelloAsso bloque le robot. etat : ouvert ou cloture.",
+  "evenements": [
+    {
+      "titre": "Ô Gravel Surprise ride #8",
+      "url": "https://www.helloasso.com/associations/o-gravel/evenements/o-gravel-surprise-ride-8-2",
+      "date": "2026-10-17",
+      "end_date": null,
+      "date_limite": "2026-10-10T23:59:00+02:00",
+      "prix": "35 €",
+      "places_restantes": 0,
+      "etat": "cloture",
+      "raison": "complet"
+    },
+    {
+      "titre": "Ô Gravel Occitanie 600 2027",
+      "url": "https://www.helloasso.com/associations/o-gravel/evenements/o-gravel-occitanie-600-2027",
+      "date": "2027-04-03",
+      "end_date": "2027-04-08",
+      "date_limite": "2027-03-07T23:59:00+01:00",
+      "prix": "150 €",
+      "prix_apres": {"a_partir_du": "2026-11-01", "prix": "165 €"},
+      "places_restantes": null,
+      "etat": "ouvert",
+      "raison": null
+    }
+  ]
+}
