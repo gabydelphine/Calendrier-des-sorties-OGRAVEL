@@ -25,21 +25,25 @@ section[data-onglet]{display:none}
 section[data-onglet].actif{display:block}
 h2{font-size:1.05rem;margin:22px 0 10px;color:var(--bordeaux)}
 .carte{background:var(--carte);border-radius:14px;padding:16px;box-shadow:0 2px 10px #0000000f;margin:10px 0}
-.prochaine{background:var(--bordeaux);color:#fff}
+.prochaine{background:var(--bordeaux);color:#fff;padding:12px 14px}
+.prochaine .entete{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .prochaine .etiquette{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;opacity:.85}
-.prochaine .quand{font-size:1.5rem;font-weight:800;margin:4px 0 0}
-.prochaine .titre{font-size:1.05rem;font-weight:650;margin:2px 0}
-.prochaine .lieu{opacity:.85;font-size:.92rem}
+.prochaine .quand{font-size:1.2rem;font-weight:800;margin:2px 0 0;line-height:1.2}
+.prochaine .titre{font-size:.98rem;font-weight:650;margin:1px 0}
+.prochaine .lieu{opacity:.85;font-size:.86rem}
+.prochaine .bouton,.prochaine .inscrire,.prochaine .complet{margin-top:8px}
+.prochaine .bouton{padding:8px 12px;font-size:.92rem}
+.prochaine .complet{padding:.35rem .9rem;font-size:.78rem}
 .prochaine .bouton{background:#fff;color:var(--bordeaux)}
-.dans{display:inline-block;background:#ffffff26;border-radius:999px;padding:2px 10px;font-size:.8rem;margin-top:8px}
+.dans{display:inline-block;background:#ffffff26;border-radius:999px;padding:2px 10px;font-size:.75rem;white-space:nowrap}
 .bouton{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:10px;padding:11px 14px;font:inherit;font-weight:650;cursor:pointer;text-decoration:none;background:var(--bordeaux);color:#fff;margin-top:12px}
 .bouton.secondaire{background:transparent;color:var(--bordeaux);border:1.5px solid var(--bordeaux)}
 .grands{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
-.grand{display:flex;flex-direction:column;gap:4px;background:var(--carte);border-radius:14px;padding:12px 12px;text-decoration:none;color:var(--encre);box-shadow:0 2px 10px #0000000f;border-top:4px solid var(--bordeaux);min-height:96px}
-.grand.vert{border-top-color:var(--vert)}
-.grand .emoji{font-size:1.35rem}
-.grand strong{font-size:.93rem;line-height:1.2}
-.grand span{font-size:.76rem;color:var(--gris)}
+.grand{display:grid;grid-template-columns:auto 1fr;column-gap:9px;row-gap:1px;align-items:center;background:var(--carte);border-radius:12px;padding:9px 10px;text-decoration:none;color:var(--encre);box-shadow:0 2px 10px #0000000f;border-left:4px solid var(--bordeaux)}
+.grand.vert{border-left-color:var(--vert)}
+.grand span.emoji{grid-row:span 2;font-size:1.5rem;line-height:1;color:inherit}
+.grand strong{font-size:.88rem;line-height:1.15;align-self:end}
+.grand span{font-size:.72rem;line-height:1.2;color:var(--gris);align-self:start}
 .liens{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
 .liens a{flex:0 1 calc((100% - 16px) / 3);max-width:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px;background:var(--carte);border-radius:10px;padding:10px 6px;text-decoration:none;color:var(--encre);font-weight:600;font-size:.84rem;line-height:1.2;border:1px solid var(--trait)}
 .liens a span{font-size:1.2rem}
@@ -118,11 +122,11 @@ textarea{min-height:70px}
 
     <h2>Les calendriers</h2>
     <div class="grands">
-      <a class="grand" href="https://gabydelphine.github.io/Calendrier-des-sorties-OGRAVEL/" target="_blank" rel="noopener">
+      <a class="grand" href="#sorties">
         <span class="emoji">🚴</span><strong>Sorties ÔGravel</strong><span>Les rendez-vous de l'association</span>
       </a>
       <a class="grand vert" href="https://gabydelphine.github.io/Agenda-Gravel-autres-associations/" target="_blank" rel="noopener">
-        <span class="emoji">🗺️</span><strong>Agenda gravel</strong><span>Les épreuves des autres clubs à 200 km</span>
+        <span class="emoji">🗺️</span><strong>Agenda gravel</strong><span>Les épreuves des autres clubs à 200&nbsp;km</span>
       </a>
     </div>
 
@@ -170,7 +174,6 @@ textarea{min-height:70px}
 
 <nav>
   <a href="#accueil" data-lien="accueil"><span>🏠</span>Accueil</a>
-  <a href="#sorties" data-lien="sorties"><span>🚴</span>Sorties</a>
   <a href="#blog" data-lien="blog"><span>📰</span>Blog</a>
   <a href="#parcours" data-lien="parcours"><span>🗺️</span>Parcours</a>
   <a href="#photos" data-lien="photos"><span>📸</span>Photos</a>
@@ -268,11 +271,10 @@ function rendreProchaine() {
   if (!s) return;
   const d = jour(s.date);
   const carte = el('div', {class: 'carte prochaine'},
-    el('div', {class: 'etiquette', text: 'Prochaine sortie'}),
+    el('div', {class: 'entete'}, el('div', {class: 'etiquette', text: 'Prochaine sortie'}), el('span', {class: 'dans', text: dans(d)})),
     el('div', {class: 'quand', text: dateLongue(d)}),
     el('div', {class: 'titre', text: s.title || 'Sortie ÔGravel'}),
-    s.location ? el('div', {class: 'lieu', text: '📍 ' + s.location}) : null,
-    el('span', {class: 'dans', text: dans(d)}));
+    s.location ? el('div', {class: 'lieu', text: '📍 ' + s.location}) : null);
   carte.append(el('div', {}, boutonInscription(s)));
   zone.append(carte);
 }
