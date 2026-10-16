@@ -55,8 +55,10 @@ h2{font-size:1.05rem;margin:22px 0 10px;color:var(--bordeaux)}
 .chiffres{display:flex;gap:14px;color:var(--gris);font-size:.88rem;margin-top:4px}
 .etapes{margin:8px 0 0;padding-left:20px;color:var(--encre)}
 .etapes li{margin:6px 0}
-.installer{display:none;background:var(--sable);border-radius:14px;padding:14px 16px;margin:6px 0 4px}
-.installer.visible{display:block}
+.installer{display:none;align-items:center;gap:10px;background:var(--sable);border-radius:12px;padding:8px 10px 8px 14px;margin:0 0 4px}
+.installer.visible{display:flex}
+.installer .texte{flex:1;font-size:.88rem;line-height:1.25}
+.installer .bouton{margin:0;padding:7px 14px;font-size:.9rem}
 .choix{display:grid;gap:8px;margin-top:14px}
 .choix button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1.5px solid var(--trait);background:#fff;border-radius:12px;padding:12px 14px;font:inherit;font-weight:650;color:var(--encre);cursor:pointer}
 .choix button span{font-size:1.3rem}
@@ -87,9 +89,8 @@ textarea{min-height:70px}
   <!-- ACCUEIL -->
   <section data-onglet="accueil">
     <div class="installer" id="installer">
-      <strong>📲 Installez l'appli sur votre téléphone</strong>
-      <div class="petit">Une icône ÔGravel sur votre écran d'accueil, comme une vraie appli.</div>
-      <button class="bouton" id="installer-bouton" type="button">Installer sur votre téléphone</button>
+      <div class="texte">📲 <strong>L'appli sur votre écran d'accueil</strong></div>
+      <button class="bouton" id="installer-bouton" type="button">Installer</button>
     </div>
 
     <div id="prochaine"></div>
