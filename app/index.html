@@ -100,6 +100,9 @@ textarea{min-height:70px}
 .trace .tdate{grid-row:span 2;font-weight:800;font-size:.82rem;color:var(--bordeaux);line-height:1.15}
 .trace .tnom{font-weight:650;font-size:.92rem;line-height:1.25;min-width:0}
 .trace .tchiffres{font-size:.78rem;color:var(--gris);font-variant-numeric:tabular-nums}
+.photos .actions{display:flex;flex-wrap:wrap;gap:10px}
+.photos .actions .bouton{margin-top:0;flex:1 1 140px;text-align:center}
+.remarque{margin:14px 0 0;font-size:.86rem;color:var(--gris);font-style:italic}
 .whatsapp{display:flex;align-items:center;gap:10px;margin:12px 0 4px;padding:9px 10px;border-radius:14px;text-decoration:none;color:#fff;background:linear-gradient(135deg,#1fa855,#128c7e);box-shadow:0 4px 14px #128c7e40}
 .wa-bulle{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#ffffff26}
 .wa-texte{flex:1;display:flex;flex-direction:column;line-height:1.25}
@@ -393,15 +396,30 @@ function rendrePhotos() {
     zone.append(el('div', {class: 'carte vide'}, el('div', {text: '📸'}), el('p', {text: "L'album photos partagé arrive bientôt."})));
     return;
   }
-  zone.append(el('div', {class: 'carte'},
-    el('p', {text: "Toutes les photos des sorties, au même endroit. Chacun peut regarder et ajouter les siennes."}),
-    el('a', {class: 'bouton', href: url, target: '_blank', rel: 'noopener', text: "📸 Ouvrir l'album ÔGravel"})));
-  const etapes = el('ol', {class: 'etapes'},
-    el('li', {text: "Ouvrez l'album ci-dessus une première fois et touchez « Rejoindre »."}),
-    el('li', {text: 'Dans WhatsApp, ouvrez la photo puis touchez Partager (↗ ou ⋮ → Partager).'}),
-    el('li', {text: 'Choisissez Google Photos, puis « Ajouter à l\'album » → ÔGravel.'}));
-  zone.append(el('div', {class: 'carte'}, el('strong', {text: 'Ajouter mes photos depuis WhatsApp'}), etapes,
-    el('p', {class: 'petit', text: "Astuce : on peut sélectionner plusieurs photos d'un coup avant de toucher Partager."})));
+  // « Partager des photos » ouvre la galerie du téléphone ; les photos choisies
+  // partent ensuite par le menu Partager du téléphone (choisir Google Photos).
+  const choix = el('input', {type: 'file', accept: 'image/*,video/*', multiple: '', hidden: ''});
+  const partager = el('button', {class: 'bouton', type: 'button', text: '📤 Partager des photos'});
+  const message = el('p', {class: 'petit', hidden: ''});
+  partager.addEventListener('click', () => choix.click());
+  choix.addEventListener('change', async () => {
+    const fichiers = [...choix.files]; choix.value = '';
+    if (!fichiers.length) return;
+    if (navigator.canShare && navigator.canShare({files: fichiers})) {
+      try { await navigator.share({files: fichiers, title: 'Photos ÔGravel'}); message.hidden = true; }
+      catch (e) { if (e.name !== 'AbortError') { message.textContent = "Partage impossible depuis ce téléphone : ouvrez l'album pour y ajouter vos photos."; message.hidden = false; } }
+    } else {
+      message.textContent = "Ce téléphone ne permet pas de partager depuis l'appli : l'album s'ouvre, touchez « + » pour ajouter vos photos.";
+      message.hidden = false;
+      window.open(url, '_blank', 'noopener');
+    }
+  });
+  zone.append(el('div', {class: 'carte photos'},
+    el('div', {class: 'actions'},
+      partager,
+      el('a', {class: 'bouton secondaire', href: url, target: '_blank', rel: 'noopener', text: '🖼️ Voir les photos'})),
+    choix, message,
+    el('p', {class: 'remarque', text: "Pensez à partager vos photos dans l'album Google ÔGravel."})));
 }
 
 /* ---------- Installation sur l'écran d'accueil ---------- */
