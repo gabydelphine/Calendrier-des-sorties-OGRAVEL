@@ -451,44 +451,27 @@ function rendrePhotos() {
   }
   // « Partager des photos » ouvre la galerie du téléphone ; les photos choisies
   // partent ensuite par le menu Partager du téléphone (choisir Google Photos).
-  const choix = el('input', {type: 'file', accept: 'image/*', multiple: '', hidden: ''});
+  const choix = el('input', {type: 'file', accept: 'image/*,video/*', multiple: '', hidden: ''});
   const partager = el('button', {class: 'bouton', type: 'button', text: '📤 Partager des photos'});
   const message = el('p', {class: 'petit', hidden: ''});
   partager.addEventListener('click', () => choix.click());
-  // Android n'ouvre le menu Partager que juste après un appui : une fois les photos
-  // choisies, le bouton « Envoyer vers Google Photos » lance le partage.
-  const envoyer = el('button', {class: 'bouton', type: 'button', hidden: ''});
-  let fichiers = [];
-  // Lien vers l'album, touché par le membre (une ouverture automatique serait bloquée).
-  const ouvrirAlbum = el('a', {class: 'bouton secondaire', href: url, target: '_blank', rel: 'noopener', hidden: '',
-    text: "📂 Ouvrir l'album ÔGravel"});
-  const album = (texte) => {
-    envoyer.hidden = true; ouvrirAlbum.hidden = false;
-    message.textContent = texte + " Ouvrez l'album et touchez « + » pour ajouter vos photos.";
-    message.hidden = false;
-  };
-  // Après le choix des photos, toujours un bouton visible : c'est son appui qui lance l'envoi.
-  choix.addEventListener('change', () => {
-    fichiers = [...choix.files]; choix.value = '';
+  choix.addEventListener('change', async () => {
+    const fichiers = [...choix.files]; choix.value = '';
     if (!fichiers.length) return;
-    envoyer.textContent = '📤 Envoyer ' + fichiers.length + ' photo' + (fichiers.length > 1 ? 's' : '') + ' vers Google Photos';
-    envoyer.hidden = false; ouvrirAlbum.hidden = true; message.hidden = true;
-    envoyer.scrollIntoView({behavior: 'smooth', block: 'center'});
-  });
-  envoyer.addEventListener('click', async () => {
-    if (!(navigator.canShare && navigator.canShare({files: fichiers}))) {
-      return album("Ce navigateur ne sait pas envoyer les photos vers Google Photos.");
+    if (navigator.canShare && navigator.canShare({files: fichiers})) {
+      try { await navigator.share({files: fichiers, title: 'Photos ÔGravel'}); message.hidden = true; }
+      catch (e) { if (e.name !== 'AbortError') { message.textContent = "Partage impossible depuis ce téléphone : ouvrez l'album pour y ajouter vos photos."; message.hidden = false; } }
+    } else {
+      message.textContent = "Ce téléphone ne permet pas de partager depuis l'appli : l'album s'ouvre, touchez « + » pour ajouter vos photos.";
+      message.hidden = false;
+      window.open(url, '_blank', 'noopener');
     }
-    try {
-      await navigator.share({files: fichiers, title: 'Photos ÔGravel'});
-      envoyer.hidden = true; message.textContent = 'Merci !'; message.hidden = false;
-    } catch (e) { if (e.name !== 'AbortError') album("Le partage n'a pas fonctionné."); }
   });
   zone.append(el('div', {class: 'carte photos'},
     el('div', {class: 'actions'},
       partager,
       el('a', {class: 'bouton secondaire', href: '#galerie', text: '🖼️ Voir les photos'})),
-    choix, envoyer, ouvrirAlbum, message,
+    choix, message,
     el('p', {class: 'remarque', text: "Pensez à partager vos photos dans l'album Google ÔGravel."})));
   rendreCarrousel(url);
   rendreGalerie();
