@@ -100,6 +100,15 @@ textarea{min-height:70px}
 .trace .tdate{grid-row:span 2;font-weight:800;font-size:.82rem;color:var(--bordeaux);line-height:1.15}
 .trace .tnom{font-weight:650;font-size:.92rem;line-height:1.25;min-width:0}
 .trace .tchiffres{font-size:.78rem;color:var(--gris);font-variant-numeric:tabular-nums}
+.carrousel{position:relative;margin:4px 0 12px;border-radius:14px;overflow:hidden;background:var(--sable);box-shadow:0 2px 10px #0000000f}
+.piste{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.piste::-webkit-scrollbar{display:none}
+.diapo{flex:0 0 100%;scroll-snap-align:start;position:relative;aspect-ratio:4/3;display:block}
+.diapo img{width:100%;height:100%;object-fit:cover;display:block}
+.diapo .legende{position:absolute;left:10px;bottom:10px;background:#0009;color:#fff;font-size:.72rem;padding:3px 8px;border-radius:999px}
+.points{position:absolute;right:10px;bottom:12px;display:flex;gap:4px;max-width:55%;flex-wrap:wrap;justify-content:flex-end}
+.points span{width:6px;height:6px;border-radius:50%;background:#ffffff80}
+.points span.actif{background:#fff}
 .photos .actions{display:flex;flex-wrap:wrap;gap:10px}
 .photos .actions .bouton{margin-top:0;flex:1 1 140px;text-align:center}
 .remarque{margin:14px 0 0;font-size:.86rem;color:var(--gris);font-style:italic}
@@ -420,6 +429,56 @@ function rendrePhotos() {
       el('a', {class: 'bouton secondaire', href: url, target: '_blank', rel: 'noopener', text: '🖼️ Voir les photos'})),
     choix, message,
     el('p', {class: 'remarque', text: "Pensez à partager vos photos dans l'album Google ÔGravel."})));
+  rendreCarrousel(url);
+}
+
+/* ---------- Carrousel : album Google ÔGravel + photos du blog ---------- */
+const MEDIA_API = 'https://ogravel.com/wp-json/wp/v2/media?per_page=24&media_type=image&_fields=date,link,post,media_details,source_url';
+let minuterie = null;
+async function rendreCarrousel(album) {
+  const zone = document.getElementById('photos');
+  const bloc = el('div', {class: 'carrousel', 'aria-label': 'Photos des sorties'});
+  const piste = el('div', {class: 'piste'});
+  const points = el('div', {class: 'points'});
+  bloc.append(piste, points);
+  zone.prepend(bloc);
+  const [albumPhotos, blogPhotos] = await Promise.all([
+    json('photos.json').then(d => (d.photos || []).map(p => ({src: p.url + '=w900-h675-c', lien: album, legende: 'Album ÔGravel'}))).catch(() => []),
+    fetch(MEDIA_API).then(r => r.ok ? r.json() : []).then(l => l.map(m => {
+      const t = (m.media_details && m.media_details.sizes) || {};
+      const src = urlSure((t.medium_large || t.large || t.medium || {}).source_url || m.source_url);
+      const d = new Date(m.date);
+      return src ? {src, lien: 'https://ogravel.com/?p=' + (m.post || ''), legende: 'Blog · ' + (Number.isNaN(d.getTime()) ? '' : d.getDate() + ' ' + MOIS_COURTS[d.getMonth()] + ' ' + d.getFullYear())} : null;
+    }).filter(Boolean)).catch(() => [])
+  ]);
+  // Sélection : on alterne album et blog, 24 photos au plus.
+  const selection = [];
+  for (let i = 0; selection.length < 24 && (i < albumPhotos.length || i < blogPhotos.length); i++) {
+    if (albumPhotos[i]) selection.push(albumPhotos[i]);
+    if (blogPhotos[i]) selection.push(blogPhotos[i]);
+  }
+  if (!selection.length) { bloc.remove(); return; }
+  selection.forEach((p, i) => {
+    const lien = urlSure(p.lien) || album;
+    piste.append(el('a', {class: 'diapo', href: lien, target: '_blank', rel: 'noopener'},
+      el('img', {src: p.src, alt: '', loading: i < 2 ? 'eager' : 'lazy', referrerpolicy: 'no-referrer'}),
+      el('span', {class: 'legende', text: p.legende})));
+    points.append(el('span', {class: i ? '' : 'actif'}));
+  });
+  const aller = i => piste.scrollTo({left: i * piste.clientWidth, behavior: 'smooth'});
+  const courant = () => Math.round(piste.scrollLeft / Math.max(1, piste.clientWidth));
+  piste.addEventListener('scroll', () => { const c = courant(); [...points.children].forEach((p, i) => p.classList.toggle('actif', i === c)); }, {passive: true});
+  const lancer = () => {
+    clearInterval(minuterie);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    minuterie = setInterval(() => {
+      if (!document.querySelector('section[data-onglet="photos"].actif') || document.hidden) return;
+      aller((courant() + 1) % selection.length);
+    }, 4000);
+  };
+  // Le défilement s'arrête quand on touche le carrousel, puis reprend.
+  piste.addEventListener('pointerdown', () => { clearInterval(minuterie); setTimeout(lancer, 8000); });
+  lancer();
 }
 
 /* ---------- Installation sur l'écran d'accueil ---------- */
