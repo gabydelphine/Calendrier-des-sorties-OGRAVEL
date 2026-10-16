@@ -14,7 +14,36 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parent
 CONFIG = BASE / "app" / "config.json"
 SORTIE = BASE / "app" / "photos.json"
-MAXI = 40  # nombre de photos gardées pour le carrousel
+MAXI = 60  # nombre de photos gardées pour le carrousel
+PARIS = datetime.timezone(datetime.timedelta(hours=2))
+
+
+def sorties_connues():
+    """Toutes les sorties ÔGravel connues : calendrier, historique, HelloAsso et parcours."""
+    def lire_json(chemin):
+        try:
+            return json.loads(chemin.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return {}
+    liste = []
+    for e in lire_json(BASE / "events.json").get("events", []):
+        liste.append((e["date"], e.get("end_date"), e.get("title", "")))
+    for e in lire_json(BASE / "sorties-historique.json").get("sorties", []):
+        liste.append((e["date"], e.get("end_date"), e.get("title", "")))
+    for e in lire_json(BASE / "helloasso.json").get("evenements", []):
+        if e.get("date"):
+            liste.append((e["date"], e.get("end_date"), e.get("titre", "")))
+    for e in lire_json(CONFIG.parent / "parcours.json").get("parcours", []):
+        if e.get("date"):
+            liste.append((e["date"], None, e.get("nom", "")))
+    return liste
+
+
+def sortie_du_jour(date, sorties):
+    for debut, fin, titre in sorties:
+        if debut <= date <= (fin or debut):
+            return titre
+    return None
 
 
 def lire(url):
@@ -40,7 +69,16 @@ def main():
         if url in vues or largeur < 300 or hauteur < 300:
             continue  # doublons, avatars et vignettes
         vues.add(url)
-        photos.append({"url": url, "largeur": largeur, "hauteur": hauteur})
+        photo = {"url": url, "largeur": largeur, "hauteur": hauteur}
+        # Juste après l'adresse, la page donne la date de prise de vue (millisecondes).
+        suite = html[m.end():m.end() + 600]
+        if len(photos) == 0:
+            print("   [indice]", repr(suite[:300]))
+        t = re.search(r"\b(1[4-9]\d{11})\b", suite)
+        if t:
+            moment = datetime.datetime.fromtimestamp(int(t.group(1)) / 1000, PARIS)
+            photo["date"] = moment.date().isoformat()
+        photos.append(photo)
     if not photos:
         # Repli : toute adresse de photo de l'album, sans dimensions.
         for url in re.findall(r"https://lh3\.googleusercontent\.com/pw/[A-Za-z0-9_\-]{40,}", html):
@@ -52,6 +90,15 @@ def main():
         print(html[:1500])
         raise RuntimeError("Aucune photo trouvée : fichier précédent conservé")
 
+    # Tri par date (les plus récentes d'abord) et association à la sortie du jour.
+    sorties = sorties_connues()
+    for p in photos:
+        if p.get("date"):
+            titre = sortie_du_jour(p["date"], sorties)
+            if titre:
+                p["sortie"] = titre
+    photos.sort(key=lambda p: p.get("date", ""), reverse=True)
+    print(f"{sum(1 for p in photos if p.get('date'))} photos datées, {sum(1 for p in photos if p.get('sortie'))} rattachées à une sortie")
     SORTIE.write_text(json.dumps({
         "updated": datetime.date.today().isoformat(),
         "album": album,
