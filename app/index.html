@@ -329,7 +329,19 @@ document.getElementById('installer-bouton').addEventListener('click', async () =
   document.getElementById('installer').classList.remove('visible');
 });
 if (ios) bandeau("Dans Safari : touchez Partager (□↑) puis « Sur l'écran d'accueil ».", false);
-else if (/Android/.test(navigator.userAgent)) setTimeout(() => { if (!invite) bandeau("Dans Chrome : menu ⋮ puis « Ajouter à l'écran d'accueil ».", false); }, 2500);
+else if (/Android/.test(navigator.userAgent)) setTimeout(() => {
+  if (invite) return;
+  const ua = navigator.userAgent;
+  let t = "Menu ⋮ du navigateur puis « Ajouter à l'écran d'accueil » (ou « Installer l'application »).";
+  if (/SamsungBrowser/.test(ua)) t = "Samsung Internet : touchez ☰ en bas à droite, puis « Ajouter page à » → « Écran d'accueil ».";
+  else if (/Firefox/.test(ua)) t = "Firefox : touchez ⋮ puis « Ajouter à l'écran d'accueil ».";
+  else if (/EdgA/.test(ua)) t = "Edge : touchez ☰ en bas, puis « Ajouter au téléphone ».";
+  else if (/OPR|Opera/.test(ua)) t = "Opera : touchez ⋮ puis « Ajouter à… » → « Écran d'accueil ».";
+  else if (/MiuiBrowser|XiaoMi/.test(ua)) t = "Navigateur Xiaomi : touchez ☰ puis « Ajouter aux raccourcis » ou « Écran d'accueil ».";
+  else if (/HuaweiBrowser/.test(ua)) t = "Navigateur Huawei : touchez ☰ puis « Ajouter à » → « Écran d'accueil ».";
+  else if (/; wv\)|FBAN|FBAV|Instagram|WhatsApp/.test(ua)) t = "Ouvrez d'abord ce lien dans votre navigateur (menu ⋮ → « Ouvrir dans le navigateur »), puis ajoutez-le à l'écran d'accueil.";
+  bandeau(t, false);
+}, 2500);
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 
 /* ---------- Chargement ---------- */
