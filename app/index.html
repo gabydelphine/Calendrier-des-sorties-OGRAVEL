@@ -459,29 +459,36 @@ function rendrePhotos() {
   // choisies, le bouton « Envoyer vers Google Photos » lance le partage.
   const envoyer = el('button', {class: 'bouton', type: 'button', hidden: ''});
   let fichiers = [];
-  const album = () => {
-    message.textContent = "L'album ÔGravel s'ouvre : touchez « + » pour ajouter vos photos.";
-    message.hidden = false; window.open(url, '_blank', 'noopener');
+  // Lien vers l'album, touché par le membre (une ouverture automatique serait bloquée).
+  const ouvrirAlbum = el('a', {class: 'bouton secondaire', href: url, target: '_blank', rel: 'noopener', hidden: '',
+    text: "📂 Ouvrir l'album ÔGravel"});
+  const album = (texte) => {
+    envoyer.hidden = true; ouvrirAlbum.hidden = false;
+    message.textContent = texte + " Ouvrez l'album et touchez « + » pour ajouter vos photos.";
+    message.hidden = false;
   };
+  // Après le choix des photos, toujours un bouton visible : c'est son appui qui lance l'envoi.
   choix.addEventListener('change', () => {
     fichiers = [...choix.files]; choix.value = '';
     if (!fichiers.length) return;
-    if (navigator.canShare && navigator.canShare({files: fichiers})) {
-      envoyer.textContent = '📤 Envoyer ' + fichiers.length + ' photo' + (fichiers.length > 1 ? 's' : '') + ' vers Google Photos';
-      envoyer.hidden = false; message.hidden = true;
-    } else album();
+    envoyer.textContent = '📤 Envoyer ' + fichiers.length + ' photo' + (fichiers.length > 1 ? 's' : '') + ' vers Google Photos';
+    envoyer.hidden = false; ouvrirAlbum.hidden = true; message.hidden = true;
+    envoyer.scrollIntoView({behavior: 'smooth', block: 'center'});
   });
   envoyer.addEventListener('click', async () => {
+    if (!(navigator.canShare && navigator.canShare({files: fichiers}))) {
+      return album("Ce navigateur ne sait pas envoyer les photos vers Google Photos.");
+    }
     try {
       await navigator.share({files: fichiers, title: 'Photos ÔGravel'});
       envoyer.hidden = true; message.textContent = 'Merci !'; message.hidden = false;
-    } catch (e) { if (e.name !== 'AbortError') { envoyer.hidden = true; album(); } }
+    } catch (e) { if (e.name !== 'AbortError') album("Le partage n'a pas fonctionné."); }
   });
   zone.append(el('div', {class: 'carte photos'},
     el('div', {class: 'actions'},
       partager,
       el('a', {class: 'bouton secondaire', href: '#galerie', text: '🖼️ Voir les photos'})),
-    choix, envoyer, message,
+    choix, envoyer, ouvrirAlbum, message,
     el('p', {class: 'remarque', text: "Pensez à partager vos photos dans l'album Google ÔGravel."})));
   rendreCarrousel(url);
   rendreGalerie();
