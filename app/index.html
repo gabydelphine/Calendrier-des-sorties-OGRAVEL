@@ -268,7 +268,7 @@ addEventListener('hashchange', afficher);
 function rendreLiens() {
   const wa = document.getElementById('whatsapp');
   // Ouvre simplement l'application WhatsApp du téléphone (aucun lien d'invitation).
-  if (/Android/.test(navigator.userAgent)) wa.href = 'intent://send/#Intent;scheme=whatsapp;package=com.whatsapp;end';
+  if (/Android/.test(navigator.userAgent)) wa.href = 'intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.whatsapp;end';
   const zone = document.getElementById('liens'); zone.replaceChildren();
   const reseaux = document.getElementById('reseaux'); reseaux.replaceChildren();
   for (const l of config.liens || []) {
