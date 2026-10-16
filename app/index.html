@@ -238,6 +238,10 @@ function billet(s) {
   return billetterie.find(h => h.date && h.date <= s.date && s.date <= (h.end_date || h.date))
     || billetterie.find(h => simplifier(h.titre) && simplifier(h.titre) === simplifier(s.title));
 }
+function prixDuJour(h) {
+  const p = h.prix_apres;
+  return p && p.a_partir_du && new Date() >= new Date(p.a_partir_du + 'T00:00:00') ? p.prix : h.prix;
+}
 function boutonInscription(s) {
   const h = billet(s);
   if (h) {
@@ -245,7 +249,7 @@ function boutonInscription(s) {
     if (fini) return el('span', {class: 'complet', text: 'Inscriptions clôturées'});
     return el('span', {class: 'inscrire'},
       el('a', {class: 'bouton', href: h.url, target: '_blank', rel: 'noopener', text: "Je m'inscris"}),
-      h.prix ? el('small', {class: 'prix', text: h.prix}) : null);
+      prixDuJour(h) ? el('small', {class: 'prix', text: prixDuJour(h)}) : null);
   }
   if ((config.complets || []).includes(s.date))
     return el('span', {class: 'complet', text: 'Complet'});
