@@ -88,12 +88,28 @@ def infos_tour(html):
         if m:
             date = datetime.date(int(m.group(3)), MOIS[m.group(2)], int(m.group(1))).isoformat()
     km = dplus = None
-    m = re.search(r'"distance"\s*:\s*([\d.]+)', html)
+    m = re.search(r'\\?"distance\\?"\s*:\s*([\d.]+)', html)
     if m:
         km = round(float(m.group(1)) / 1000)
-    m = re.search(r'"elevation_up"\s*:\s*([\d.]+)', html)
+    m = re.search(r'\\?"elevation_?[uU]p\\?"\s*:\s*([\d.]+)', html)
     if m:
         dplus = round(float(m.group(1)))
+    if km is None:
+        # Repli : texte affiché, par ex. « 53,2 km » dans la description de la page.
+        m = re.search(r'<meta[^>]+(?:name|property)="(?:og:)?description"[^>]+content="([^"]+)"', html)
+        texte = m.group(1) if m else ""
+        mk = re.search(r"(\d+(?:[.,]\d+)?)\s*km", texte)
+        if mk:
+            km = round(float(mk.group(1).replace(",", ".")))
+        md = re.search(r"(\d[\d\s .]*)\s*m\b[^.]{0,40}?(?:dénivelé|montée|D\+)|(?:dénivelé|montée|D\+)[^\d]{0,30}(\d[\d\s .]*)\s*m", texte, re.I)
+        if md:
+            dplus = int(re.sub(r"\D", "", md.group(1) or md.group(2)))
+    if km is None:
+        # Aide au réglage : montre où apparaissent km et dénivelé dans la page.
+        for mot in ("distance", "elevation", " km"):
+            i = html.find(mot)
+            if i >= 0:
+                print("   [indice]", repr(html[max(0, i - 60):i + 80]))
     return nom, date, km, dplus
 
 
@@ -131,7 +147,7 @@ def main():
     for i in ids:
         if i in deja or i in exclus:
             continue
-        if i not in vus:
+        if i not in vus or vus[i].get("km") is None:
             time.sleep(1)
             try:
                 nom, date, km, dplus = infos_tour(lire(TOUR.format(i)))
