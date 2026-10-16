@@ -24,6 +24,7 @@ BASE = Path(__file__).resolve().parent
 UTILISATEUR = "1261516550100"  # Thierry SCHIAVI - Ô Gravel !
 PROFIL = f"https://www.komoot.com/fr-fr/user/{UTILISATEUR}"
 TOUR = "https://www.komoot.com/fr-fr/tour/{}"
+VISUGPX = "https://www.visugpx.com/membres/1289/"  # traces de Thierry Ô Gravel ! (pages autorisées par le robots.txt)
 PARCOURS = BASE / "app" / "parcours.json"
 HISTORIQUE = BASE / "sorties-historique.json"
 VUS = BASE / "komoot-vus.json"
@@ -130,7 +131,8 @@ def main():
     sorties = memoriser_sorties()
     parcours = charger(PARCOURS, {"parcours": []})
     exclus = {str(x) for x in parcours.get("_exclus", [])}
-    deja = {m.group(1) for p in parcours["parcours"] if (m := re.search(r"/tour/(\d+)", p.get("lien", "")))}
+    deja = {m.group(1) for p in parcours["parcours"] for cle in ("lien", "lien_komoot")
+            if (m := re.search(r"/tour/(\d+)", p.get(cle) or ""))}
     vus = charger(VUS, {})
 
     html = lire(PROFIL)
@@ -174,10 +176,73 @@ def main():
         print(f"+ ajouté : {bloc['date']} {bloc['nom']} (sortie « {s['title']} »)")
 
     ecrire(VUS, vus)
+    try:
+        ajouts += visugpx(parcours, sorties, aujourdhui)
+    except Exception as exc:  # VisuGPX indisponible : on garde les liens Komoot
+        print(f"! VisuGPX : {exc}", file=sys.stderr)
     if ajouts:
         parcours["parcours"].sort(key=lambda p: p.get("date", ""), reverse=True)
         ecrire(PARCOURS, parcours)
     print(f"{ajouts} parcours ajoutés")
+
+
+def traces_visugpx():
+    """Traces publiques de Thierry sur VisuGPX : code, nom, date, km, D+."""
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(lire(VISUGPX), "html.parser")
+    traces, vus = [], set()
+    for a in soup.find_all("a", href=re.compile(r"^/[A-Za-z0-9]{10}$")):
+        code = a["href"][1:]
+        if code in vus:
+            continue
+        bloc, texte = a, ""
+        for _ in range(6):  # remonte jusqu'au bloc qui contient la date de la trace
+            bloc = bloc.parent
+            if bloc is None:
+                break
+            texte = bloc.get_text(" ", strip=True)
+            if re.search(r"\d{2}\.\d{2}\.\d{4}", texte):
+                break
+        m = re.search(r"(\d{2})\.(\d{2})\.(\d{4})", texte)
+        if not m:
+            continue
+        vus.add(code)
+        km = re.search(r"([\d.,]+)\s*km", texte)
+        dp = re.search(r"D\+\s*([\d\s]+?)\s*m\b", texte)
+        traces.append({"code": code, "nom": a.get_text(" ", strip=True),
+                       "date": f"{m.group(3)}-{m.group(2)}-{m.group(1)}",
+                       "km": round(float(km.group(1).replace(",", "."))) if km else None,
+                       "dplus": int(re.sub(r"\D", "", dp.group(1))) if dp else None})
+    return traces
+
+
+def visugpx(parcours, sorties, aujourdhui):
+    """Préfère la trace VisuGPX (parcours proposé, GPX en accès libre) publiée
+    le jour d'une sortie : remplace le lien Komoot, ou ajoute la sortie."""
+    traces = traces_visugpx()
+    print(f"{len(traces)} traces sur VisuGPX")
+    exclus = {str(x) for x in parcours.get("_exclus", [])}
+    changements = 0
+    for t in traces:
+        if t["code"] in exclus or any(t["code"] in (p.get("lien") or "") for p in parcours["parcours"]):
+            continue
+        existant = next((p for p in parcours["parcours"]
+                         if p.get("date") == t["date"] and "visugpx.com" not in (p.get("lien") or "")), None)
+        if existant:
+            existant["lien_komoot"] = existant.get("lien_komoot") or existant.get("lien")
+        elif sortie_du_jour(t["date"], sorties, aujourdhui):
+            existant = {"date": t["date"], "nom": t["nom"], "auto": True}
+            parcours["parcours"].append(existant)
+        else:
+            continue
+        existant["lien"] = "https://www.visugpx.com/" + t["code"]
+        if t["km"]:
+            existant["distance_km"] = t["km"]
+        if t["dplus"]:
+            existant["denivele_m"] = t["dplus"]
+        changements += 1
+        print(f"+ VisuGPX : {t['date']} {t['nom']}")
+    return changements
 
 
 if __name__ == "__main__":
