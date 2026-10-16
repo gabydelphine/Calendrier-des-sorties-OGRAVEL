@@ -451,7 +451,7 @@ function rendrePhotos() {
   }
   // « Partager des photos » ouvre la galerie du téléphone ; les photos choisies
   // partent ensuite par le menu Partager du téléphone (choisir Google Photos).
-  const choix = el('input', {type: 'file', accept: 'image/*,video/*', multiple: '', hidden: ''});
+  const choix = el('input', {type: 'file', accept: 'image/*', multiple: '', hidden: ''});
   const partager = el('button', {class: 'bouton', type: 'button', text: '📤 Partager des photos'});
   const message = el('p', {class: 'petit', hidden: ''});
   partager.addEventListener('click', () => choix.click());
