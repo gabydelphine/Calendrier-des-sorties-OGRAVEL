@@ -268,7 +268,11 @@ addEventListener('hashchange', afficher);
 function rendreLiens() {
   const wa = document.getElementById('whatsapp');
   // Ouvre simplement WhatsApp (aucun lien d'invitation : chacun retrouve la communauté dans l'appli).
-  wa.href = 'https://wa.me';
+  // Sur Android, l'adresse wa.me est envoyée directement à WhatsApp (paquet com.whatsapp, équivalent
+  // web de setPackage) ; si WhatsApp ne répond pas, repli sur la page wa.me au lieu du Play Store.
+  wa.href = /Android/.test(navigator.userAgent)
+    ? 'intent://wa.me/#Intent;scheme=https;package=com.whatsapp;S.browser_fallback_url=' + encodeURIComponent('https://wa.me/') + ';end'
+    : 'https://wa.me/';
   const zone = document.getElementById('liens'); zone.replaceChildren();
   const reseaux = document.getElementById('reseaux'); reseaux.replaceChildren();
   for (const l of config.liens || []) {
