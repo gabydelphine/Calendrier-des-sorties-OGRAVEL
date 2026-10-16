@@ -268,7 +268,7 @@ addEventListener('hashchange', afficher);
 function rendreLiens() {
   const wa = document.getElementById('whatsapp');
   // Ouvre simplement WhatsApp (aucun lien d'invitation : chacun retrouve la communauté dans l'appli).
-  wa.href = 'https://wa.me/';
+  wa.href = 'https://wa.me';
   const zone = document.getElementById('liens'); zone.replaceChildren();
   const reseaux = document.getElementById('reseaux'); reseaux.replaceChildren();
   for (const l of config.liens || []) {
