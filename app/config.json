@@ -1,0 +1,32 @@
+{
+  "_aide": "Réglages de l'appli ÔGravel. Modifier les adresses ici, l'appli se met à jour toute seule.",
+  "photos_url": "https://photos.app.goo.gl/xDjK9YYXGkt55fAh7",
+  "inscription_email": "thierry.schiavi@aliceadsl.fr",
+  "liens": [
+    {
+      "nom": "Site ÔGravel",
+      "url": "https://ogravel.com/",
+      "icone": "🌐"
+    },
+    {
+      "nom": "Calendrier officiel",
+      "url": "https://ogravel.com/calendrier/",
+      "icone": "📅"
+    },
+    {
+      "nom": "Strava",
+      "url": "https://www.strava.com/clubs/%C3%B4-gravel-719803",
+      "icone": "🟠"
+    },
+    {
+      "nom": "Instagram",
+      "url": "https://www.instagram.com/o_gravel_/",
+      "icone": "📷"
+    },
+    {
+      "nom": "Facebook",
+      "url": "https://www.facebook.com/%C3%94-Gravel-108045327710810",
+      "icone": "👥"
+    }
+  ]
+}

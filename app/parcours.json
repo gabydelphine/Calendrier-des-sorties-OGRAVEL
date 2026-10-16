@@ -1,0 +1,4 @@
+{
+  "_aide": "Liste des parcours. Pour en ajouter un, copier un bloc et le modifier. 'lien' : page Strava, Komoot, OpenRunner ou VisuGPX. 'gpx' (facultatif) : nom d'un fichier .gpx déposé dans le dossier app/traces/. 'type' : Family, Special, Distance ou Surprise.",
+  "parcours": []
+}

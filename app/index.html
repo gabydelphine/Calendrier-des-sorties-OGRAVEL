@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ÔGravel</title>
+<meta name="theme-color" content="#873c46">
+<meta name="description" content="L'appli des membres ÔGravel : sorties, calendriers, parcours et photos.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ÔGravel">
+<style>
+:root{--bordeaux:#873c46;--bordeaux-fonce:#6d2f38;--creme:#f8f6f1;--sable:#f3e6d8;--encre:#26312b;--gris:#647169;--vert:#2f6f4f;--carte:#fff;--trait:#e8e2da}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0;background:var(--creme);color:var(--encre);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+a{color:var(--bordeaux)}
+header{background:var(--bordeaux);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 18px 16px;display:flex;align-items:center;gap:12px}
+header img{width:44px;height:44px;border-radius:10px;background:#fff;object-fit:contain;padding:2px}
+header h1{font-size:1.25rem;margin:0;line-height:1.1}
+header p{margin:2px 0 0;font-size:.82rem;opacity:.85}
+main{max-width:640px;margin:0 auto;padding:16px 16px calc(96px + env(safe-area-inset-bottom))}
+section[data-onglet]{display:none}
+section[data-onglet].actif{display:block}
+h2{font-size:1.05rem;margin:22px 0 10px;color:var(--bordeaux)}
+.carte{background:var(--carte);border-radius:14px;padding:16px;box-shadow:0 2px 10px #0000000f;margin:10px 0}
+.prochaine{background:var(--bordeaux);color:#fff}
+.prochaine .etiquette{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;opacity:.85}
+.prochaine .quand{font-size:1.5rem;font-weight:800;margin:4px 0 0}
+.prochaine .titre{font-size:1.05rem;font-weight:650;margin:2px 0}
+.prochaine .lieu{opacity:.85;font-size:.92rem}
+.prochaine .bouton{background:#fff;color:var(--bordeaux)}
+.dans{display:inline-block;background:#ffffff26;border-radius:999px;padding:2px 10px;font-size:.8rem;margin-top:8px}
+.bouton{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:10px;padding:11px 14px;font:inherit;font-weight:650;cursor:pointer;text-decoration:none;background:var(--bordeaux);color:#fff;margin-top:12px}
+.bouton.secondaire{background:transparent;color:var(--bordeaux);border:1.5px solid var(--bordeaux)}
+.grands{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.grand{display:flex;flex-direction:column;gap:6px;background:var(--carte);border-radius:14px;padding:16px 14px;text-decoration:none;color:var(--encre);box-shadow:0 2px 10px #0000000f;border-top:4px solid var(--bordeaux);min-height:118px}
+.grand.vert{border-top-color:var(--vert)}
+.grand .emoji{font-size:1.6rem}
+.grand strong{font-size:.98rem;line-height:1.2}
+.grand span{font-size:.8rem;color:var(--gris)}
+.liens{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.liens a{display:flex;align-items:center;gap:8px;background:var(--carte);border-radius:10px;padding:11px 12px;text-decoration:none;color:var(--encre);font-weight:600;font-size:.92rem;border:1px solid var(--trait)}
+.sortie{display:flex;gap:14px;align-items:flex-start}
+.sortie .jour{min-width:54px;text-align:center;background:var(--sable);border-radius:10px;padding:6px 4px;color:var(--bordeaux);font-weight:800;line-height:1.1}
+.sortie .jour small{display:block;font-weight:600;font-size:.72rem;text-transform:uppercase}
+.sortie .titre{font-weight:700}
+.sortie .lieu,.petit{color:var(--gris);font-size:.88rem}
+.sortie .bouton{margin-top:8px;padding:8px 12px;font-size:.92rem}
+.mois{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--gris);margin:18px 0 4px}
+.vide{color:var(--gris);text-align:center;padding:24px 12px}
+.badge{display:inline-block;font-size:.72rem;font-weight:700;text-transform:uppercase;border-radius:6px;padding:2px 7px;background:var(--sable);color:var(--bordeaux)}
+.badge.special{background:#fde2e2}.badge.family{background:#e3f1e7;color:var(--vert)}.badge.surprise{background:#efe4f7;color:#6b3f8a}.badge.distance{background:#e2ecf8;color:#2e5a87}
+.chiffres{display:flex;gap:14px;color:var(--gris);font-size:.88rem;margin-top:4px}
+.etapes{margin:8px 0 0;padding-left:20px;color:var(--encre)}
+.etapes li{margin:6px 0}
+.installer{display:none;background:var(--sable);border-radius:14px;padding:14px 16px;margin:6px 0 4px}
+.installer.visible{display:block}
+.installer strong{color:var(--bordeaux)}
+nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--trait);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 0 8px;text-decoration:none;color:var(--gris);font-size:.74rem;font-weight:600}
+nav a span{font-size:1.25rem;line-height:1}
+nav a.actif{color:var(--bordeaux)}
+dialog{border:0;border-radius:16px;padding:20px;width:min(420px,calc(100% - 32px));box-shadow:0 10px 35px #0004}
+dialog::backdrop{background:#0007}
+dialog h3{margin:0 0 4px;color:var(--bordeaux)}
+label{display:block;margin-top:12px;font-weight:600;font-size:.92rem}
+input,select,textarea{width:100%;font:inherit;padding:10px;border:1px solid #bbb;border-radius:8px;margin-top:4px;background:#fff}
+textarea{min-height:70px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<header>
+  <img src="logo.jpg" alt="Logo ÔGravel">
+  <div><h1>ÔGravel</h1><p>L'appli des membres</p></div>
+</header>
+
+<main>
+  <!-- ACCUEIL -->
+  <section data-onglet="accueil">
+    <div class="installer" id="installer">
+      <strong>📲 Installez l'appli sur votre téléphone</strong>
+      <div class="petit" id="installer-texte"></div>
+      <button class="bouton" id="installer-bouton" hidden>Installer</button>
+    </div>
+
+    <div id="prochaine"></div>
+
+    <h2>Les calendriers</h2>
+    <div class="grands">
+      <a class="grand" href="https://gabydelphine.github.io/Calendrier-des-sorties-OGRAVEL/" target="_blank" rel="noopener">
+        <span class="emoji">🚴</span><strong>Sorties ÔGravel</strong><span>Les rendez-vous de l'association</span>
+      </a>
+      <a class="grand vert" href="https://gabydelphine.github.io/Agenda-Gravel-autres-associations/" target="_blank" rel="noopener">
+        <span class="emoji">🗺️</span><strong>Agenda gravel</strong><span>Les épreuves des autres clubs à 200 km</span>
+      </a>
+    </div>
+
+    <h2>ÔGravel en ligne</h2>
+    <div class="liens" id="liens"></div>
+  </section>
+
+  <!-- SORTIES -->
+  <section data-onglet="sorties">
+    <h2>Prochaines sorties</h2>
+    <p class="petit">Touchez « Je m'inscris » : un e-mail prérempli s'ouvre, il ne reste qu'à l'envoyer.</p>
+    <div id="sorties">Chargement…</div>
+    <a class="bouton secondaire" href="https://gabydelphine.github.io/Calendrier-des-sorties-OGRAVEL/#choix" target="_blank" rel="noopener">📅 Ajouter les sorties à mon agenda</a>
+  </section>
+
+  <!-- PARCOURS -->
+  <section data-onglet="parcours">
+    <h2>Parcours</h2>
+    <div id="parcours">Chargement…</div>
+  </section>
+
+  <!-- PHOTOS -->
+  <section data-onglet="photos">
+    <h2>Photos des sorties</h2>
+    <div id="photos"></div>
+  </section>
+</main>
+
+<nav>
+  <a href="#accueil" data-lien="accueil"><span>🏠</span>Accueil</a>
+  <a href="#sorties" data-lien="sorties"><span>🚴</span>Sorties</a>
+  <a href="#parcours" data-lien="parcours"><span>🗺️</span>Parcours</a>
+  <a href="#photos" data-lien="photos"><span>📸</span>Photos</a>
+</nav>
+
+<dialog id="inscription">
+  <form id="form-inscription">
+    <h3>Je m'inscris</h3>
+    <p class="petit" id="inscription-sortie"></p>
+    <label for="nom">Prénom et nom *</label>
+    <input id="nom" required autocomplete="name" maxlength="100">
+    <label for="formule">Parcours *</label>
+    <select id="formule" required>
+      <option value="">— Choisir —</option>
+      <option>Family</option><option>Special</option><option>Distance</option><option>Je ne sais pas encore</option>
+    </select>
+    <label for="message">Message (facultatif)</label>
+    <textarea id="message" maxlength="1000" placeholder="Accompagnant, covoiturage, question…"></textarea>
+    <p class="petit">Votre messagerie va s'ouvrir avec l'e-mail prérempli : pensez à appuyer sur Envoyer.</p>
+    <div class="actions">
+      <button class="bouton" type="submit">Préparer l'e-mail</button>
+      <button class="bouton secondaire" type="button" id="annuler">Annuler</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+const SORTIES_URL = '../events.json';
+const MOIS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+const JOURS = ['dim.','lun.','mar.','mer.','jeu.','ven.','sam.'];
+const MOIS_COURTS = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+let config = {liens: [], photos_url: '', inscription_email: ''};
+let sorties = [];
+let choisie = null;
+
+function el(tag, attrs = {}, ...enfants) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') n.className = v; else if (k === 'text') n.textContent = v; else n.setAttribute(k, v);
+  }
+  for (const e of enfants) if (e != null) n.append(e);
+  return n;
+}
+function jour(iso) { const d = new Date(iso + 'T12:00:00'); return Number.isNaN(d.getTime()) ? null : d; }
+function dateLongue(d) { return JOURS[d.getDay()] + ' ' + d.getDate() + ' ' + MOIS[d.getMonth()] + ' ' + d.getFullYear(); }
+function dans(d) {
+  const auj = new Date(); auj.setHours(12, 0, 0, 0);
+  const n = Math.round((d - auj) / 86400000);
+  return n <= 0 ? "Aujourd'hui" : n === 1 ? 'Demain' : 'Dans ' + n + ' jours';
+}
+function urlSure(v) { try { const u = new URL(v); return ['http:', 'https:'].includes(u.protocol) ? u.href : null; } catch { return null; } }
+
+/* ---------- Onglets ---------- */
+function afficher() {
+  const nom = (location.hash || '#accueil').slice(1);
+  const valide = ['accueil', 'sorties', 'parcours', 'photos'].includes(nom) ? nom : 'accueil';
+  document.querySelectorAll('section[data-onglet]').forEach(s => s.classList.toggle('actif', s.dataset.onglet === valide));
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('actif', a.dataset.lien === valide));
+  window.scrollTo(0, 0);
+}
+addEventListener('hashchange', afficher);
+
+/* ---------- Accueil ---------- */
+function rendreLiens() {
+  const zone = document.getElementById('liens'); zone.replaceChildren();
+  for (const l of config.liens || []) {
+    const url = urlSure(l.url); if (!url) continue;
+    zone.append(el('a', {href: url, target: '_blank', rel: 'noopener'}, el('span', {text: l.icone || '🔗'}), l.nom));
+  }
+}
+function rendreProchaine() {
+  const zone = document.getElementById('prochaine'); zone.replaceChildren();
+  const s = sorties[0];
+  if (!s) return;
+  const d = jour(s.date);
+  const carte = el('div', {class: 'carte prochaine'},
+    el('div', {class: 'etiquette', text: 'Prochaine sortie'}),
+    el('div', {class: 'quand', text: dateLongue(d)}),
+    el('div', {class: 'titre', text: s.title || 'Sortie ÔGravel'}),
+    s.location ? el('div', {class: 'lieu', text: '📍 ' + s.location}) : null,
+    el('span', {class: 'dans', text: dans(d)}));
+  const b = el('button', {class: 'bouton', type: 'button', text: "Je m'inscris"});
+  b.addEventListener('click', () => ouvrirInscription(s));
+  carte.append(el('div', {}, b));
+  zone.append(carte);
+}
+
+/* ---------- Sorties ---------- */
+function rendreSorties() {
+  const zone = document.getElementById('sorties'); zone.replaceChildren();
+  if (!sorties.length) { zone.append(el('p', {class: 'vide', text: 'Aucune sortie annoncée pour le moment.'})); return; }
+  let dernier = '';
+  for (const s of sorties) {
+    const d = jour(s.date); const m = MOIS[d.getMonth()] + ' ' + d.getFullYear();
+    if (m !== dernier) { zone.append(el('div', {class: 'mois', text: m})); dernier = m; }
+    const fin = s.end_date ? jour(s.end_date) : null;
+    const b = el('button', {class: 'bouton', type: 'button', text: "Je m'inscris"});
+    b.addEventListener('click', () => ouvrirInscription(s));
+    zone.append(el('div', {class: 'carte sortie'},
+      el('div', {class: 'jour'}, el('small', {text: JOURS[d.getDay()]}), String(d.getDate()), el('small', {text: MOIS_COURTS[d.getMonth()]})),
+      el('div', {},
+        el('div', {class: 'titre', text: s.title || 'Sortie ÔGravel'}),
+        s.location ? el('div', {class: 'lieu', text: '📍 ' + s.location}) : null,
+        fin && fin > d ? el('div', {class: 'lieu', text: "Jusqu'au " + dateLongue(fin)}) : null,
+        el('div', {class: 'lieu', text: dans(d)}),
+        b)));
+  }
+}
+
+/* ---------- Inscription par e-mail ---------- */
+const dlg = document.getElementById('inscription');
+function ouvrirInscription(s) {
+  choisie = s;
+  document.getElementById('form-inscription').reset();
+  try { document.getElementById('nom').value = localStorage.getItem('ogravel-nom') || ''; } catch {}
+  document.getElementById('inscription-sortie').textContent = (s.title || 'Sortie ÔGravel') + ' — ' + dateLongue(jour(s.date));
+  dlg.showModal();
+}
+document.getElementById('annuler').addEventListener('click', () => dlg.close());
+document.getElementById('form-inscription').addEventListener('submit', ev => {
+  ev.preventDefault(); if (!choisie) return;
+  const nom = document.getElementById('nom').value.trim();
+  const formule = document.getElementById('formule').value;
+  const message = document.getElementById('message').value.trim();
+  if (!nom || !formule) return;
+  try { localStorage.setItem('ogravel-nom', nom); } catch {}
+  const quand = dateLongue(jour(choisie.date));
+  const sujet = 'ÔGravel – Inscription – ' + (choisie.title || 'Sortie') + ' – ' + quand;
+  const corps = 'Bonjour,\n\nJe souhaite participer à la sortie ÔGravel suivante :\n\nSortie : ' + (choisie.title || '') +
+    '\nDate : ' + quand + '\nLieu : ' + (choisie.location || 'Non précisé') + '\n\nParticipant : ' + nom +
+    '\nParcours : ' + formule + (message ? '\n\nMessage : ' + message : '') + '\n\nSportivement,\n' + nom;
+  dlg.close();
+  location.href = 'mailto:' + encodeURIComponent(config.inscription_email || '') + '?subject=' + encodeURIComponent(sujet) + '&body=' + encodeURIComponent(corps);
+});
+
+/* ---------- Parcours ---------- */
+function rendreParcours(liste) {
+  const zone = document.getElementById('parcours'); zone.replaceChildren();
+  if (!liste.length) {
+    zone.append(el('div', {class: 'carte vide'},
+      el('div', {text: '🗺️'}),
+      el('p', {text: "Aucun parcours publié pour l'instant."}),
+      el('p', {class: 'petit', text: "Les traces des sorties (Strava, Komoot, GPX…) apparaîtront ici au fil de la saison."})));
+    return;
+  }
+  for (const p of liste) {
+    const type = String(p.type || '').toLowerCase();
+    const actions = el('div', {class: 'actions'});
+    const lien = urlSure(p.lien);
+    if (lien) actions.append(el('a', {class: 'bouton', href: lien, target: '_blank', rel: 'noopener', text: '🗺️ Voir le parcours'}));
+    if (p.gpx && /^[\w.\- ]+\.gpx$/i.test(p.gpx)) actions.append(el('a', {class: 'bouton secondaire', href: 'traces/' + encodeURIComponent(p.gpx), download: '', text: '⬇️ GPX'}));
+    zone.append(el('div', {class: 'carte'},
+      p.type ? el('span', {class: 'badge ' + type, text: p.type}) : null,
+      el('div', {class: 'titre', style: 'font-weight:700;margin-top:6px', text: p.nom || 'Parcours'}),
+      el('div', {class: 'chiffres'},
+        p.distance_km ? el('span', {text: '↔️ ' + p.distance_km + ' km'}) : null,
+        p.denivele_m ? el('span', {text: '⛰️ ' + p.denivele_m + ' m D+'}) : null,
+        p.depart ? el('span', {text: '📍 ' + p.depart}) : null),
+      p.description ? el('p', {class: 'petit', text: p.description}) : null,
+      actions));
+  }
+}
+
+/* ---------- Photos ---------- */
+function rendrePhotos() {
+  const zone = document.getElementById('photos'); zone.replaceChildren();
+  const url = urlSure(config.photos_url);
+  if (!url) {
+    zone.append(el('div', {class: 'carte vide'}, el('div', {text: '📸'}), el('p', {text: "L'album photos partagé arrive bientôt."})));
+    return;
+  }
+  zone.append(el('div', {class: 'carte'},
+    el('p', {text: "Toutes les photos des sorties, au même endroit. Chacun peut regarder et ajouter les siennes."}),
+    el('a', {class: 'bouton', href: url, target: '_blank', rel: 'noopener', text: "📸 Ouvrir l'album ÔGravel"})));
+  const etapes = el('ol', {class: 'etapes'},
+    el('li', {text: "Ouvrez l'album ci-dessus une première fois et touchez « Rejoindre »."}),
+    el('li', {text: 'Dans WhatsApp, ouvrez la photo puis touchez Partager (↗ ou ⋮ → Partager).'}),
+    el('li', {text: 'Choisissez Google Photos, puis « Ajouter à l\'album » → ÔGravel.'}));
+  zone.append(el('div', {class: 'carte'}, el('strong', {text: 'Ajouter mes photos depuis WhatsApp'}), etapes,
+    el('p', {class: 'petit', text: "Astuce : on peut sélectionner plusieurs photos d'un coup avant de toucher Partager."})));
+}
+
+/* ---------- Installation sur l'écran d'accueil ---------- */
+let invite = null;
+const autonome = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
+function bandeau(texte, bouton) {
+  if (autonome) return;
+  document.getElementById('installer-texte').textContent = texte;
+  document.getElementById('installer-bouton').hidden = !bouton;
+  document.getElementById('installer').classList.add('visible');
+}
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); invite = e; bandeau("Une icône ÔGravel sur votre écran d'accueil, comme une vraie appli.", true); });
+document.getElementById('installer-bouton').addEventListener('click', async () => {
+  if (!invite) return; invite.prompt(); await invite.userChoice; invite = null;
+  document.getElementById('installer').classList.remove('visible');
+});
+if (ios) bandeau("Dans Safari : touchez Partager (□↑) puis « Sur l'écran d'accueil ».", false);
+else if (/Android/.test(navigator.userAgent)) setTimeout(() => { if (!invite) bandeau("Dans Chrome : menu ⋮ puis « Ajouter à l'écran d'accueil ».", false); }, 2500);
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+/* ---------- Chargement ---------- */
+async function json(url) { const r = await fetch(url + '?v=' + Date.now(), {cache: 'no-store'}); if (!r.ok) throw Error(url); return r.json(); }
+async function demarrer() {
+  afficher();
+  try { config = Object.assign(config, await json('config.json')); } catch {}
+  rendreLiens(); rendrePhotos();
+  try {
+    const d = await json(SORTIES_URL);
+    const auj = new Date(); auj.setHours(0, 0, 0, 0);
+    sorties = (Array.isArray(d.events) ? d.events : []).filter(s => jour(s.date) && jour(s.end_date || s.date) >= auj)
+      .sort((a, b) => a.date.localeCompare(b.date));
+    rendreProchaine(); rendreSorties();
+  } catch { document.getElementById('sorties').textContent = 'Sorties momentanément indisponibles.'; }
+  try { const p = await json('parcours.json'); rendreParcours(Array.isArray(p.parcours) ? p.parcours : []); }
+  catch { rendreParcours([]); }
+}
+demarrer();
+</script>
+</body>
+</html>
