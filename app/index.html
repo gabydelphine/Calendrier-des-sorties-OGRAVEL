@@ -267,9 +267,8 @@ addEventListener('hashchange', afficher);
 /* ---------- Accueil ---------- */
 function rendreLiens() {
   const wa = document.getElementById('whatsapp');
-  // Partage WhatsApp : ouvre la liste des discussions (aucun lien d'invitation),
-  // on touche le groupe ÔGravel. C'est l'usage prévu par WhatsApp, donc sans erreur.
-  wa.href = 'https://wa.me/?text=' + encodeURIComponent('Salut la communauté ÔGravel ! 🚴');
+  // Ouvre simplement WhatsApp (aucun lien d'invitation : chacun retrouve la communauté dans l'appli).
+  wa.href = 'https://wa.me';
   const zone = document.getElementById('liens'); zone.replaceChildren();
   const reseaux = document.getElementById('reseaux'); reseaux.replaceChildren();
   for (const l of config.liens || []) {
