@@ -69,6 +69,7 @@ label{display:block;margin-top:12px;font-weight:600;font-size:.92rem}
 input,select,textarea{width:100%;font:inherit;padding:10px;border:1px solid #bbb;border-radius:8px;margin-top:4px;background:#fff}
 textarea{min-height:70px}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
+.complet{display:inline-block;margin-top:.6rem;padding:.45rem 1rem;border-radius:999px;background:#ddd;color:#555;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:.85rem}
 </style>
 </head>
 <body>
@@ -206,10 +207,16 @@ function rendreProchaine() {
     el('div', {class: 'titre', text: s.title || 'Sortie ÔGravel'}),
     s.location ? el('div', {class: 'lieu', text: '📍 ' + s.location}) : null,
     el('span', {class: 'dans', text: dans(d)}));
+  carte.append(el('div', {}, boutonInscription(s)));
+  zone.append(carte);
+}
+
+function boutonInscription(s) {
+  if ((config.complets || []).includes(s.date))
+    return el('span', {class: 'complet', text: 'Complet'});
   const b = el('button', {class: 'bouton', type: 'button', text: "Je m'inscris"});
   b.addEventListener('click', () => ouvrirInscription(s));
-  carte.append(el('div', {}, b));
-  zone.append(carte);
+  return b;
 }
 
 /* ---------- Sorties ---------- */
@@ -221,8 +228,7 @@ function rendreSorties() {
     const d = jour(s.date); const m = MOIS[d.getMonth()] + ' ' + d.getFullYear();
     if (m !== dernier) { zone.append(el('div', {class: 'mois', text: m})); dernier = m; }
     const fin = s.end_date ? jour(s.end_date) : null;
-    const b = el('button', {class: 'bouton', type: 'button', text: "Je m'inscris"});
-    b.addEventListener('click', () => ouvrirInscription(s));
+    const b = boutonInscription(s);
     zone.append(el('div', {class: 'carte sortie'},
       el('div', {class: 'jour'}, el('small', {text: JOURS[d.getDay()]}), String(d.getDate()), el('small', {text: MOIS_COURTS[d.getMonth()]})),
       el('div', {},
