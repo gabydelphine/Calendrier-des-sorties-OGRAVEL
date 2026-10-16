@@ -1,8 +1,7 @@
 name: Actualiser le calendrier ÔGravel
 on:
   schedule:
-    # Toutes les 3 heures : les places HelloAsso partent vite.
-    - cron: '15 */3 * * *'
+    - cron: '15 5 * * *'
   workflow_dispatch:
 permissions:
   contents: write
@@ -14,18 +13,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install beautifulsoup4 curl_cffi
+      - run: pip install beautifulsoup4
       - run: python update.py
       # Le fichier d'abonnement est régénéré ici : un enregistrement fait par
       # le robot ne déclenche pas l'autre workflow (règle de GitHub).
       - run: python generer_ics.py
-      # Inscriptions HelloAsso (complet, date limite, prix). Une panne de
-      # HelloAsso ne bloque pas la mise à jour du calendrier.
-      - run: python helloasso.py
-        continue-on-error: true
       - name: Publier les nouvelles dates
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add events.json ogravel.ics $(ls helloasso.json 2>/dev/null)
+          git add events.json ogravel.ics
           git diff --cached --quiet || (git commit -m "Actualiser les sorties" && git push)
