@@ -449,21 +449,29 @@ function rendrePhotos() {
     zone.append(el('div', {class: 'carte vide'}, el('div', {text: '📸'}), el('p', {text: "L'album photos partagé arrive bientôt."})));
     return;
   }
-  // « Partager des photos » : après la question sur la sortie, ouvre directement
-  // l'album ÔGravel dans Google Photos ; le « + » de l'album y ajoute les photos.
+  // « Partager des photos » ouvre la galerie du téléphone ; les photos choisies
+  // partent ensuite par le menu Partager du téléphone (choisir Google Photos).
+  const choix = el('input', {type: 'file', accept: 'image/*,video/*', multiple: '', hidden: ''});
   const partager = el('button', {class: 'bouton', type: 'button', text: '📤 Partager des photos'});
   const message = el('p', {class: 'petit', hidden: ''});
-  partager.addEventListener('click', () => demanderEvenement(choisi => {
-    if (choisi) signalerEvenement(choisi);
-    message.textContent = "Dans l'album ÔGravel, touchez « + » pour ajouter vos photos.";
-    message.hidden = false;
-    window.open(url, '_blank', 'noopener');
-  }));
+  partager.addEventListener('click', () => choix.click());
+  choix.addEventListener('change', async () => {
+    const fichiers = [...choix.files]; choix.value = '';
+    if (!fichiers.length) return;
+    if (navigator.canShare && navigator.canShare({files: fichiers})) {
+      try { await navigator.share({files: fichiers, title: 'Photos ÔGravel'}); message.hidden = true; }
+      catch (e) { if (e.name !== 'AbortError') { message.textContent = "Partage impossible depuis ce téléphone : l'album s'ouvre, touchez « + » pour ajouter vos photos."; message.hidden = false; window.open(url, '_blank', 'noopener'); } }
+    } else {
+      message.textContent = "Ce téléphone ne permet pas de partager depuis l'appli : l'album s'ouvre, touchez « + » pour ajouter vos photos.";
+      message.hidden = false;
+      window.open(url, '_blank', 'noopener');
+    }
+  });
   zone.append(el('div', {class: 'carte photos'},
     el('div', {class: 'actions'},
       partager,
       el('a', {class: 'bouton secondaire', href: '#galerie', text: '🖼️ Voir les photos'})),
-    message,
+    choix, message,
     el('p', {class: 'remarque', text: "Pensez à partager vos photos dans l'album Google ÔGravel."})));
   rendreCarrousel(url);
   rendreGalerie();
