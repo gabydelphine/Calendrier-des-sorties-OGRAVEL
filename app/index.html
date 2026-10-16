@@ -100,12 +100,31 @@ textarea{min-height:70px}
 .trace .tdate{grid-row:span 2;font-weight:800;font-size:.82rem;color:var(--bordeaux);line-height:1.15}
 .trace .tnom{font-weight:650;font-size:.92rem;line-height:1.25;min-width:0}
 .trace .tchiffres{font-size:.78rem;color:var(--gris);font-variant-numeric:tabular-nums}
+.retour{display:inline-block;margin:6px 0 0;font-weight:600;text-decoration:none}
+.groupe{margin:16px 0 6px}
+.g-titre{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:0 -16px 6px;padding:8px 16px;position:sticky;top:0;z-index:2;background:var(--creme)}
+.g-titre strong{color:var(--bordeaux);font-size:.98rem}
+.g-titre span{color:var(--gris);font-size:.78rem;white-space:nowrap}
+.grille{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.vignette{padding:0;border:0;background:var(--sable);aspect-ratio:1;border-radius:6px;overflow:hidden;cursor:pointer}
+.vignette img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transform:scale(1.04);transition:opacity .5s ease,transform .6s ease}
+.vignette img.vue{opacity:1;transform:none}
+.vignette:active img{transform:scale(.96)}
+.vignette.couverture{grid-column:span 2;grid-row:span 2;border-radius:10px}
+@media (prefers-reduced-motion:reduce){.vignette img{transition:none;transform:none}}
+.visionneuse{position:fixed;inset:0;z-index:20;background:#000e;display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.visionneuse img{max-width:100%;max-height:82vh;object-fit:contain}
+.visionneuse button{position:absolute;background:#ffffff22;color:#fff;border:0;border-radius:50%;width:44px;height:44px;font-size:1.6rem;cursor:pointer}
+.v-fermer{top:calc(12px + env(safe-area-inset-top));right:12px;font-size:1.1rem!important}
+.v-prec{left:8px;top:50%}
+.v-suiv{right:8px;top:50%}
+.v-legende{position:absolute;bottom:calc(16px + env(safe-area-inset-bottom));left:16px;right:16px;color:#fff;text-align:center;font-size:.85rem}
 .carrousel{position:relative;margin:4px 0 12px;border-radius:14px;overflow:hidden;background:var(--sable);box-shadow:0 2px 10px #0000000f}
 .piste{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
 .piste::-webkit-scrollbar{display:none}
 .diapo{flex:0 0 100%;scroll-snap-align:start;position:relative;aspect-ratio:4/3;display:block}
 .diapo img{width:100%;height:100%;object-fit:cover;display:block}
-.diapo .legende{position:absolute;left:10px;bottom:10px;background:#0009;color:#fff;font-size:.72rem;padding:3px 8px;border-radius:999px}
+.diapo .legende{position:absolute;left:10px;bottom:10px;max-width:calc(100% - 90px);background:#0009;color:#fff;font-size:.74rem;font-weight:600;padding:4px 9px;border-radius:999px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .points{position:absolute;right:10px;bottom:12px;display:flex;gap:4px;max-width:55%;flex-wrap:wrap;justify-content:flex-end}
 .points span{width:6px;height:6px;border-radius:50%;background:#ffffff80}
 .points span.actif{background:#fff}
@@ -188,7 +207,28 @@ textarea{min-height:70px}
     <h2>Photos des sorties</h2>
     <div id="photos"></div>
   </section>
+
+  <!-- GALERIE : photos de l'album triées par sortie -->
+  <section data-onglet="galerie">
+    <a class="retour" href="#photos">← Photos</a>
+    <h2>Les photos, sortie par sortie</h2>
+    <div id="galerie">Chargement…</div>
+  </section>
 </main>
+
+<dialog id="depot">
+  <h3>Partager des photos</h3>
+  <div id="depot-corps"></div>
+  <div class="actions"><button class="bouton secondaire" type="button" onclick="this.closest('dialog').close()">Annuler</button></div>
+</dialog>
+
+<div class="visionneuse" id="visionneuse" hidden>
+  <button type="button" class="v-fermer" aria-label="Fermer">✕</button>
+  <button type="button" class="v-prec" aria-label="Photo précédente">‹</button>
+  <img alt="">
+  <button type="button" class="v-suiv" aria-label="Photo suivante">›</button>
+  <div class="v-legende"></div>
+</div>
 
 <nav>
   <a href="#accueil" data-lien="accueil"><span>🏠</span>Accueil</a>
@@ -257,9 +297,9 @@ function urlSure(v) { try { const u = new URL(v); return ['http:', 'https:'].inc
 /* ---------- Onglets ---------- */
 function afficher() {
   const nom = (location.hash || '#accueil').slice(1);
-  const valide = ['accueil', 'sorties', 'blog', 'parcours', 'photos'].includes(nom) ? nom : 'accueil';
+  const valide = ['accueil', 'sorties', 'blog', 'parcours', 'photos', 'galerie'].includes(nom) ? nom : 'accueil';
   document.querySelectorAll('section[data-onglet]').forEach(s => s.classList.toggle('actif', s.dataset.onglet === valide));
-  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('actif', a.dataset.lien === valide));
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('actif', a.dataset.lien === (valide === 'galerie' ? 'photos' : valide)));
   window.scrollTo(0, 0);
 }
 addEventListener('hashchange', afficher);
@@ -414,27 +454,161 @@ function rendrePhotos() {
   const choix = el('input', {type: 'file', accept: 'image/*,video/*', multiple: '', hidden: ''});
   const partager = el('button', {class: 'bouton', type: 'button', text: '📤 Partager des photos'});
   const message = el('p', {class: 'petit', hidden: ''});
-  partager.addEventListener('click', () => choix.click());
-  choix.addEventListener('change', async () => {
-    const fichiers = [...choix.files]; choix.value = '';
+  let evenement = null;  // { nom, date } quand ce n'est pas la dernière sortie
+  partager.addEventListener('click', () => demanderEvenement(choisi => { evenement = choisi; choix.click(); }));
+  // Android n'ouvre le menu Partager que juste après un appui : une fois les photos choisies,
+  // on affiche donc un bouton « Envoyer vers Google Photos » qui lance le partage.
+  const envoyer = el('button', {class: 'bouton', type: 'button', hidden: ''});
+  let fichiers = [];
+  choix.addEventListener('change', () => {
+    fichiers = [...choix.files]; choix.value = '';
     if (!fichiers.length) return;
+    if (evenement) signalerEvenement(evenement);
     if (navigator.canShare && navigator.canShare({files: fichiers})) {
-      try { await navigator.share({files: fichiers, title: 'Photos ÔGravel'}); message.hidden = true; }
-      catch (e) { if (e.name !== 'AbortError') { message.textContent = "Partage impossible depuis ce téléphone : ouvrez l'album pour y ajouter vos photos."; message.hidden = false; } }
+      envoyer.textContent = '📤 Envoyer ' + fichiers.length + ' photo' + (fichiers.length > 1 ? 's' : '') + ' vers Google Photos';
+      envoyer.hidden = false;
+      message.textContent = "Touchez le bouton, choisissez « Photos » puis l'album ÔGravel.";
+      message.hidden = false;
     } else {
       message.textContent = "Ce téléphone ne permet pas de partager depuis l'appli : l'album s'ouvre, touchez « + » pour ajouter vos photos.";
       message.hidden = false;
       window.open(url, '_blank', 'noopener');
     }
   });
+  envoyer.addEventListener('click', async () => {
+    try {
+      await navigator.share({files: fichiers, title: 'Photos ÔGravel'});
+      envoyer.hidden = true; message.textContent = 'Merci ! Vos photos apparaîtront dans la galerie demain matin.';
+    } catch (e) {
+      if (e.name === 'AbortError') return;
+      message.textContent = "Partage impossible depuis ce téléphone : l'album s'ouvre, touchez « + » pour ajouter vos photos.";
+      window.open(url, '_blank', 'noopener');
+    }
+  });
   zone.append(el('div', {class: 'carte photos'},
     el('div', {class: 'actions'},
       partager,
-      el('a', {class: 'bouton secondaire', href: url, target: '_blank', rel: 'noopener', text: '🖼️ Voir les photos'})),
-    choix, message,
+      el('a', {class: 'bouton secondaire', href: '#galerie', text: '🖼️ Voir les photos'})),
+    choix, envoyer, message,
     el('p', {class: 'remarque', text: "Pensez à partager vos photos dans l'album Google ÔGravel."})));
   rendreCarrousel(url);
+  rendreGalerie();
 }
+
+/* ---------- Dépôt de photos : de quelle sortie s'agit-il ? ---------- */
+async function derniereSortie() {
+  const auj = new Date(); auj.setHours(23, 59, 0, 0);
+  const candidats = [];
+  try { (await json('parcours.json')).parcours.forEach(p => p.date && candidats.push({date: p.date, nom: p.nom})); } catch {}
+  try { (await json('../events.json')).events.forEach(e => candidats.push({date: e.date, nom: e.title})); } catch {}
+  return candidats.filter(c => jour(c.date) && jour(c.date) <= auj).sort((a, b) => b.date.localeCompare(a.date))[0] || null;
+}
+async function demanderEvenement(suite) {
+  const dlg = document.getElementById('depot');
+  const corps = document.getElementById('depot-corps');
+  const derniere = await derniereSortie();
+  const etape1 = () => {
+    corps.replaceChildren(el('p', {class: 'petit', text: 'Ces photos concernent :'}));
+    const g = el('div', {class: 'choix'});
+    const b1 = el('button', {type: 'button'}, el('span', {text: '🚴'}),
+      derniere ? 'La dernière sortie : ' + derniere.nom + ' (' + dateCourte(derniere.date) + ')' : 'La dernière sortie ÔGravel');
+    b1.addEventListener('click', () => { dlg.close(); suite(null); });
+    const b2 = el('button', {type: 'button'}, el('span', {text: '📍'}), 'Un autre événement');
+    b2.addEventListener('click', etape2);
+    g.append(b1, b2); corps.append(g);
+  };
+  const etape2 = () => {
+    const nom = el('input', {id: 'depot-nom', maxlength: '80', placeholder: 'Ex. : Gravel du Drac, week-end en Ariège…', required: '', list: 'depot-noms', autocomplete: 'off'});
+    const liste = el('datalist', {id: 'depot-noms'});
+    nomsConnus().then(n => n.forEach(x => liste.append(el('option', {value: x}))));
+    const date = el('input', {id: 'depot-date', type: 'date'}); date.value = new Date().toISOString().slice(0, 10);
+    const ok = el('button', {class: 'bouton', type: 'button', text: 'Choisir mes photos'});
+    ok.addEventListener('click', () => {
+      if (!nom.value.trim()) { nom.focus(); return; }
+      dlg.close(); suite({nom: nom.value.trim(), date: date.value});
+    });
+    corps.replaceChildren(
+      el('label', {for: 'depot-nom', text: "Nom de l'événement *"}), nom, liste,
+      el('label', {for: 'depot-date', text: 'Date des photos'}), date, ok);
+    nom.focus();
+  };
+  etape1(); dlg.showModal();
+}
+// Le nom d'un événement hors calendrier part discrètement dans le formulaire Google ÔGravel :
+// le robot le lit chaque matin pour titrer les photos de ce jour-là.
+const FORMULAIRE = 'https://docs.google.com/forms/d/e/1FAIpQLSfGScgZFTUpOmEtxZFFNxCYB42tBkUUXXaTfjHHNrOTv3w5vQ/formResponse';
+function signalerEvenement(ev) {
+  const donnees = new URLSearchParams({'entry.1963119525': ev.nom, 'entry.2118522583': ev.date || ''});
+  fetch(FORMULAIRE, {method: 'POST', mode: 'no-cors', body: donnees}).catch(() => {});
+}
+// Noms proposés pendant la saisie : sorties ÔGravel et épreuves de l'Agenda gravel.
+async function nomsConnus() {
+  const noms = new Set();
+  try { (await json('parcours.json')).parcours.forEach(p => p.nom && noms.add(p.nom)); } catch {}
+  try { (await json('../events.json')).events.forEach(e => e.title && noms.add(e.title)); } catch {}
+  try { (await json('/Agenda-Gravel-autres-associations/events.json')).events.forEach(e => e.title && noms.add(e.title)); } catch {}
+  return [...noms].sort((x, y) => x.localeCompare(y, 'fr'));
+}
+
+/* ---------- Galerie : photos de l'album, groupées par sortie ---------- */
+let photosAlbum = null;
+function chargerPhotosAlbum() {
+  if (!photosAlbum) photosAlbum = json('photos.json').then(d => d.photos || []).catch(() => []);
+  return photosAlbum;
+}
+function dateCourte(iso) { const d = iso ? jour(iso) : null; return d ? d.getDate() + ' ' + MOIS_COURTS[d.getMonth()] + ' ' + d.getFullYear() : ''; }
+async function rendreGalerie() {
+  const zone = document.getElementById('galerie');
+  const photos = await chargerPhotosAlbum();
+  zone.replaceChildren();
+  if (!photos.length) { zone.append(el('p', {class: 'vide', text: "Pas encore de photos dans l'album."})); return; }
+  // Groupes : une sortie (ou un jour sans sortie), du plus récent au plus ancien.
+  const groupes = [];
+  for (const p of photos) {
+    const cle = (p.sortie || '') + '|' + (p.sortie ? '' : p.date || '');
+    let g = groupes.find(x => x.cle === cle);
+    if (!g) { g = {cle, titre: p.sortie || 'Photos du ' + (dateCourte(p.date) || 'album'), date: p.date, photos: []}; groupes.push(g); }
+    g.photos.push(p);
+  }
+  const toutes = [];
+  for (const g of groupes) {
+    const grille = el('div', {class: 'grille'});
+    for (const p of g.photos) {
+      const i = toutes.length; toutes.push({src: p.url + '=w1600-h1600', legende: g.titre + (p.date ? ' · ' + dateCourte(p.date) : '')});
+      const premiere = g.photos[0] === p;
+      const img = el('img', {src: p.url + (premiere ? '=w700-h700-c' : '=w300-h300-c'), alt: '', loading: 'lazy', referrerpolicy: 'no-referrer'});
+      img.addEventListener('load', () => img.classList.add('vue'));
+      const b = el('button', {type: 'button', class: 'vignette' + (premiere ? ' couverture' : ''), 'aria-label': 'Agrandir la photo'}, img);
+      b.addEventListener('click', () => ouvrirVisionneuse(toutes, i));
+      grille.append(b);
+    }
+    zone.append(el('div', {class: 'groupe'},
+      el('div', {class: 'g-titre'}, el('strong', {text: g.titre}),
+        el('span', {text: [g.date && g.titre.indexOf('Photos du') ? dateCourte(g.date) : '', g.photos.length + ' photo' + (g.photos.length > 1 ? 's' : '')].filter(Boolean).join(' · ')})),
+      grille));
+  }
+  const album = urlSure(config.photos_url);
+  if (album) zone.append(el('a', {class: 'bouton secondaire', href: album, target: '_blank', rel: 'noopener', text: "Ouvrir l'album Google complet"}));
+}
+let visionneuse = {liste: [], i: 0};
+function montrer() {
+  const v = document.getElementById('visionneuse'), p = visionneuse.liste[visionneuse.i];
+  v.querySelector('img').src = p.src; v.querySelector('img').referrerPolicy = 'no-referrer';
+  v.querySelector('.v-legende').textContent = p.legende + '  (' + (visionneuse.i + 1) + '/' + visionneuse.liste.length + ')';
+}
+function ouvrirVisionneuse(liste, i) { visionneuse = {liste, i}; montrer(); document.getElementById('visionneuse').hidden = false; }
+function bouger(pas) { const n = visionneuse.liste.length; visionneuse.i = (visionneuse.i + pas + n) % n; montrer(); }
+(() => {
+  const v = document.getElementById('visionneuse');
+  v.querySelector('.v-fermer').addEventListener('click', () => { v.hidden = true; });
+  v.querySelector('.v-prec').addEventListener('click', () => bouger(-1));
+  v.querySelector('.v-suiv').addEventListener('click', () => bouger(1));
+  let x0 = null;
+  v.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, {passive: true});
+  v.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) bouger(dx < 0 ? 1 : -1); x0 = null; });
+  addEventListener('keydown', e => { if (v.hidden) return; if (e.key === 'Escape') v.hidden = true; if (e.key === 'ArrowLeft') bouger(-1); if (e.key === 'ArrowRight') bouger(1); });
+  addEventListener('hashchange', () => { v.hidden = true; });
+})();
 
 /* ---------- Carrousel : album Google ÔGravel + photos du blog ---------- */
 const MEDIA_API = 'https://ogravel.com/wp-json/wp/v2/media?per_page=24&media_type=image&_fields=date,link,post,media_details,source_url';
@@ -447,7 +621,12 @@ async function rendreCarrousel(album) {
   bloc.append(piste, points);
   zone.prepend(bloc);
   const [albumPhotos, blogPhotos] = await Promise.all([
-    json('photos.json').then(d => (d.photos || []).map(p => ({src: p.url + '=w900-h675-c', lien: album, legende: 'Album ÔGravel'}))).catch(() => []),
+    chargerPhotosAlbum().then(liste => liste.map(p => {
+      // Titre : la sortie du jour de la photo (associée par le robot), sinon « Album ÔGravel », avec la date.
+      const d0 = p.date ? jour(p.date) : null;
+      const quand = d0 ? d0.getDate() + ' ' + MOIS_COURTS[d0.getMonth()] + ' ' + d0.getFullYear() : '';
+      return {src: p.url + '=w900-h675-c', lien: album, legende: [p.sortie || 'Album ÔGravel', quand].filter(Boolean).join(' · ')};
+    })).catch(() => []),
     fetch(MEDIA_API).then(r => r.ok ? r.json() : []).then(l => l.map(m => {
       const t = (m.media_details && m.media_details.sizes) || {};
       const src = urlSure((t.medium_large || t.large || t.medium || {}).source_url || m.source_url);
