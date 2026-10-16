@@ -1,4 +1,9 @@
 {
   "_aide": "Titres des photos prises un jour sans sortie au calendrier. Format : \"AAAA-MM-JJ\": \"Nom de l événement\".",
-  "titres": {}
+  "titres": {
+    "2026-10-04": "Dralha Blanca",
+    "2026-10-03": "Dralha Blanca",
+    "2026-08-29": "Family musclé + Special rides gaillacois",
+    "2026-03-22": "FSGT-CUGNAUX"
+  }
 }
