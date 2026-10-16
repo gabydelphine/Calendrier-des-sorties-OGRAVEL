@@ -1,4 +1,194 @@
 {
-  "_aide": "Liste des parcours. Pour en ajouter un, copier un bloc et le modifier. 'lien' : page Strava, Komoot, OpenRunner ou VisuGPX. 'gpx' (facultatif) : nom d'un fichier .gpx déposé dans le dossier app/traces/. 'type' : Family, Special, Distance ou Surprise.",
-  "parcours": []
+  "_aide": "Liste des parcours (sorties ÔGravel publiées sur Komoot par Thierry SCHIAVI). Pour en ajouter un : copier un bloc et le modifier. 'lien' : page Komoot, Strava, OpenRunner… 'gpx' (facultatif) : fichier .gpx déposé dans app/traces/. km et D+ : valeurs enregistrées sur Komoot.",
+  "parcours": [
+    {
+      "date": "2026-10-10",
+      "nom": "Journée Ô Gravel",
+      "distance_km": 53,
+      "denivele_m": 472,
+      "lien": "https://www.komoot.com/fr-fr/tour/3342482904"
+    },
+    {
+      "date": "2026-09-27",
+      "nom": "Special rides entre Garonne et Ariège",
+      "distance_km": 128,
+      "denivele_m": 689,
+      "lien": "https://www.komoot.com/fr-fr/tour/3315361634"
+    },
+    {
+      "date": "2026-08-28",
+      "nom": "Family musclé + Special rides gaillacois",
+      "distance_km": 158,
+      "denivele_m": 1320,
+      "lien": "https://www.komoot.com/fr-fr/tour/3247202341"
+    },
+    {
+      "date": "2026-07-05",
+      "nom": "Family + Special rides et un peu +",
+      "distance_km": 114,
+      "denivele_m": 590,
+      "lien": "https://www.komoot.com/fr-fr/tour/3087905602"
+    },
+    {
+      "date": "2026-06-13",
+      "nom": "Week-end à Saint-Pons-de-Thomières",
+      "distance_km": 66,
+      "denivele_m": 1066,
+      "lien": "https://www.komoot.com/fr-fr/tour/3047963664"
+    },
+    {
+      "date": "2026-04-10",
+      "nom": "Family et Special rides Seuil de Naurouze",
+      "distance_km": 203,
+      "denivele_m": 1767,
+      "lien": "https://www.komoot.com/fr-fr/tour/2881390436"
+    },
+    {
+      "date": "2026-02-07",
+      "nom": "Special ride vallées du Tarn et de l'Agout",
+      "distance_km": 102,
+      "denivele_m": 703,
+      "lien": "https://www.komoot.com/fr-fr/tour/2778870490"
+    },
+    {
+      "date": "2026-01-25",
+      "nom": "Family et Special ride",
+      "distance_km": 69,
+      "denivele_m": 170,
+      "lien": "https://www.komoot.com/fr-fr/tour/2767086018"
+    },
+    {
+      "date": "2025-12-21",
+      "nom": "Pèlerinage en Montagne Noire",
+      "distance_km": 71,
+      "denivele_m": 1252,
+      "lien": "https://www.komoot.com/fr-fr/tour/2723851535"
+    },
+    {
+      "date": "2025-11-23",
+      "nom": "Family et Special rides Mirepoix",
+      "distance_km": 104,
+      "denivele_m": 873,
+      "lien": "https://www.komoot.com/fr-fr/tour/2696242147"
+    },
+    {
+      "date": "2025-10-18",
+      "nom": "Surprise ride #7",
+      "distance_km": 113,
+      "denivele_m": 582,
+      "lien": "https://www.komoot.com/fr-fr/tour/2643056106"
+    },
+    {
+      "date": "2025-10-05",
+      "nom": "Special rides Saint-Paul-Cap-de-Joux",
+      "distance_km": 86,
+      "denivele_m": 822,
+      "lien": "https://www.komoot.com/fr-fr/tour/2619049891"
+    },
+    {
+      "date": "2025-09-13",
+      "nom": "Family et Special ride Grenade",
+      "distance_km": 120,
+      "denivele_m": 618,
+      "lien": "https://www.komoot.com/fr-fr/tour/2576066566"
+    },
+    {
+      "date": "2025-06-28",
+      "nom": "Family et Special rides Carcassonne Alaric",
+      "distance_km": 164,
+      "denivele_m": 1976,
+      "lien": "https://www.komoot.com/fr-fr/tour/2370866948"
+    },
+    {
+      "date": "2025-05-17",
+      "nom": "Special ride collines du vent",
+      "distance_km": 72,
+      "denivele_m": 1174,
+      "lien": "https://www.komoot.com/fr-fr/tour/2267048401"
+    },
+    {
+      "date": "2025-03-14",
+      "nom": "Bivouac et Special ride",
+      "distance_km": 229,
+      "denivele_m": 1655,
+      "lien": "https://www.komoot.com/fr-fr/tour/2103990637"
+    },
+    {
+      "date": "2025-02-09",
+      "nom": "Family et Special rides Garonne",
+      "distance_km": 116,
+      "denivele_m": 394,
+      "lien": "https://www.komoot.com/fr-fr/tour/2050415839"
+    },
+    {
+      "date": "2024-12-22",
+      "nom": "Pèlerinage en Montagne Noire",
+      "distance_km": 43,
+      "denivele_m": 988,
+      "lien": "https://www.komoot.com/fr-fr/tour/1989918803"
+    },
+    {
+      "date": "2024-12-14",
+      "nom": "Special ride urbain et péri-urbain",
+      "distance_km": 68,
+      "denivele_m": 453,
+      "lien": "https://www.komoot.com/fr-fr/tour/1983421966"
+    },
+    {
+      "date": "2024-11-24",
+      "nom": "Family et Special rides Montech",
+      "distance_km": 160,
+      "denivele_m": 417,
+      "lien": "https://www.komoot.com/fr-fr/tour/1967198930"
+    },
+    {
+      "date": "2024-11-21",
+      "nom": "Urban pizza ride Chez Félix",
+      "distance_km": 88,
+      "denivele_m": 565,
+      "lien": "https://www.komoot.com/fr-fr/tour/1964627198"
+    },
+    {
+      "date": "2024-11-16",
+      "nom": "Cassoulet ride",
+      "distance_km": 215,
+      "denivele_m": 1276,
+      "lien": "https://www.komoot.com/fr-fr/tour/1960362558"
+    },
+    {
+      "date": "2024-10-13",
+      "nom": "Surprise ride #6",
+      "distance_km": 105,
+      "denivele_m": 1092,
+      "lien": "https://www.komoot.com/fr-fr/tour/1911744879"
+    },
+    {
+      "date": "2024-09-29",
+      "nom": "Family et Special rides en Montagne Noire",
+      "distance_km": 74,
+      "denivele_m": 1038,
+      "lien": "https://www.komoot.com/fr-fr/tour/1888957663"
+    },
+    {
+      "date": "2024-06-23",
+      "nom": "Special ride Garonne Frontonnais",
+      "distance_km": 88,
+      "denivele_m": 304,
+      "lien": "https://www.komoot.com/fr-fr/tour/1666127468"
+    },
+    {
+      "date": "2024-04-27",
+      "nom": "Family ride Seuil de Naurouze",
+      "distance_km": 41,
+      "denivele_m": 218,
+      "lien": "https://www.komoot.com/fr-fr/tour/1535747533"
+    },
+    {
+      "date": "2024-03-16",
+      "nom": "Special et family rides Forêt de Bouconne",
+      "distance_km": 126,
+      "denivele_m": 850,
+      "lien": "https://www.komoot.com/fr-fr/tour/1479499901"
+    }
+  ]
 }

@@ -95,6 +95,11 @@ textarea{min-height:70px}
 .article .date{font-size:.75rem;color:var(--gris);text-transform:uppercase;letter-spacing:.04em}
 .article strong{display:block;margin:2px 0 4px;font-size:1rem;line-height:1.25;color:var(--bordeaux)}
 .article p{margin:0;font-size:.86rem;color:var(--gris)}
+.traces{display:grid;gap:6px}
+.trace{display:grid;grid-template-columns:52px 1fr;column-gap:10px;align-items:center;background:var(--carte);border:1px solid var(--trait);border-radius:10px;padding:9px 12px;text-decoration:none;color:var(--encre)}
+.trace .tdate{grid-row:span 2;font-weight:800;font-size:.82rem;color:var(--bordeaux);line-height:1.15}
+.trace .tnom{font-weight:650;font-size:.92rem;line-height:1.25;min-width:0}
+.trace .tchiffres{font-size:.78rem;color:var(--gris);font-variant-numeric:tabular-nums}
 .whatsapp{display:flex;align-items:center;gap:10px;margin:12px 0 4px;padding:9px 10px;border-radius:14px;text-decoration:none;color:#fff;background:linear-gradient(135deg,#1fa855,#128c7e);box-shadow:0 4px 14px #128c7e40}
 .wa-bulle{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#ffffff26}
 .wa-texte{flex:1;display:flex;flex-direction:column;line-height:1.25}
@@ -162,6 +167,7 @@ textarea{min-height:70px}
   <!-- PARCOURS -->
   <section data-onglet="parcours">
     <h2>Parcours</h2>
+    <p class="petit">Les sorties ÔGravel publiées sur Komoot par Thierry. Touchez une sortie pour voir la carte ; le GPX se télécharge depuis Komoot (compte gratuit).</p>
     <div id="parcours">Chargement…</div>
   </section>
 
@@ -362,21 +368,20 @@ function rendreParcours(liste) {
       el('p', {class: 'petit', text: "Les traces des sorties (Strava, Komoot, GPX…) apparaîtront ici au fil de la saison."})));
     return;
   }
-  for (const p of liste) {
-    const type = String(p.type || '').toLowerCase();
-    const actions = el('div', {class: 'actions'});
+  // Liste compacte, de la plus récente à la plus ancienne, groupée par année.
+  const tries = liste.slice().sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+  let annee = null, ul = null;
+  for (const p of tries) {
+    const d = p.date ? jour(p.date) : null;
+    const an = d ? String(d.getFullYear()) : '';
+    if (an !== annee) { annee = an; if (an) zone.append(el('div', {class: 'mois', text: an})); ul = el('div', {class: 'traces'}); zone.append(ul); }
     const lien = urlSure(p.lien);
-    if (lien) actions.append(el('a', {class: 'bouton', href: lien, target: '_blank', rel: 'noopener', text: '🗺️ Voir le parcours'}));
-    if (p.gpx && /^[\w.\- ]+\.gpx$/i.test(p.gpx)) actions.append(el('a', {class: 'bouton secondaire', href: 'traces/' + encodeURIComponent(p.gpx), download: '', text: '⬇️ GPX'}));
-    zone.append(el('div', {class: 'carte'},
-      p.type ? el('span', {class: 'badge ' + type, text: p.type}) : null,
-      el('div', {class: 'titre', style: 'font-weight:700;margin-top:6px', text: p.nom || 'Parcours'}),
-      el('div', {class: 'chiffres'},
-        p.distance_km ? el('span', {text: '↔️ ' + p.distance_km + ' km'}) : null,
-        p.denivele_m ? el('span', {text: '⛰️ ' + p.denivele_m + ' m D+'}) : null,
-        p.depart ? el('span', {text: '📍 ' + p.depart}) : null),
-      p.description ? el('p', {class: 'petit', text: p.description}) : null,
-      actions));
+    const ligne = el(lien ? 'a' : 'div', lien ? {class: 'trace', href: lien, target: '_blank', rel: 'noopener'} : {class: 'trace'},
+      el('span', {class: 'tdate', text: d ? d.getDate() + ' ' + MOIS_COURTS[d.getMonth()] : ''}),
+      el('span', {class: 'tnom', text: p.nom || 'Parcours'}),
+      el('span', {class: 'tchiffres', text: [p.distance_km ? p.distance_km + ' km' : '', p.denivele_m ? p.denivele_m + ' m D+' : ''].filter(Boolean).join(' · ')}));
+    ul.append(ligne);
+    if (p.gpx && /^[\w.\- ]+\.gpx$/i.test(p.gpx)) ul.append(el('a', {class: 'bouton secondaire', href: 'traces/' + encodeURIComponent(p.gpx), download: '', text: '⬇️ GPX'}));
   }
 }
 
