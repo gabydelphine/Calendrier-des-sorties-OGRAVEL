@@ -35,13 +35,14 @@ h2{font-size:1.05rem;margin:22px 0 10px;color:var(--bordeaux)}
 .bouton{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:10px;padding:11px 14px;font:inherit;font-weight:650;cursor:pointer;text-decoration:none;background:var(--bordeaux);color:#fff;margin-top:12px}
 .bouton.secondaire{background:transparent;color:var(--bordeaux);border:1.5px solid var(--bordeaux)}
 .grands{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
-.grand{display:flex;flex-direction:column;gap:6px;background:var(--carte);border-radius:14px;padding:16px 14px;text-decoration:none;color:var(--encre);box-shadow:0 2px 10px #0000000f;border-top:4px solid var(--bordeaux);min-height:118px}
+.grand{display:flex;flex-direction:column;gap:4px;background:var(--carte);border-radius:14px;padding:12px 12px;text-decoration:none;color:var(--encre);box-shadow:0 2px 10px #0000000f;border-top:4px solid var(--bordeaux);min-height:96px}
 .grand.vert{border-top-color:var(--vert)}
-.grand .emoji{font-size:1.6rem}
-.grand strong{font-size:.98rem;line-height:1.2}
-.grand span{font-size:.8rem;color:var(--gris)}
-.liens{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
-.liens a{display:flex;align-items:center;gap:8px;background:var(--carte);border-radius:10px;padding:11px 12px;text-decoration:none;color:var(--encre);font-weight:600;font-size:.92rem;border:1px solid var(--trait)}
+.grand .emoji{font-size:1.35rem}
+.grand strong{font-size:.93rem;line-height:1.2}
+.grand span{font-size:.76rem;color:var(--gris)}
+.liens{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.liens a{flex:0 1 calc((100% - 16px) / 3);max-width:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px;background:var(--carte);border-radius:10px;padding:10px 6px;text-decoration:none;color:var(--encre);font-weight:600;font-size:.84rem;line-height:1.2;border:1px solid var(--trait)}
+.liens a span{font-size:1.2rem}
 .sortie{display:flex;gap:14px;align-items:flex-start}
 .sortie .jour{min-width:54px;text-align:center;background:var(--sable);border-radius:10px;padding:6px 4px;color:var(--bordeaux);font-weight:800;line-height:1.1}
 .sortie .jour small{display:block;font-weight:600;font-size:.72rem;text-transform:uppercase}
@@ -81,12 +82,21 @@ textarea{min-height:70px}
 .prix{font-size:.8rem;color:var(--gris);white-space:nowrap}
 .prochaine .prix{color:#fff;opacity:.85}
 .sortie .inscrire{margin-top:8px}
-.whatsapp{display:flex;align-items:center;gap:12px;margin:14px 0 4px;padding:14px;border-radius:14px;text-decoration:none;color:#fff;background:linear-gradient(135deg,#1fa855,#128c7e);box-shadow:0 4px 14px #128c7e40}
-.wa-bulle{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:#ffffff26}
+.reseaux{display:flex;justify-content:center;gap:18px;margin:14px 0 4px}
+.reseaux a{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:#fff;border:1px solid var(--trait);box-shadow:0 2px 8px #0000000d}
+.reseaux img{width:28px;height:28px;border-radius:6px}
+.article{display:block;padding:0;overflow:hidden;text-decoration:none;color:var(--encre)}
+.article img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--sable)}
+.article .corps{padding:12px 14px 14px}
+.article .date{font-size:.75rem;color:var(--gris);text-transform:uppercase;letter-spacing:.04em}
+.article strong{display:block;margin:2px 0 4px;font-size:1rem;line-height:1.25;color:var(--bordeaux)}
+.article p{margin:0;font-size:.86rem;color:var(--gris)}
+.whatsapp{display:flex;align-items:center;gap:10px;margin:12px 0 4px;padding:9px 10px;border-radius:14px;text-decoration:none;color:#fff;background:linear-gradient(135deg,#1fa855,#128c7e);box-shadow:0 4px 14px #128c7e40}
+.wa-bulle{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#ffffff26}
 .wa-texte{flex:1;display:flex;flex-direction:column;line-height:1.25}
-.wa-texte strong{font-size:1rem}
-.wa-texte span{font-size:.8rem;opacity:.9}
-.wa-go{flex:none;background:#fff;color:#128c7e;font-weight:750;font-size:.88rem;border-radius:999px;padding:7px 12px}
+.wa-texte strong{font-size:.9rem}
+.wa-texte span{font-size:.72rem;opacity:.9}
+.wa-go{flex:none;background:#fff;color:#128c7e;font-weight:750;font-size:.8rem;border-radius:999px;padding:5px 10px}
 .complet{display:inline-block;margin-top:.6rem;padding:.45rem 1rem;border-radius:999px;background:#ddd;color:#555;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:.85rem}
 </style>
 </head>
@@ -118,7 +128,7 @@ textarea{min-height:70px}
 
     <a class="whatsapp" id="whatsapp" target="_blank" rel="noopener" hidden>
       <span class="wa-bulle" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="26" height="26"><path fill="currentColor" d="M12 3C6.9 3 3 6.6 3 11c0 2.3 1.1 4.4 2.9 5.9L5 21l4.3-2.2c.9.2 1.8.3 2.7.3 5.1 0 9-3.6 9-8.1S17.1 3 12 3Zm-4 9.2a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm4 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm4 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Z"/></svg>
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 3C6.9 3 3 6.6 3 11c0 2.3 1.1 4.4 2.9 5.9L5 21l4.3-2.2c.9.2 1.8.3 2.7.3 5.1 0 9-3.6 9-8.1S17.1 3 12 3Zm-4 9.2a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm4 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm4 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Z"/></svg>
       </span>
       <span class="wa-texte"><strong>La communauté ÔGravel</strong><span>Discussions, photos et infos de dernière minute</span></span>
       <span class="wa-go">Rejoindre&nbsp;›</span>
@@ -126,6 +136,7 @@ textarea{min-height:70px}
 
     <h2>ÔGravel en ligne</h2>
     <div class="liens" id="liens"></div>
+    <div class="reseaux" id="reseaux"></div>
   </section>
 
   <!-- SORTIES -->
@@ -134,6 +145,14 @@ textarea{min-height:70px}
     <p class="petit">Touchez « Je m'inscris » : selon la sortie, la page HelloAsso ou un e-mail prérempli s'ouvre.</p>
     <div id="sorties">Chargement…</div>
     <a class="bouton secondaire" href="https://gabydelphine.github.io/Calendrier-des-sorties-OGRAVEL/#choix" target="_blank" rel="noopener">📅 Ajouter les sorties à mon agenda</a>
+  </section>
+
+  <!-- BLOG -->
+  <section data-onglet="blog">
+    <h2>Le blog ÔGravel</h2>
+    <p class="petit">Les derniers récits de sorties publiés sur ogravel.com.</p>
+    <div id="blog">Chargement…</div>
+    <a class="bouton secondaire" href="https://ogravel.com/" target="_blank" rel="noopener">Tout le blog sur ogravel.com</a>
   </section>
 
   <!-- PARCOURS -->
@@ -152,6 +171,7 @@ textarea{min-height:70px}
 <nav>
   <a href="#accueil" data-lien="accueil"><span>🏠</span>Accueil</a>
   <a href="#sorties" data-lien="sorties"><span>🚴</span>Sorties</a>
+  <a href="#blog" data-lien="blog"><span>📰</span>Blog</a>
   <a href="#parcours" data-lien="parcours"><span>🗺️</span>Parcours</a>
   <a href="#photos" data-lien="photos"><span>📸</span>Photos</a>
 </nav>
@@ -216,7 +236,7 @@ function urlSure(v) { try { const u = new URL(v); return ['http:', 'https:'].inc
 /* ---------- Onglets ---------- */
 function afficher() {
   const nom = (location.hash || '#accueil').slice(1);
-  const valide = ['accueil', 'sorties', 'parcours', 'photos'].includes(nom) ? nom : 'accueil';
+  const valide = ['accueil', 'sorties', 'blog', 'parcours', 'photos'].includes(nom) ? nom : 'accueil';
   document.querySelectorAll('section[data-onglet]').forEach(s => s.classList.toggle('actif', s.dataset.onglet === valide));
   document.querySelectorAll('nav a').forEach(a => a.classList.toggle('actif', a.dataset.lien === valide));
   window.scrollTo(0, 0);
@@ -229,8 +249,16 @@ function rendreLiens() {
   const waUrl = urlSure(config.whatsapp_url);
   if (waUrl) { wa.href = waUrl; wa.hidden = false; }
   const zone = document.getElementById('liens'); zone.replaceChildren();
+  const reseaux = document.getElementById('reseaux'); reseaux.replaceChildren();
   for (const l of config.liens || []) {
     const url = urlSure(l.url); if (!url) continue;
+    if (l.logo) {
+      // Icône officielle servie par le site lui-même (via le service d'icônes de Google).
+      const img = el('img', {alt: '', src: 'https://www.google.com/s2/favicons?sz=64&domain=' + encodeURIComponent(l.logo)});
+      img.onerror = () => img.replaceWith(document.createTextNode(l.icone || '🔗'));
+      reseaux.append(el('a', {href: url, target: '_blank', rel: 'noopener', 'aria-label': l.nom, title: l.nom}, img));
+      continue;
+    }
     zone.append(el('a', {href: url, target: '_blank', rel: 'noopener'}, el('span', {text: l.icone || '🔗'}), l.nom));
   }
 }
@@ -457,12 +485,41 @@ addEventListener('appinstalled', () => document.getElementById('installer').clas
 if (!autonome) document.getElementById('installer').classList.add('visible');
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 
+/* ---------- Blog (articles de ogravel.com) ---------- */
+const BLOG_API = 'https://ogravel.com/wp-json/wp/v2/posts?per_page=10&_embed=wp:featuredmedia&_fields=date,link,title,excerpt,_links,_embedded';
+function texteBrut(html) { const d = document.createElement('div'); d.innerHTML = html || ''; return (d.textContent || '').replace(/\s+/g, ' ').trim(); }
+async function rendreBlog() {
+  const zone = document.getElementById('blog');
+  let articles;
+  try {
+    const r = await fetch(BLOG_API); if (!r.ok) throw Error();
+    articles = await r.json();
+  } catch { zone.textContent = 'Blog momentanément indisponible.'; return; }
+  zone.replaceChildren();
+  for (const a of articles) {
+    const lien = urlSure(a.link); if (!lien) continue;
+    const media = a._embedded && a._embedded['wp:featuredmedia'] && a._embedded['wp:featuredmedia'][0];
+    const tailles = media && media.media_details && media.media_details.sizes || {};
+    const image = urlSure((tailles.medium_large || tailles.large || tailles.medium || {}).source_url || (media && media.source_url));
+    const d = new Date(a.date);
+    let resume = texteBrut(a.excerpt && a.excerpt.rendered).replace(/\s*(\[…\]|…|Lire la suite.*)$/, '');
+    if (resume.length > 160) resume = resume.slice(0, 157).replace(/\s+\S*$/, '') + '…';
+    zone.append(el('a', {class: 'carte article', href: lien, target: '_blank', rel: 'noopener'},
+      image ? el('img', {src: image, alt: '', loading: 'lazy'}) : null,
+      el('div', {class: 'corps'},
+        el('div', {class: 'date', text: Number.isNaN(d.getTime()) ? '' : dateLongue(d)}),
+        el('strong', {text: texteBrut(a.title && a.title.rendered)}),
+        resume ? el('p', {text: resume}) : null)));
+  }
+  if (!zone.children.length) zone.textContent = 'Aucun article pour le moment.';
+}
+
 /* ---------- Chargement ---------- */
 async function json(url) { const r = await fetch(url + '?v=' + Date.now(), {cache: 'no-store'}); if (!r.ok) throw Error(url); return r.json(); }
 async function demarrer() {
   afficher();
   try { config = Object.assign(config, await json('config.json')); } catch {}
-  rendreLiens(); rendrePhotos();
+  rendreLiens(); rendrePhotos(); rendreBlog();
   try {
     const d = await json(SORTIES_URL);
     const auj = new Date(); auj.setHours(0, 0, 0, 0);

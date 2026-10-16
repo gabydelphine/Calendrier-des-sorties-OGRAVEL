@@ -26,17 +26,20 @@
     {
       "nom": "Strava",
       "url": "https://www.strava.com/clubs/OGravel",
-      "icone": "🟠"
+      "icone": "🟠",
+      "logo": "strava.com"
     },
     {
       "nom": "Instagram",
       "url": "https://www.instagram.com/o_gravel_/",
-      "icone": "📷"
+      "icone": "📷",
+      "logo": "instagram.com"
     },
     {
       "nom": "Facebook",
       "url": "https://www.facebook.com/%C3%94-Gravel-108045327710810",
-      "icone": "👥"
+      "icone": "👥",
+      "logo": "facebook.com"
     }
   ]
 }
