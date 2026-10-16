@@ -49,8 +49,19 @@ TERMINE = [
 
 
 def lire(url):
+    # HelloAsso filtre les robots : on se présente comme un navigateur
+    # (curl_cffi imite Chrome), avec repli sur urllib.
+    try:
+        from curl_cffi import requests as cr
+        r = cr.get(url, impersonate="chrome", timeout=30, headers={"Accept-Language": "fr-FR,fr;q=0.9"})
+        print(f"{r.status_code} {url}")
+        r.raise_for_status()
+        return r.text
+    except ImportError:
+        pass
     req = urllib.request.Request(url, headers={
-        "User-Agent": "Mozilla/5.0 (compatible; OGravel-calendrier; +https://gabydelphine.github.io/Calendrier-des-sorties-OGRAVEL/)",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Language": "fr-FR,fr;q=0.9",
     })
     with urllib.request.urlopen(req, timeout=30) as r:
