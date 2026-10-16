@@ -138,6 +138,7 @@ textarea{min-height:70px}
 .wa-texte span{font-size:.72rem;opacity:.9}
 .wa-go{flex:none;background:#fff;color:#128c7e;font-weight:750;font-size:.8rem;border-radius:999px;padding:5px 10px}
 .complet{display:inline-block;margin-top:.6rem;padding:.45rem 1rem;border-radius:999px;background:#ddd;color:#555;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:.85rem}
+#depot .case{display:flex;align-items:center;gap:8px;font-weight:600;margin-top:12px}#depot .case input{width:auto;margin:0}
 </style>
 </head>
 <body>
@@ -496,14 +497,25 @@ async function demanderEvenement(suite) {
     const liste = el('datalist', {id: 'depot-noms'});
     nomsConnus().then(n => n.forEach(x => liste.append(el('option', {value: x}))));
     const date = el('input', {id: 'depot-date', type: 'date'}); date.value = new Date().toISOString().slice(0, 10);
-    const ok = el('button', {class: 'bouton', type: 'button', text: 'Choisir mes photos'});
+    // Événement sur plusieurs jours : une case révèle la date de fin.
+    const fin = el('input', {id: 'depot-fin', type: 'date'});
+    const zoneFin = el('div', {hidden: ''}, el('label', {for: 'depot-fin', text: "Jusqu'au"}), fin);
+    const plusieurs = el('input', {id: 'depot-plusieurs', type: 'checkbox'});
+    plusieurs.addEventListener('change', () => {
+      zoneFin.hidden = !plusieurs.checked;
+      if (plusieurs.checked && (!fin.value || fin.value < date.value)) fin.value = date.value;
+    });
+    const ok = el('button', {class: 'bouton', type: 'button', text: "Ouvrir l'album"});
     ok.addEventListener('click', () => {
       if (!nom.value.trim()) { nom.focus(); return; }
-      dlg.close(); suite({nom: nom.value.trim(), date: date.value});
+      const f = plusieurs.checked && fin.value > date.value ? fin.value : null;
+      dlg.close(); suite({nom: nom.value.trim(), date: date.value, fin: f});
     });
     corps.replaceChildren(
       el('label', {for: 'depot-nom', text: "Nom de l'événement *"}), nom, liste,
-      el('label', {for: 'depot-date', text: 'Date des photos'}), date, ok);
+      el('label', {for: 'depot-date', text: 'Date des photos'}), date,
+      el('label', {class: 'case', for: 'depot-plusieurs'}, plusieurs, ' Sur plusieurs jours'),
+      zoneFin, ok);
     nom.focus();
   };
   etape1(); dlg.showModal();
@@ -511,9 +523,17 @@ async function demanderEvenement(suite) {
 // Le nom d'un événement hors calendrier part discrètement dans le formulaire Google ÔGravel :
 // le robot le lit chaque matin pour titrer les photos de ce jour-là.
 const FORMULAIRE = 'https://docs.google.com/forms/d/e/1FAIpQLSfGScgZFTUpOmEtxZFFNxCYB42tBkUUXXaTfjHHNrOTv3w5vQ/formResponse';
+// Sur plusieurs jours : une réponse par jour (15 au plus), pour titrer chaque journée.
 function signalerEvenement(ev) {
-  const donnees = new URLSearchParams({'entry.1963119525': ev.nom, 'entry.2118522583': ev.date || ''});
-  fetch(FORMULAIRE, {method: 'POST', mode: 'no-cors', body: donnees}).catch(() => {});
+  const jours = [ev.date || ''];
+  if (ev.date && ev.fin) {
+    const d = new Date(ev.date + 'T12:00:00'), f = new Date(ev.fin + 'T12:00:00');
+    while (jours.length < 15) { d.setDate(d.getDate() + 1); if (d > f) break; jours.push(d.toISOString().slice(0, 10)); }
+  }
+  for (const jour of jours) {
+    const donnees = new URLSearchParams({'entry.1963119525': ev.nom, 'entry.2118522583': jour});
+    fetch(FORMULAIRE, {method: 'POST', mode: 'no-cors', body: donnees}).catch(() => {});
+  }
 }
 // Noms proposés pendant la saisie : sorties ÔGravel et épreuves de l'Agenda gravel.
 async function nomsConnus() {
