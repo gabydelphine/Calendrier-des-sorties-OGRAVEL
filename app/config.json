@@ -3,7 +3,9 @@
   "photos_url": "https://photos.app.goo.gl/xDjK9YYXGkt55fAh7",
   "inscription_email": "thierry.schiavi@aliceadsl.fr",
   "_complets": "Dates (AAAA-MM-JJ) des sorties complètes : le bouton « Je m'inscris » y est remplacé par « Complet ».",
-  "complets": ["2026-10-17"],
+  "complets": [
+    "2026-10-17"
+  ],
   "liens": [
     {
       "nom": "Site ÔGravel",
@@ -16,8 +18,13 @@
       "icone": "📅"
     },
     {
+      "nom": "Boutique",
+      "url": "https://www.helloasso.com/associations/o-gravel/boutiques/boutique-o-gravel",
+      "icone": "👕"
+    },
+    {
       "nom": "Strava",
-      "url": "https://www.strava.com/clubs/%C3%B4-gravel-719803",
+      "url": "https://www.strava.com/clubs/OGravel",
       "icone": "🟠"
     },
     {
