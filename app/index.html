@@ -267,10 +267,8 @@ addEventListener('hashchange', afficher);
 /* ---------- Accueil ---------- */
 function rendreLiens() {
   const wa = document.getElementById('whatsapp');
-  // Ouvre WhatsApp sur le choix d'une discussion, avec un message tout prêt
-  // (aucun lien d'invitation : on choisit soi-même le groupe ÔGravel).
-  const texte = "L'appli des membres ÔGravel : sorties, parcours et photos 👉 https://gabydelphine.github.io/Calendrier-des-sorties-OGRAVEL/app/";
-  wa.href = 'https://wa.me/?text=' + encodeURIComponent(texte);
+  // Ouvre simplement WhatsApp (aucun lien d'invitation : chacun retrouve la communauté dans l'appli).
+  wa.href = 'https://wa.me/';
   const zone = document.getElementById('liens'); zone.replaceChildren();
   const reseaux = document.getElementById('reseaux'); reseaux.replaceChildren();
   for (const l of config.liens || []) {
