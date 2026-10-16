@@ -105,7 +105,7 @@ textarea{min-height:70px}
 .piste::-webkit-scrollbar{display:none}
 .diapo{flex:0 0 100%;scroll-snap-align:start;position:relative;aspect-ratio:4/3;display:block}
 .diapo img{width:100%;height:100%;object-fit:cover;display:block}
-.diapo .legende{position:absolute;left:10px;bottom:10px;background:#0009;color:#fff;font-size:.72rem;padding:3px 8px;border-radius:999px}
+.diapo .legende{position:absolute;left:10px;bottom:10px;max-width:calc(100% - 90px);background:#0009;color:#fff;font-size:.74rem;font-weight:600;padding:4px 9px;border-radius:999px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .points{position:absolute;right:10px;bottom:12px;display:flex;gap:4px;max-width:55%;flex-wrap:wrap;justify-content:flex-end}
 .points span{width:6px;height:6px;border-radius:50%;background:#ffffff80}
 .points span.actif{background:#fff}
@@ -447,7 +447,12 @@ async function rendreCarrousel(album) {
   bloc.append(piste, points);
   zone.prepend(bloc);
   const [albumPhotos, blogPhotos] = await Promise.all([
-    json('photos.json').then(d => (d.photos || []).map(p => ({src: p.url + '=w900-h675-c', lien: album, legende: 'Album ÔGravel'}))).catch(() => []),
+    json('photos.json').then(d => (d.photos || []).map(p => {
+      // Titre : la sortie du jour de la photo (associée par le robot), sinon « Album ÔGravel », avec la date.
+      const d0 = p.date ? jour(p.date) : null;
+      const quand = d0 ? d0.getDate() + ' ' + MOIS_COURTS[d0.getMonth()] + ' ' + d0.getFullYear() : '';
+      return {src: p.url + '=w900-h675-c', lien: album, legende: [p.sortie || 'Album ÔGravel', quand].filter(Boolean).join(' · ')};
+    })).catch(() => []),
     fetch(MEDIA_API).then(r => r.ok ? r.json() : []).then(l => l.map(m => {
       const t = (m.media_details && m.media_details.sizes) || {};
       const src = urlSure((t.medium_large || t.large || t.medium || {}).source_url || m.source_url);
