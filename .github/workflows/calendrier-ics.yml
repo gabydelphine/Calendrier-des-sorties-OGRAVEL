@@ -5,6 +5,7 @@ on:
     paths:
       - events.json
       - generer_ics.py
+      - helloasso.json
       - .github/workflows/calendrier-ics.yml
   workflow_dispatch:
 permissions:
