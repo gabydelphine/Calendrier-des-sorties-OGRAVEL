@@ -1,0 +1,35 @@
+{
+  "_aide": "Dates des sorties ÔGravel déjà vues au calendrier (sert à rattacher les traces Komoot).",
+  "sorties": [
+    {
+      "date": "2026-10-17",
+      "end_date": null,
+      "title": "Ô Gravel Surprise ride #8"
+    },
+    {
+      "date": "2026-10-24",
+      "end_date": null,
+      "title": "Challenges 2000 m ou 3000 m"
+    },
+    {
+      "date": "2026-11-14",
+      "end_date": null,
+      "title": "Special rides Pech-David"
+    },
+    {
+      "date": "2026-11-24",
+      "end_date": null,
+      "title": "Special ride Super Lune"
+    },
+    {
+      "date": "2026-12-19",
+      "end_date": null,
+      "title": "Pèlerinage en Montagne Noire"
+    },
+    {
+      "date": "2027-04-03",
+      "end_date": "2027-04-08",
+      "title": "Ô Gravel Occitanie 600 2027"
+    }
+  ]
+}
