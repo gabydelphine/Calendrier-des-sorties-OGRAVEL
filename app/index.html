@@ -147,12 +147,12 @@ textarea{min-height:70px}
       </a>
     </div>
 
-    <a class="whatsapp" id="whatsapp" target="_blank" rel="noopener" hidden>
+    <a class="whatsapp" id="whatsapp" href="whatsapp://">
       <span class="wa-bulle" aria-hidden="true">
         <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 3C6.9 3 3 6.6 3 11c0 2.3 1.1 4.4 2.9 5.9L5 21l4.3-2.2c.9.2 1.8.3 2.7.3 5.1 0 9-3.6 9-8.1S17.1 3 12 3Zm-4 9.2a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm4 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm4 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Z"/></svg>
       </span>
-      <span class="wa-texte"><strong>La communauté ÔGravel</strong><span>Discussions, photos et infos de dernière minute</span></span>
-      <span class="wa-go">Rejoindre&nbsp;›</span>
+      <span class="wa-texte"><strong>La communauté ÔGravel</strong><span>Dans WhatsApp, onglet « Communautés »</span></span>
+      <span class="wa-go">Ouvrir WhatsApp&nbsp;›</span>
     </a>
 
     <h2>ÔGravel en ligne</h2>
@@ -267,8 +267,8 @@ addEventListener('hashchange', afficher);
 /* ---------- Accueil ---------- */
 function rendreLiens() {
   const wa = document.getElementById('whatsapp');
-  const waUrl = urlSure(config.whatsapp_url);
-  if (waUrl) { wa.href = waUrl; wa.hidden = false; }
+  // Ouvre simplement l'application WhatsApp du téléphone (aucun lien d'invitation).
+  if (/Android/.test(navigator.userAgent)) wa.href = 'intent://send/#Intent;scheme=whatsapp;package=com.whatsapp;end';
   const zone = document.getElementById('liens'); zone.replaceChildren();
   const reseaux = document.getElementById('reseaux'); reseaux.replaceChildren();
   for (const l of config.liens || []) {
