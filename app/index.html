@@ -101,10 +101,16 @@ textarea{min-height:70px}
 .trace .tnom{font-weight:650;font-size:.92rem;line-height:1.25;min-width:0}
 .trace .tchiffres{font-size:.78rem;color:var(--gris);font-variant-numeric:tabular-nums}
 .retour{display:inline-block;margin:6px 0 0;font-weight:600;text-decoration:none}
-.groupe{margin:16px 0 6px}
-.g-titre{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:0 -16px 6px;padding:8px 16px;position:sticky;top:0;z-index:2;background:var(--creme)}
-.g-titre strong{color:var(--bordeaux);font-size:.98rem}
-.g-titre span{color:var(--gris);font-size:.78rem;white-space:nowrap}
+.groupe{margin:8px 0;background:#fff;border-radius:12px;box-shadow:0 1px 4px #0001}
+.g-titre{display:flex;align-items:center;gap:12px;width:100%;padding:8px 12px 8px 8px;border:0;background:none;font:inherit;text-align:left;cursor:pointer;color:inherit}
+.groupe.ouvert .g-titre{position:sticky;top:0;z-index:2;background:#fff;border-radius:12px 12px 0 0}
+.g-mini{width:48px;height:48px;border-radius:8px;object-fit:cover;flex:none;background:var(--sable)}
+.g-texte{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.g-texte strong{color:var(--bordeaux);font-size:.95rem;line-height:1.25}
+.g-texte small{color:var(--gris);font-size:.78rem}
+.g-fleche{font-size:1.5rem;color:var(--bordeaux);transition:transform .2s ease;line-height:1}
+.groupe.ouvert .g-fleche{transform:rotate(90deg)}
+.groupe .grille{padding:0 8px 8px}
 .grille{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
 .vignette{padding:0;border:0;background:var(--sable);aspect-ratio:1;border-radius:6px;overflow:hidden;cursor:pointer}
 .vignette img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transform:scale(1.04);transition:opacity .5s ease,transform .6s ease}
@@ -551,6 +557,14 @@ function chargerPhotosAlbum() {
   return photosAlbum;
 }
 function dateCourte(iso) { const d = iso ? jour(iso) : null; return d ? d.getDate() + ' ' + MOIS_COURTS[d.getMonth()] + ' ' + d.getFullYear() : ''; }
+// « 4 oct. 2026 », ou « 10 – 14 juil. 2026 » quand les photos couvrent plusieurs jours.
+function periode(photos) {
+  const d = photos.map(p => p.date).filter(Boolean).sort();
+  if (!d.length) return '';
+  const a = d[0], b = d[d.length - 1];
+  if (a === b) return dateCourte(a);
+  return (a.slice(0, 7) === b.slice(0, 7) ? String(+a.slice(8)) : dateCourte(a).replace(/ \d{4}$/, '')) + ' – ' + dateCourte(b);
+}
 async function rendreGalerie() {
   const zone = document.getElementById('galerie');
   const photos = await chargerPhotosAlbum();
@@ -564,22 +578,36 @@ async function rendreGalerie() {
     if (!g) { g = {cle, titre: p.sortie || 'Photos du ' + (dateCourte(p.date) || 'album'), date: p.date, photos: []}; groupes.push(g); }
     g.photos.push(p);
   }
-  const toutes = [];
+  // Chaque sortie est repliée : on touche son titre pour voir ses photos
+  // (les photos ne se chargent qu'à l'ouverture).
   for (const g of groupes) {
-    const grille = el('div', {class: 'grille'});
-    for (const p of g.photos) {
-      const i = toutes.length; toutes.push({src: p.url + '=w1600-h1600', legende: g.titre + (p.date ? ' · ' + dateCourte(p.date) : '')});
-      const premiere = g.photos[0] === p;
-      const img = el('img', {src: p.url + (premiere ? '=w700-h700-c' : '=w300-h300-c'), alt: '', loading: 'lazy', referrerpolicy: 'no-referrer'});
-      img.addEventListener('load', () => img.classList.add('vue'));
-      const b = el('button', {type: 'button', class: 'vignette' + (premiere ? ' couverture' : ''), 'aria-label': 'Agrandir la photo'}, img);
-      b.addEventListener('click', () => ouvrirVisionneuse(toutes, i));
-      grille.append(b);
-    }
-    zone.append(el('div', {class: 'groupe'},
-      el('div', {class: 'g-titre'}, el('strong', {text: g.titre}),
-        el('span', {text: [g.date && g.titre.indexOf('Photos du') ? dateCourte(g.date) : '', g.photos.length + ' photo' + (g.photos.length > 1 ? 's' : '')].filter(Boolean).join(' · ')})),
-      grille));
+    const liste = g.photos.map(p => ({src: p.url + '=w1600-h1600', legende: g.titre + (p.date ? ' · ' + dateCourte(p.date) : '')}));
+    const grille = el('div', {class: 'grille', hidden: ''});
+    const remplir = () => {
+      if (grille.childElementCount) return;
+      g.photos.forEach((p, i) => {
+        const premiere = i === 0;
+        const img = el('img', {src: p.url + (premiere ? '=w700-h700-c' : '=w300-h300-c'), alt: '', loading: 'lazy', referrerpolicy: 'no-referrer'});
+        img.addEventListener('load', () => img.classList.add('vue'));
+        const b = el('button', {type: 'button', class: 'vignette' + (premiere ? ' couverture' : ''), 'aria-label': 'Agrandir la photo'}, img);
+        b.addEventListener('click', () => ouvrirVisionneuse(liste, i));
+        grille.append(b);
+      });
+    };
+    const mini = el('img', {class: 'g-mini', src: g.photos[0].url + '=w120-h120-c', alt: '', loading: 'lazy', referrerpolicy: 'no-referrer'});
+    const titre = el('button', {type: 'button', class: 'g-titre', 'aria-expanded': 'false'},
+      mini,
+      el('span', {class: 'g-texte'}, el('strong', {text: g.titre}),
+        el('small', {text: [g.date && g.titre.indexOf('Photos du') ? periode(g.photos) : '', g.photos.length + ' photo' + (g.photos.length > 1 ? 's' : '')].filter(Boolean).join(' · ')})),
+      el('span', {class: 'g-fleche', 'aria-hidden': 'true', text: '›'}));
+    const groupe = el('div', {class: 'groupe'}, titre, grille);
+    titre.addEventListener('click', () => {
+      const ouvrir = grille.hidden;
+      if (ouvrir) remplir();
+      grille.hidden = !ouvrir; groupe.classList.toggle('ouvert', ouvrir);
+      titre.setAttribute('aria-expanded', String(ouvrir));
+    });
+    zone.append(groupe);
   }
   const album = urlSure(config.photos_url);
   if (album) zone.append(el('a', {class: 'bouton secondaire', href: album, target: '_blank', rel: 'noopener', text: "Ouvrir l'album Google complet"}));
