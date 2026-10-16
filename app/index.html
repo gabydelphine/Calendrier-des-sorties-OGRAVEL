@@ -76,6 +76,11 @@ label{display:block;margin-top:12px;font-weight:600;font-size:.92rem}
 input,select,textarea{width:100%;font:inherit;padding:10px;border:1px solid #bbb;border-radius:8px;margin-top:4px;background:#fff}
 textarea{min-height:70px}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
+.inscrire{display:inline-flex;align-items:center;gap:10px;margin-top:12px}
+.inscrire .bouton{margin:0}
+.prix{font-size:.8rem;color:var(--gris);white-space:nowrap}
+.prochaine .prix{color:#fff;opacity:.85}
+.sortie .inscrire{margin-top:8px}
 .complet{display:inline-block;margin-top:.6rem;padding:.45rem 1rem;border-radius:999px;background:#ddd;color:#555;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:.85rem}
 </style>
 </head>
@@ -112,7 +117,7 @@ textarea{min-height:70px}
   <!-- SORTIES -->
   <section data-onglet="sorties">
     <h2>Prochaines sorties</h2>
-    <p class="petit">Touchez « Je m'inscris » : un e-mail prérempli s'ouvre, il ne reste qu'à l'envoyer.</p>
+    <p class="petit">Touchez « Je m'inscris » : selon la sortie, la page HelloAsso ou un e-mail prérempli s'ouvre.</p>
     <div id="sorties">Chargement…</div>
     <a class="bouton secondaire" href="https://gabydelphine.github.io/Calendrier-des-sorties-OGRAVEL/#choix" target="_blank" rel="noopener">📅 Ajouter les sorties à mon agenda</a>
   </section>
@@ -174,6 +179,7 @@ const JOURS = ['dim.','lun.','mar.','mer.','jeu.','ven.','sam.'];
 const MOIS_COURTS = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
 let config = {liens: [], photos_url: '', inscription_email: ''};
 let sorties = [];
+let billetterie = [];  // événements HelloAsso (../helloasso.json)
 let choisie = null;
 
 function el(tag, attrs = {}, ...enfants) {
@@ -226,7 +232,21 @@ function rendreProchaine() {
   zone.append(carte);
 }
 
+function simplifier(t) { return (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9#]+/g, ' ').trim(); }
+function billet(s) {
+  // Même date (ou date comprise dans l'événement HelloAsso), sinon même titre.
+  return billetterie.find(h => h.date && h.date <= s.date && s.date <= (h.end_date || h.date))
+    || billetterie.find(h => simplifier(h.titre) && simplifier(h.titre) === simplifier(s.title));
+}
 function boutonInscription(s) {
+  const h = billet(s);
+  if (h) {
+    const fini = h.etat === 'cloture' || (h.date_limite && new Date() > new Date(h.date_limite));
+    if (fini) return el('span', {class: 'complet', text: 'Inscriptions clôturées'});
+    return el('span', {class: 'inscrire'},
+      el('a', {class: 'bouton', href: h.url, target: '_blank', rel: 'noopener', text: "Je m'inscris"}),
+      h.prix ? el('small', {class: 'prix', text: h.prix}) : null);
+  }
   if ((config.complets || []).includes(s.date))
     return el('span', {class: 'complet', text: 'Complet'});
   const b = el('button', {class: 'bouton', type: 'button', text: "Je m'inscris"});
@@ -427,6 +447,14 @@ async function demarrer() {
     const auj = new Date(); auj.setHours(0, 0, 0, 0);
     sorties = (Array.isArray(d.events) ? d.events : []).filter(s => jour(s.date) && jour(s.end_date || s.date) >= auj)
       .sort((a, b) => a.date.localeCompare(b.date));
+    try { const h = await json('../helloasso.json'); billetterie = Array.isArray(h.evenements) ? h.evenements : []; } catch {}
+    // Événements HelloAsso absents du calendrier ogravel.com : ajoutés aux sorties.
+    for (const h of billetterie) {
+      if (!h.date || !jour(h.date) || jour(h.end_date || h.date) < auj) continue;
+      if (sorties.some(s => billet(s) === h)) continue;
+      sorties.push({date: h.date, end_date: h.end_date || undefined, title: h.titre, location: ''});
+    }
+    sorties.sort((a, b) => a.date.localeCompare(b.date));
     rendreProchaine(); rendreSorties();
   } catch { document.getElementById('sorties').textContent = 'Sorties momentanément indisponibles.'; }
   try { const p = await json('parcours.json'); rendreParcours(Array.isArray(p.parcours) ? p.parcours : []); }
