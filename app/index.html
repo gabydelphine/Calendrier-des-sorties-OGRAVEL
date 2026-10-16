@@ -179,7 +179,7 @@ textarea{min-height:70px}
   <!-- PARCOURS -->
   <section data-onglet="parcours">
     <h2>Parcours</h2>
-    <p class="petit">Les sorties ÔGravel publiées sur Komoot par Thierry. Touchez une sortie pour voir la carte ; le GPX se télécharge depuis Komoot (compte gratuit).</p>
+    <p class="petit">Les traces des sorties ÔGravel publiées par Thierry. Touchez une sortie pour voir la carte et récupérer le GPX : en libre accès sur VisuGPX, avec un compte gratuit sur Komoot.</p>
     <div id="parcours">Chargement…</div>
   </section>
 
@@ -391,7 +391,7 @@ function rendreParcours(liste) {
     const ligne = el(lien ? 'a' : 'div', lien ? {class: 'trace', href: lien, target: '_blank', rel: 'noopener'} : {class: 'trace'},
       el('span', {class: 'tdate', text: d ? d.getDate() + ' ' + MOIS_COURTS[d.getMonth()] : ''}),
       el('span', {class: 'tnom', text: p.nom || 'Parcours'}),
-      el('span', {class: 'tchiffres', text: [p.distance_km ? p.distance_km + ' km' : '', p.denivele_m ? p.denivele_m + ' m D+' : ''].filter(Boolean).join(' · ')}));
+      el('span', {class: 'tchiffres', text: [p.distance_km ? p.distance_km + ' km' : '', p.denivele_m ? p.denivele_m + ' m D+' : '', /visugpx\.com/.test(lien || '') ? 'VisuGPX' : /komoot\./.test(lien || '') ? 'Komoot' : ''].filter(Boolean).join(' · ')}));
     ul.append(ligne);
     if (p.gpx && /^[\w.\- ]+\.gpx$/i.test(p.gpx)) ul.append(el('a', {class: 'bouton secondaire', href: 'traces/' + encodeURIComponent(p.gpx), download: '', text: '⬇️ GPX'}));
   }
