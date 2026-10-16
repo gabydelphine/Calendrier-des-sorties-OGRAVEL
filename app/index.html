@@ -57,6 +57,11 @@ h2{font-size:1.05rem;margin:22px 0 10px;color:var(--bordeaux)}
 .etapes li{margin:6px 0}
 .installer{display:none;background:var(--sable);border-radius:14px;padding:14px 16px;margin:6px 0 4px}
 .installer.visible{display:block}
+.choix{display:grid;gap:8px;margin-top:14px}
+.choix button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1.5px solid var(--trait);background:#fff;border-radius:12px;padding:12px 14px;font:inherit;font-weight:650;color:var(--encre);cursor:pointer}
+.choix button span{font-size:1.3rem}
+.etapes-install{margin:12px 0 0;padding-left:22px}
+.etapes-install li{margin:8px 0}
 .installer strong{color:var(--bordeaux)}
 nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--trait);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:5}
 nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 0 8px;text-decoration:none;color:var(--gris);font-size:.74rem;font-weight:600}
@@ -83,8 +88,8 @@ textarea{min-height:70px}
   <section data-onglet="accueil">
     <div class="installer" id="installer">
       <strong>📲 Installez l'appli sur votre téléphone</strong>
-      <div class="petit" id="installer-texte"></div>
-      <button class="bouton" id="installer-bouton" hidden>Installer</button>
+      <div class="petit">Une icône ÔGravel sur votre écran d'accueil, comme une vraie appli.</div>
+      <button class="bouton" id="installer-bouton" type="button">Installer sur votre téléphone</button>
     </div>
 
     <div id="prochaine"></div>
@@ -150,6 +155,15 @@ textarea{min-height:70px}
       <button class="bouton secondaire" type="button" id="annuler">Annuler</button>
     </div>
   </form>
+</dialog>
+
+<dialog id="install">
+  <h3>Installer l'appli</h3>
+  <div id="install-corps"></div>
+  <div class="actions">
+    <button class="bouton secondaire" type="button" id="install-retour" hidden>← Retour</button>
+    <button class="bouton secondaire" type="button" id="install-fermer">Fermer</button>
+  </div>
 </dialog>
 
 <script>
@@ -317,31 +331,88 @@ function rendrePhotos() {
 let invite = null;
 const autonome = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
-function bandeau(texte, bouton) {
-  if (autonome) return;
-  document.getElementById('installer-texte').textContent = texte;
-  document.getElementById('installer-bouton').hidden = !bouton;
-  document.getElementById('installer').classList.add('visible');
+const ua = navigator.userAgent;
+const dansChrome = /Android/.test(ua) && /Chrome\//.test(ua) && !/SamsungBrowser|EdgA|OPR|Opera|Firefox|MiuiBrowser|XiaoMi|HuaweiBrowser|YaBrowser|; wv\)|FBAN|FBAV|Instagram|WhatsApp/.test(ua);
+const dlgInstall = document.getElementById('install');
+const corps = document.getElementById('install-corps');
+const retour = document.getElementById('install-retour');
+let pile = [];
+
+const NAVIGATEURS_ANDROID = [
+  ['chrome', '🟢', 'Chrome'],
+  ['samsung', '🟣', 'Samsung Internet'],
+  ['firefox', '🦊', 'Firefox'],
+  ['edge', '🔵', 'Edge'],
+  ['opera', '🔴', 'Opera'],
+  ['xiaomi', '🟠', 'Navigateur Xiaomi (Mi Browser)'],
+  ['huawei', '⚪', 'Navigateur Huawei'],
+  ['autre', '❓', 'Autre / je ne sais pas']
+];
+const NAVIGATEURS_IOS = [['safari', '🧭', 'Safari'], ['chrome-ios', '🟢', 'Chrome'], ['autre-ios', '❓', 'Autre / je ne sais pas']];
+const ETAPES = {
+  chrome: ["Touchez les 3 points ⋮ en haut à droite.", "Touchez « Installer l'application » (ou « Ajouter à l'écran d'accueil »).", "Confirmez avec « Installer »."],
+  samsung: ["Touchez ☰ (les 3 traits) en bas à droite.", "Touchez « Ajouter page à ».", "Choisissez « Écran d'accueil », puis « Ajouter »."],
+  firefox: ["Touchez les 3 points ⋮.", "Touchez « Ajouter à l'écran d'accueil » (ou « Installer »).", "Confirmez avec « Ajouter »."],
+  edge: ["Touchez ☰ (les 3 traits) en bas.", "Touchez « Ajouter au téléphone ».", "Confirmez avec « Installer »."],
+  opera: ["Touchez les 3 points ⋮.", "Touchez « Ajouter à… » puis « Écran d'accueil ».", "Confirmez avec « Ajouter »."],
+  xiaomi: ["Touchez ☰ (les 3 traits) en bas à droite.", "Touchez « Ajouter aux favoris » puis « Écran d'accueil » (ou « Ajouter un raccourci »).", "Confirmez avec « Ajouter »."],
+  huawei: ["Touchez ☰ (les 3 traits) en bas à droite.", "Touchez « Ajouter à » puis « Écran d'accueil ».", "Confirmez avec « Ajouter »."],
+  autre: ["Ouvrez le menu du navigateur (⋮ ou ☰).", "Cherchez « Ajouter à l'écran d'accueil », « Installer » ou « Ajouter un raccourci ».", "Si rien ne correspond, ouvrez l'appli dans Chrome avec le bouton ci-dessous."],
+  safari: ["Touchez le bouton Partager □↑ (en bas de l'écran, ou en haut sur iPad).", "Faites défiler et touchez « Sur l'écran d'accueil ».", "Touchez « Ajouter » en haut à droite."],
+  'chrome-ios': ["Touchez le bouton Partager □↑ dans la barre d'adresse.", "Touchez « Ajouter à l'écran d'accueil ».", "Touchez « Ajouter »."],
+  'autre-ios': ["Copiez l'adresse de cette page.", "Ouvrez-la dans Safari.", "Touchez Partager □↑ puis « Sur l'écran d'accueil »."]
+};
+
+function ecran(fn) { pile.push(fn); fn(); retour.hidden = pile.length < 2; }
+function choix(question, options, suite) {
+  corps.replaceChildren(el('p', {class: 'petit', text: question}));
+  const g = el('div', {class: 'choix'});
+  for (const [id, emoji, nom] of options) {
+    const b = el('button', {type: 'button'}, el('span', {text: emoji}), nom);
+    b.addEventListener('click', () => suite(id));
+    g.append(b);
+  }
+  corps.append(g);
 }
-addEventListener('beforeinstallprompt', e => { e.preventDefault(); invite = e; bandeau("Une icône ÔGravel sur votre écran d'accueil, comme une vraie appli.", true); });
-document.getElementById('installer-bouton').addEventListener('click', async () => {
-  if (!invite) return; invite.prompt(); await invite.userChoice; invite = null;
-  document.getElementById('installer').classList.remove('visible');
+function boutonChrome() {
+  const a = el('a', {class: 'bouton', text: 'Ouvrir dans Chrome',
+    href: 'intent://' + location.host + location.pathname + '#Intent;scheme=https;package=com.android.chrome;end'});
+  return a;
+}
+function etapes(id) {
+  const nom = [...NAVIGATEURS_ANDROID, ...NAVIGATEURS_IOS].find(n => n[0] === id)[2];
+  corps.replaceChildren(el('p', {class: 'petit', text: 'Avec ' + nom + ' :'}));
+  const ol = el('ol', {class: 'etapes-install'});
+  for (const e of ETAPES[id]) ol.append(el('li', {text: e}));
+  corps.append(ol, el('p', {class: 'petit', text: "L'icône ÔGravel apparaît ensuite sur votre écran d'accueil."}));
+  if (id === 'chrome' && !dansChrome) corps.append(el('p', {class: 'petit', text: "Vous n'êtes pas dans Chrome en ce moment : ouvrez d'abord l'appli dans Chrome."}), boutonChrome());
+  if (id === 'autre' && /Android/.test(ua)) corps.append(boutonChrome());
+}
+async function installerChrome() {
+  if (invite) {
+    dlgInstall.close();
+    invite.prompt(); const r = await invite.userChoice; invite = null;
+    if (r.outcome === 'accepted') document.getElementById('installer').classList.remove('visible');
+  } else etapes('chrome');
+}
+function etapeAndroid() {
+  choix('Quel navigateur utilisez-vous ?', NAVIGATEURS_ANDROID, id => ecran(() => id === 'chrome' ? installerChrome() : etapes(id)));
+}
+function etapeIos() {
+  choix('Quel navigateur utilisez-vous ?', NAVIGATEURS_IOS, id => ecran(() => etapes(id)));
+}
+function etapeSysteme() {
+  choix('Quel est votre téléphone ?', [['android', '🤖', 'Android (Samsung, Xiaomi, Pixel, Huawei…)'], ['ios', '🍎', 'iPhone / iPad']],
+    id => ecran(id === 'android' ? etapeAndroid : etapeIos));
+}
+retour.addEventListener('click', () => { pile.pop(); pile[pile.length - 1](); retour.hidden = pile.length < 2; });
+document.getElementById('install-fermer').addEventListener('click', () => dlgInstall.close());
+document.getElementById('installer-bouton').addEventListener('click', () => {
+  pile = []; ecran(etapeSysteme); dlgInstall.showModal();
 });
-if (ios) bandeau("Dans Safari : touchez Partager (□↑) puis « Sur l'écran d'accueil ».", false);
-else if (/Android/.test(navigator.userAgent)) setTimeout(() => {
-  if (invite) return;
-  const ua = navigator.userAgent;
-  let t = "Menu ⋮ du navigateur puis « Ajouter à l'écran d'accueil » (ou « Installer l'application »).";
-  if (/SamsungBrowser/.test(ua)) t = "Samsung Internet : touchez ☰ en bas à droite, puis « Ajouter page à » → « Écran d'accueil ».";
-  else if (/Firefox/.test(ua)) t = "Firefox : touchez ⋮ puis « Ajouter à l'écran d'accueil ».";
-  else if (/EdgA/.test(ua)) t = "Edge : touchez ☰ en bas, puis « Ajouter au téléphone ».";
-  else if (/OPR|Opera/.test(ua)) t = "Opera : touchez ⋮ puis « Ajouter à… » → « Écran d'accueil ».";
-  else if (/MiuiBrowser|XiaoMi/.test(ua)) t = "Navigateur Xiaomi : touchez ☰ puis « Ajouter aux raccourcis » ou « Écran d'accueil ».";
-  else if (/HuaweiBrowser/.test(ua)) t = "Navigateur Huawei : touchez ☰ puis « Ajouter à » → « Écran d'accueil ».";
-  else if (/; wv\)|FBAN|FBAV|Instagram|WhatsApp/.test(ua)) t = "Ouvrez d'abord ce lien dans votre navigateur (menu ⋮ → « Ouvrir dans le navigateur »), puis ajoutez-le à l'écran d'accueil.";
-  bandeau(t, false);
-}, 2500);
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); invite = e; });
+addEventListener('appinstalled', () => document.getElementById('installer').classList.remove('visible'));
+if (!autonome) document.getElementById('installer').classList.add('visible');
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 
 /* ---------- Chargement ---------- */
