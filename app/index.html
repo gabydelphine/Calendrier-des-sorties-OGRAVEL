@@ -153,6 +153,9 @@ body{background:transparent}
 .avec-fond .groupe{background:#ffffffd6}
 .avec-fond .groupe.ouvert .g-titre{background:#fffffff2}
 .avec-fond nav{background:#fffffff0}
+.vignette{position:relative}
+.v-badge{position:absolute;right:5px;bottom:5px;background:#000a;color:#fff;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:999px;pointer-events:none}
+.visionneuse video{max-width:100%;max-height:82vh;background:#000}
 </style>
 </head>
 <body>
@@ -242,6 +245,7 @@ body{background:transparent}
   <button type="button" class="v-fermer" aria-label="Fermer">✕</button>
   <button type="button" class="v-prec" aria-label="Photo précédente">‹</button>
   <img alt="">
+  <video controls playsinline preload="metadata" referrerpolicy="no-referrer" hidden></video>
   <button type="button" class="v-suiv" aria-label="Photo suivante">›</button>
   <div class="v-legende"></div>
 </div>
@@ -574,6 +578,11 @@ function periode(photos) {
   if (a === b) return dateCourte(a);
   return (a.slice(0, 7) === b.slice(0, 7) ? String(+a.slice(8)) : dateCourte(a).replace(/ \d{4}$/, '')) + ' – ' + dateCourte(b);
 }
+// « 34 photos », « 132 photos · 14 vidéos »
+function compte(liste) {
+  const v = liste.filter(p => p.video).length, n = liste.length - v;
+  return [n ? n + ' photo' + (n > 1 ? 's' : '') : '', v ? v + ' vidéo' + (v > 1 ? 's' : '') : ''].filter(Boolean).join(' · ');
+}
 async function rendreGalerie() {
   const zone = document.getElementById('galerie');
   const photos = await chargerPhotosAlbum();
@@ -590,7 +599,7 @@ async function rendreGalerie() {
   // Chaque sortie est repliée : on touche son titre pour voir ses photos
   // (les photos ne se chargent qu'à l'ouverture).
   for (const g of groupes) {
-    const liste = g.photos.map(p => ({src: p.url + '=w1600-h1600', legende: g.titre + (p.date ? ' · ' + dateCourte(p.date) : '')}));
+    const liste = g.photos.map(p => ({src: p.url + '=w1600-h1600', video: p.video ? p.url + '=dv' : null, legende: g.titre + (p.date ? ' · ' + dateCourte(p.date) : '')}));
     const grille = el('div', {class: 'grille', hidden: ''});
     const remplir = () => {
       if (grille.childElementCount) return;
@@ -598,7 +607,8 @@ async function rendreGalerie() {
         const premiere = i === 0;
         const img = el('img', {src: p.url + (premiere ? '=w700-h700-c' : '=w300-h300-c'), alt: '', loading: 'lazy', referrerpolicy: 'no-referrer'});
         img.addEventListener('load', () => img.classList.add('vue'));
-        const b = el('button', {type: 'button', class: 'vignette' + (premiere ? ' couverture' : ''), 'aria-label': 'Agrandir la photo'}, img);
+        const b = el('button', {type: 'button', class: 'vignette' + (premiere ? ' couverture' : ''), 'aria-label': p.video ? 'Lire la vidéo' : 'Agrandir la photo'}, img);
+        if (p.video) b.append(el('span', {class: 'v-badge', text: '▶ ' + (p.duree ? Math.floor(p.duree / 60) + ':' + String(p.duree % 60).padStart(2, '0') : '')}));
         b.addEventListener('click', () => ouvrirVisionneuse(liste, i));
         grille.append(b);
       });
@@ -607,7 +617,7 @@ async function rendreGalerie() {
     const titre = el('button', {type: 'button', class: 'g-titre', 'aria-expanded': 'false'},
       mini,
       el('span', {class: 'g-texte'}, el('strong', {text: g.titre}),
-        el('small', {text: [g.date && g.titre.indexOf('Photos du') ? periode(g.photos) : '', g.photos.length + ' photo' + (g.photos.length > 1 ? 's' : '')].filter(Boolean).join(' · ')})),
+        el('small', {text: [g.date && g.titre.indexOf('Photos du') ? periode(g.photos) : '', compte(g.photos)].filter(Boolean).join(' · ')})),
       el('span', {class: 'g-fleche', 'aria-hidden': 'true', text: '›'}));
     const groupe = el('div', {class: 'groupe'}, titre, grille);
     titre.addEventListener('click', () => {
@@ -624,21 +634,29 @@ async function rendreGalerie() {
 let visionneuse = {liste: [], i: 0};
 function montrer() {
   const v = document.getElementById('visionneuse'), p = visionneuse.liste[visionneuse.i];
-  v.querySelector('img').src = p.src; v.querySelector('img').referrerPolicy = 'no-referrer';
+  const img = v.querySelector('img'), vid = v.querySelector('video');
+  vid.pause();
+  if (p.video) {  // vidéo de l'album : lue directement depuis Google Photos
+    img.hidden = true; vid.hidden = false; vid.poster = p.src; vid.src = p.video; vid.play().catch(() => {});
+  } else {
+    vid.hidden = true; vid.removeAttribute('src'); vid.load();
+    img.hidden = false; img.src = p.src; img.referrerPolicy = 'no-referrer';
+  }
   v.querySelector('.v-legende').textContent = p.legende + '  (' + (visionneuse.i + 1) + '/' + visionneuse.liste.length + ')';
 }
 function ouvrirVisionneuse(liste, i) { visionneuse = {liste, i}; montrer(); document.getElementById('visionneuse').hidden = false; }
 function bouger(pas) { const n = visionneuse.liste.length; visionneuse.i = (visionneuse.i + pas + n) % n; montrer(); }
 (() => {
   const v = document.getElementById('visionneuse');
-  v.querySelector('.v-fermer').addEventListener('click', () => { v.hidden = true; });
+  const fermer = () => { v.hidden = true; v.querySelector('video').pause(); };
+  v.querySelector('.v-fermer').addEventListener('click', fermer);
   v.querySelector('.v-prec').addEventListener('click', () => bouger(-1));
   v.querySelector('.v-suiv').addEventListener('click', () => bouger(1));
   let x0 = null;
   v.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, {passive: true});
   v.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) bouger(dx < 0 ? 1 : -1); x0 = null; });
-  addEventListener('keydown', e => { if (v.hidden) return; if (e.key === 'Escape') v.hidden = true; if (e.key === 'ArrowLeft') bouger(-1); if (e.key === 'ArrowRight') bouger(1); });
-  addEventListener('hashchange', () => { v.hidden = true; });
+  addEventListener('keydown', e => { if (v.hidden) return; if (e.key === 'Escape') fermer(); if (e.key === 'ArrowLeft') bouger(-1); if (e.key === 'ArrowRight') bouger(1); });
+  addEventListener('hashchange', fermer);
 })();
 
 /* ---------- Carrousel : album Google ÔGravel + photos du blog ---------- */
@@ -652,7 +670,7 @@ async function rendreCarrousel(album) {
   bloc.append(piste, points);
   zone.prepend(bloc);
   const [albumPhotos, blogPhotos] = await Promise.all([
-    chargerPhotosAlbum().then(liste => liste.map(p => {
+    chargerPhotosAlbum().then(liste => liste.filter(p => !p.video).map(p => {
       // Titre : la sortie du jour de la photo (associée par le robot), sinon « Album ÔGravel », avec la date.
       const d0 = p.date ? jour(p.date) : null;
       const quand = d0 ? d0.getDate() + ' ' + MOIS_COURTS[d0.getMonth()] + ' ' + d0.getFullYear() : '';
