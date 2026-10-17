@@ -10,5 +10,12 @@
     "2026-07-12": "Route du Sel",
     "2026-07-13": "Route du Sel",
     "2026-07-14": "Route du Sel"
+  },
+  "_photos": "Photos rangées une par une (adresse de la photo → sortie et date), pour celles sans date de prise de vue.",
+  "photos": {
+    "https://lh3.googleusercontent.com/pw/AP1GczNvF3Q3JUYlb3iIDnch9EwC1EOv56JQGMBL58c-IgAEvDKl392svBYchECqtbgs3U95-3cwSp3cYr0pM06iRIy7beJ0liAUZR0jkOn_N5-Kigx-jqZl": {
+      "sortie": "Family musclé + Special rides gaillacois",
+      "date": "2026-08-29"
+    }
   }
 }

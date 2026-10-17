@@ -43,6 +43,14 @@ def sorties_connues():
     return liste
 
 
+def photos_manuelles():
+    """Sortie (et date) données à la main pour une photo précise (photos-titres.json, clé « photos »)."""
+    try:
+        return json.loads((BASE / "photos-titres.json").read_text(encoding="utf-8")).get("photos", {})
+    except (OSError, ValueError):
+        return {}
+
+
 def titres_manuels():
     """Titres donnés à la main pour les jours sans sortie au calendrier (photos-titres.json)."""
     try:
@@ -206,7 +214,14 @@ def main():
     sorties = sorties_connues()
     # Priorité : titres donnés à la main > noms donnés par les membres > calendrier.
     manuels = {**titres_formulaire(sorties), **titres_manuels()}
+    une_par_une = photos_manuelles()
     for p in photos:
+        fixe = une_par_une.get(p["url"])
+        if fixe:  # photo rangée à la main (par ex. sans date de prise de vue)
+            p["sortie"] = fixe.get("sortie") or p.get("sortie")
+            if fixe.get("date"):
+                p["date"] = fixe["date"]
+            continue
         if p.get("date"):
             titre = sortie_du_jour(p["date"], sorties, manuels)
             if titre:
