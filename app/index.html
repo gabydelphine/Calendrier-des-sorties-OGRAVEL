@@ -162,7 +162,12 @@ body{background:transparent}
 .vh-legende{flex:1;min-width:0;font-size:.82rem;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vh-son,.vh-suiv{flex:none;width:32px;height:32px;border:0;border-radius:50%;background:#ffffff2e;color:#fff;font-size:1rem;cursor:pointer}
 /* Onglet Photos : carrousel + vidéo + boutons tiennent sur un écran. */
-:root{--h-media:clamp(120px,calc((100svh - 400px) / 2),240px)}
+:root{--h-media:clamp(140px,calc((100svh - 340px) / 2),340px)}
+.carte.photos{padding:10px 12px;margin:0}
+.photos .actions{gap:8px;flex-wrap:nowrap}
+.photos .actions .bouton{flex:1 1 0;padding:7px 8px;font-size:.84rem;border-radius:9px;white-space:nowrap;gap:5px}
+.carte.photos .remarque{margin:6px 0 0;font-size:.74rem}
+#photos > h2{margin:2px 0 6px}
 #photos .points{display:none}
 </style>
 </head>
