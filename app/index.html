@@ -145,9 +145,18 @@ textarea{min-height:70px}
 .wa-go{flex:none;background:#fff;color:#128c7e;font-weight:750;font-size:.8rem;border-radius:999px;padding:5px 10px}
 .complet{display:inline-block;margin-top:.6rem;padding:.45rem 1rem;border-radius:999px;background:#ddd;color:#555;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:.85rem}
 #depot .case{display:flex;align-items:center;gap:8px;font-weight:600;margin-top:12px}#depot .case input{width:auto;margin:0}
+/* Vidéo de fond : une par jour, en transparence derrière l'appli. */
+body{background:transparent}
+.fond-video{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;opacity:.5;pointer-events:none;background:var(--creme)}
+.avec-fond{--carte:#ffffffd6}
+.avec-fond .carte,.avec-fond .groupe{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.avec-fond .groupe{background:#ffffffd6}
+.avec-fond .groupe.ouvert .g-titre{background:#fffffff2}
+.avec-fond nav{background:#fffffff0}
 </style>
 </head>
 <body>
+<video class="fond-video" id="fond" muted loop playsinline aria-hidden="true" tabindex="-1" hidden></video>
 <header>
   <img src="logo.jpg" alt="Logo ÔGravel">
   <div><h1>ÔGravel</h1><p>L'appli des membres</p></div>
@@ -828,6 +837,23 @@ async function demarrer() {
   catch { rendreParcours([]); }
 }
 demarrer();
+
+/* ---------- Vidéo de fond : change chaque jour (liste « fonds » de config.json) ---------- */
+(async () => {
+  const v = document.getElementById('fond');
+  let fonds = ['fonds/fond-1', 'fonds/fond-2'];
+  try { const c = await fetch('config.json', {cache: 'no-cache'}).then(r => r.json()); if (Array.isArray(c.fonds) && c.fonds.length) fonds = c.fonds; } catch {}
+  const auj = new Date(), jourN = Math.floor((auj - new Date(auj.getFullYear(), 0, 0)) / 864e5);
+  const nom = fonds[jourN % fonds.length];
+  v.poster = nom + '.jpg'; v.hidden = false; document.documentElement.classList.add('avec-fond');
+  // Économie de données ou animations réduites : image fixe seulement.
+  const sobre = matchMedia('(prefers-reduced-motion: reduce)').matches || (navigator.connection && navigator.connection.saveData);
+  if (sobre) return;
+  v.src = nom + '.mp4';
+  const jouer = () => v.play().catch(() => {});
+  jouer();
+  document.addEventListener('visibilitychange', () => document.hidden ? v.pause() : jouer());
+})();
 </script>
 </body>
 </html>
