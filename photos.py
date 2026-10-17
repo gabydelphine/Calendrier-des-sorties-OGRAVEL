@@ -18,7 +18,7 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parent
 CONFIG = BASE / "app" / "config.json"
 SORTIE = BASE / "app" / "photos.json"
-MAXI = 400  # nombre de photos gardées (galerie et carrousel)
+MAXI = 3000  # nombre de photos gardées (galerie et carrousel)
 PARIS = datetime.timezone(datetime.timedelta(hours=2))
 
 
@@ -186,6 +186,21 @@ def main():
     if not photos:
         print(html[:1500])
         raise RuntimeError("Aucune photo trouvée : fichier précédent conservé")
+
+    # La page de l'album ne montre que les ~300 photos les plus récentes :
+    # on garde aussi celles déjà connues (fichier précédent) pour ne rien perdre.
+    try:
+        anciennes = json.loads(SORTIE.read_text(encoding="utf-8")).get("photos", [])
+    except (OSError, ValueError):
+        anciennes = []
+    gardees = 0
+    for p in anciennes:
+        if p.get("url") and p["url"] not in vues:
+            vues.add(p["url"])
+            p.pop("sortie", None)  # retitrée ci-dessous avec les règles du jour
+            photos.append(p)
+            gardees += 1
+    print(f"{gardees} photos plus anciennes gardées du fichier précédent")
 
     # Tri par date (les plus récentes d'abord) et association à la sortie du jour.
     sorties = sorties_connues()
