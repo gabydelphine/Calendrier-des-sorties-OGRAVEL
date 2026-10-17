@@ -125,10 +125,10 @@ textarea{min-height:70px}
 .v-prec{left:8px;top:50%}
 .v-suiv{right:8px;top:50%}
 .v-legende{position:absolute;bottom:calc(16px + env(safe-area-inset-bottom));left:16px;right:16px;color:#fff;text-align:center;font-size:.85rem}
-.carrousel{position:relative;margin:4px 0 12px;border-radius:14px;overflow:hidden;background:var(--sable);box-shadow:0 2px 10px #0000000f}
+.carrousel{position:relative;margin:4px 0 8px;border-radius:14px;overflow:hidden;background:var(--sable);box-shadow:0 2px 10px #0000000f}
 .piste{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
 .piste::-webkit-scrollbar{display:none}
-.diapo{flex:0 0 100%;scroll-snap-align:start;position:relative;aspect-ratio:4/3;display:block}
+.diapo{flex:0 0 100%;scroll-snap-align:start;position:relative;height:var(--h-media);display:block}
 .diapo img{width:100%;height:100%;object-fit:cover;display:block}
 .diapo .legende{position:absolute;left:10px;bottom:10px;max-width:calc(100% - 90px);background:#0009;color:#fff;font-size:.74rem;font-weight:600;padding:4px 9px;border-radius:999px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .points{position:absolute;right:10px;bottom:12px;display:flex;gap:4px;max-width:55%;flex-wrap:wrap;justify-content:flex-end}
@@ -156,11 +156,14 @@ body{background:transparent}
 .vignette{position:relative}
 .v-badge{position:absolute;right:5px;bottom:5px;background:#000a;color:#fff;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:999px;pointer-events:none}
 .visionneuse video{max-width:100%;max-height:82vh;background:#000}
-.video-hasard{position:relative;margin:0 0 12px;border-radius:14px;overflow:hidden;background:#000;box-shadow:0 2px 10px #0000001a}
-.video-hasard video{display:block;width:100%;aspect-ratio:4/3;max-height:48vh;object-fit:cover;background:#000;cursor:pointer}
-.vh-barre{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:8px;padding:28px 10px 10px;background:linear-gradient(transparent,#000b);color:#fff}
+.video-hasard{position:relative;margin:0 0 8px;border-radius:14px;overflow:hidden;background:#000;box-shadow:0 2px 10px #0000001a}
+.video-hasard video{display:block;width:100%;height:var(--h-media);object-fit:cover;background:#000;cursor:pointer}
+.vh-barre{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:8px;padding:20px 8px 8px;background:linear-gradient(transparent,#000b);color:#fff}
 .vh-legende{flex:1;min-width:0;font-size:.82rem;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.vh-son,.vh-suiv{flex:none;width:36px;height:36px;border:0;border-radius:50%;background:#ffffff2e;color:#fff;font-size:1rem;cursor:pointer}
+.vh-son,.vh-suiv{flex:none;width:32px;height:32px;border:0;border-radius:50%;background:#ffffff2e;color:#fff;font-size:1rem;cursor:pointer}
+/* Onglet Photos : carrousel + vidéo + boutons tiennent sur un écran. */
+:root{--h-media:clamp(120px,calc((100svh - 400px) / 2),240px)}
+#photos .points{display:none}
 </style>
 </head>
 <body>
