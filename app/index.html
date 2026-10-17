@@ -156,6 +156,11 @@ body{background:transparent}
 .vignette{position:relative}
 .v-badge{position:absolute;right:5px;bottom:5px;background:#000a;color:#fff;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:999px;pointer-events:none}
 .visionneuse video{max-width:100%;max-height:82vh;background:#000}
+.video-hasard{position:relative;margin:0 0 12px;border-radius:14px;overflow:hidden;background:#000;box-shadow:0 2px 10px #0000001a}
+.video-hasard video{display:block;width:100%;aspect-ratio:4/3;max-height:48vh;object-fit:cover;background:#000;cursor:pointer}
+.vh-barre{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:8px;padding:28px 10px 10px;background:linear-gradient(transparent,#000b);color:#fff}
+.vh-legende{flex:1;min-width:0;font-size:.82rem;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vh-son,.vh-suiv{flex:none;width:36px;height:36px;border:0;border-radius:50%;background:#ffffff2e;color:#fff;font-size:1rem;cursor:pointer}
 </style>
 </head>
 <body>
@@ -486,6 +491,7 @@ function rendrePhotos() {
     message,
     el('p', {class: 'remarque', text: "Pensez à partager vos photos dans l'album Google ÔGravel."})));
   rendreCarrousel(url);
+  rendreVideoHasard();
   rendreGalerie();
 }
 
@@ -658,6 +664,40 @@ function bouger(pas) { const n = visionneuse.liste.length; visionneuse.i = (visi
   addEventListener('keydown', e => { if (v.hidden) return; if (e.key === 'Escape') fermer(); if (e.key === 'ArrowLeft') bouger(-1); if (e.key === 'ArrowRight') bouger(1); });
   addEventListener('hashchange', fermer);
 })();
+
+/* ---------- Encart vidéo : une vidéo de l'album au hasard, puis une autre à la fin ---------- */
+async function rendreVideoHasard() {
+  const zone = document.getElementById('photos');
+  const videos = (await chargerPhotosAlbum()).filter(p => p.video);
+  if (!videos.length) return;
+  const sobre = navigator.connection && navigator.connection.saveData;
+  const v = el('video', {muted: '', playsinline: '', preload: 'metadata', referrerpolicy: 'no-referrer'});
+  v.muted = true;
+  const legende = el('span', {class: 'vh-legende'});
+  const son = el('button', {type: 'button', class: 'vh-son', 'aria-label': 'Activer le son', text: '🔇'});
+  const suivante = el('button', {type: 'button', class: 'vh-suiv', 'aria-label': 'Autre vidéo', text: '⟳'});
+  let derniere = -1;
+  const jouer = () => {
+    let i = Math.floor(Math.random() * videos.length);
+    if (videos.length > 1 && i === derniere) i = (i + 1) % videos.length;
+    derniere = i;
+    const p = videos[i];
+    v.poster = p.url + '=w900-h900';
+    v.src = p.url + '=dv';
+    legende.textContent = '🎬 ' + [p.sortie || 'Album ÔGravel', p.date ? dateCourte(p.date) : ''].filter(Boolean).join(' · ');
+    if (!sobre) v.play().catch(() => {});
+  };
+  v.addEventListener('ended', jouer);
+  v.addEventListener('error', () => setTimeout(jouer, 1500));
+  son.addEventListener('click', () => { v.muted = !v.muted; son.textContent = v.muted ? '🔇' : '🔊'; son.setAttribute('aria-label', v.muted ? 'Activer le son' : 'Couper le son'); if (v.paused) v.play().catch(() => {}); });
+  suivante.addEventListener('click', jouer);
+  v.addEventListener('click', () => v.paused ? v.play().catch(() => {}) : v.pause());
+  const carte = el('div', {class: 'video-hasard'}, v, el('div', {class: 'vh-barre'}, legende, son, suivante));
+  const repere = zone.querySelector('.carte.photos');
+  repere ? zone.insertBefore(carte, repere) : zone.append(carte);
+  // On ne lit que quand l'encart est à l'écran et l'onglet Photos ouvert.
+  new IntersectionObserver(e => { if (e[0].isIntersecting) { if (!v.src) jouer(); else if (!sobre) v.play().catch(() => {}); } else v.pause(); }).observe(carte);
+}
 
 /* ---------- Carrousel : album Google ÔGravel + photos du blog ---------- */
 const MEDIA_API = 'https://ogravel.com/wp-json/wp/v2/media?per_page=24&media_type=image&_fields=date,link,post,media_details,source_url';
