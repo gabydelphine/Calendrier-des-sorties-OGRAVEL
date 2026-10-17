@@ -176,7 +176,15 @@ def main():
         vues.add(url)
         photo = {"url": url, "largeur": largeur, "hauteur": hauteur}
         # Juste après l'adresse, la page donne la date de prise de vue (millisecondes).
-        suite = html[m.end():m.end() + 600]
+        suite = html[m.end():m.end() + 1500]
+        fin = suite.find('["https://lh3')  # s'arrêter à la photo suivante
+        if fin > 0:
+            suite = suite[:fin]
+        # Vidéo : la page donne sa durée (ms) sous la clé "76647426".
+        mv = re.search(r'"76647426":\[(\d+)', suite)
+        if mv:
+            photo["video"] = True
+            photo["duree"] = round(int(mv.group(1)) / 1000)
         if len(photos) == 0:
             print("   [indice]", repr(suite[:300]))
         t = re.search(r"\b(1[4-9]\d{11})\b", suite)
