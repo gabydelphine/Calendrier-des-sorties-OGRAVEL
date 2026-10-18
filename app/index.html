@@ -500,7 +500,7 @@ function rendrePhotos() {
     el('p', {class: 'remarque', text: "Pensez à partager vos photos dans l'album Google ÔGravel."})));
   rendreCarrousel(url);
   rendreVideoHasard();
-  rendreGalerie();
+  galeriePrete = rendreGalerie();
 }
 
 /* ---------- Dépôt de photos : de quelle sortie s'agit-il ? ---------- */
@@ -597,6 +597,8 @@ function compte(liste) {
   const v = liste.filter(p => p.video).length, n = liste.length - v;
   return [n ? n + ' photo' + (n > 1 ? 's' : '') : '', v ? v + ' vidéo' + (v > 1 ? 's' : '') : ''].filter(Boolean).join(' · ');
 }
+const galerieParPhoto = new Map();
+let galeriePrete = Promise.resolve();
 async function rendreGalerie() {
   const zone = document.getElementById('galerie');
   const photos = await chargerPhotosAlbum();
@@ -634,12 +636,18 @@ async function rendreGalerie() {
         el('small', {text: [g.date && g.titre.indexOf('Photos du') ? periode(g.photos) : '', compte(g.photos)].filter(Boolean).join(' · ')})),
       el('span', {class: 'g-fleche', 'aria-hidden': 'true', text: '›'}));
     const groupe = el('div', {class: 'groupe'}, titre, grille);
-    titre.addEventListener('click', () => {
-      const ouvrir = grille.hidden;
+    const basculer = ouvrir => {
       if (ouvrir) remplir();
       grille.hidden = !ouvrir; groupe.classList.toggle('ouvert', ouvrir);
       titre.setAttribute('aria-expanded', String(ouvrir));
-    });
+    };
+    titre.addEventListener('click', () => basculer(grille.hidden));
+    // Depuis le carrousel : ouvrir cette sortie et afficher la photo touchée.
+    g.photos.forEach((p, i) => galerieParPhoto.set(p.url, () => {
+      basculer(true);
+      groupe.scrollIntoView({block: 'start'});
+      ouvrirVisionneuse(liste, i);
+    }));
     zone.append(groupe);
   }
   const album = urlSure(config.photos_url);
@@ -722,7 +730,7 @@ async function rendreCarrousel(album) {
       // Titre : la sortie du jour de la photo (associée par le robot), sinon « Album ÔGravel », avec la date.
       const d0 = p.date ? jour(p.date) : null;
       const quand = d0 ? d0.getDate() + ' ' + MOIS_COURTS[d0.getMonth()] + ' ' + d0.getFullYear() : '';
-      return {src: p.url + '=w900-h675-c', lien: album, legende: [p.sortie || 'Album ÔGravel', quand].filter(Boolean).join(' · ')};
+      return {src: p.url + '=w900-h675-c', photo: p.url, legende: [p.sortie || 'Album ÔGravel', quand].filter(Boolean).join(' · ')};
     })).catch(() => []),
     fetch(MEDIA_API).then(r => r.ok ? r.json() : []).then(l => l.map(m => {
       const t = (m.media_details && m.media_details.sizes) || {};
@@ -739,10 +747,15 @@ async function rendreCarrousel(album) {
   }
   if (!selection.length) { bloc.remove(); return; }
   selection.forEach((p, i) => {
-    const lien = urlSure(p.lien) || album;
-    piste.append(el('a', {class: 'diapo', href: lien, target: '_blank', rel: 'noopener'},
+    // Photo de l'album : s'ouvre dans la galerie de l'appli, dans sa sortie. Photo du blog : l'article.
+    const lien = p.photo ? '#galerie' : (urlSure(p.lien) || album);
+    const diapo = el('a', p.photo ? {class: 'diapo', href: lien} : {class: 'diapo', href: lien, target: '_blank', rel: 'noopener'},
       el('img', {src: p.src, alt: '', loading: i < 2 ? 'eager' : 'lazy', referrerpolicy: 'no-referrer'}),
-      el('span', {class: 'legende', text: p.legende})));
+      el('span', {class: 'legende', text: p.legende}));
+    if (p.photo) diapo.addEventListener('click', () => {
+      galeriePrete.then(() => setTimeout(() => { const ouvrir = galerieParPhoto.get(p.photo); if (ouvrir) ouvrir(); }, 60));
+    });
+    piste.append(diapo);
     points.append(el('span', {class: i ? '' : 'actif'}));
   });
   const aller = i => piste.scrollTo({left: i * piste.clientWidth, behavior: 'smooth'});
