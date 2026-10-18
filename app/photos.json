@@ -3,9 +3,11 @@
   "album": "https://photos.app.goo.gl/xDjK9YYXGkt55fAh7",
   "photos": [
     {
-      "url": "https://lh3.googleusercontent.com/pw/AP1GczOoW08VxUHVyvpI6eHgK_3bNSIVIbQDsN99sUjPGy2lqTxDM48gXMSeBvI_8NUQN0Vf7zaWuQ4rWvz20rylwzIzb16W_83tCIBFip-kYvE9dRAg-gkX",
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczNVhJjGbwXUZqVfOhzEO0GyWFof-c3Idrkj6k4r0RX-QFNQaAQc947bEaTdYhPNsxLY0vO-hLwHKSC4UVrUSwXpcWiiEJCaBRWY13ZKI0Mc_VWTdWXS",
       "largeur": 1080,
       "hauteur": 1920,
+      "video": true,
+      "duree": 52,
       "date": "2026-10-18"
     },
     {
@@ -39,7 +41,7 @@
       "date": "2026-10-18"
     },
     {
-      "url": "https://lh3.googleusercontent.com/pw/AP1GczOgluWQwZJWNJKANc1jVK_inrcueQtjPRy3UwrsoRshu1wCmfHAxmg_0t_4OueRd7Wl6ud8QtJf3SwuMro4wjBp59sWo4wXzC_rv20x8Df4agcCKn4N",
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczM9k8bgIGOALn5h5sWfjhmmIVPibS7TjA1V6qkYOsziXXFQQIUZkXRri5ir1O5Uqjd0CiZiDlSCl4vDuP6v9LIipRi7PVprrpnxg00r4K5pJwdYLNku",
       "largeur": 1080,
       "hauteur": 1920,
       "video": true,
@@ -76,6 +78,20 @@
       "hauteur": 1920,
       "video": true,
       "duree": 24,
+      "date": "2026-10-18"
+    },
+    {
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczOoW08VxUHVyvpI6eHgK_3bNSIVIbQDsN99sUjPGy2lqTxDM48gXMSeBvI_8NUQN0Vf7zaWuQ4rWvz20rylwzIzb16W_83tCIBFip-kYvE9dRAg-gkX",
+      "largeur": 1080,
+      "hauteur": 1920,
+      "date": "2026-10-18"
+    },
+    {
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczOgluWQwZJWNJKANc1jVK_inrcueQtjPRy3UwrsoRshu1wCmfHAxmg_0t_4OueRd7Wl6ud8QtJf3SwuMro4wjBp59sWo4wXzC_rv20x8Df4agcCKn4N",
+      "largeur": 1080,
+      "hauteur": 1920,
+      "video": true,
+      "duree": 28,
       "date": "2026-10-18"
     },
     {
@@ -432,7 +448,7 @@
       "sortie": "Ô Gravel Surprise ride #8"
     },
     {
-      "url": "https://lh3.googleusercontent.com/pw/AP1GczN8MDuqaLEXEsGYttr7eyWwjdtCBdLsBRRFST-9o-0ygIx8XENbpEmQzjaxdaV-PPHSiCdmxw5sDiDhDj1e8wrWO5-f7Y5V3mUmZTxa2X0v7AVluAqX",
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczOCfCXa-nZoDgyB4XMtl75QxhBp2FVPcCptYmWXKGyjb2VDw5oBfNJra_tbNcWlotfmuKJA9rvvFSQ32xJGSJRfCxiZMXlfJrb3CdnzioWSVNcEOhcR",
       "largeur": 478,
       "hauteur": 850,
       "video": true,
@@ -1125,6 +1141,15 @@
       "url": "https://lh3.googleusercontent.com/pw/AP1GczOK_5UJe0K4Yw0F3igr1TAmG10JBmzx14Dx3P-gS1hfYvei_r4BGtQWnoprvmJviwODm3II8wQwmz-Luvn_EHzdWi0PQGv0j7dfP0sYjmbGdW-WI0Zl",
       "largeur": 4000,
       "hauteur": 2252,
+      "date": "2026-10-17",
+      "sortie": "Ô Gravel Surprise ride #8"
+    },
+    {
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczN8MDuqaLEXEsGYttr7eyWwjdtCBdLsBRRFST-9o-0ygIx8XENbpEmQzjaxdaV-PPHSiCdmxw5sDiDhDj1e8wrWO5-f7Y5V3mUmZTxa2X0v7AVluAqX",
+      "largeur": 478,
+      "hauteur": 850,
+      "video": true,
+      "duree": 52,
       "date": "2026-10-17",
       "sortie": "Ô Gravel Surprise ride #8"
     },
