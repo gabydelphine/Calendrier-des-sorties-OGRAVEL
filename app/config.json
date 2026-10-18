@@ -44,6 +44,8 @@
   "_fonds": "Vidéos de fond de l'appli (dossier app/fonds, sans extension) : une différente chaque jour, à tour de rôle. Chacune a sa vidéo .mp4 et son image .jpg.",
   "fonds": [
     "fonds/fond-1",
-    "fonds/fond-2"
+    "fonds/fond-2",
+    "fonds/fond-3",
+    "fonds/fond-4"
   ]
 }
