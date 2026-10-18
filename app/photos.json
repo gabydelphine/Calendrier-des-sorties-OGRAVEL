@@ -1,9 +1,9 @@
 {
-  "updated": "2026-10-17",
+  "updated": "2026-10-18",
   "album": "https://photos.app.goo.gl/xDjK9YYXGkt55fAh7",
   "photos": [
     {
-      "url": "https://lh3.googleusercontent.com/pw/AP1GczPxecHjSf2iSUPMmqPKbEdhHvddHXNeMjZaV31UWiXcrUVUGOPIt_gSN_Ebd5R1Ohiij5KvHv74EwAe11BJAizaZ_fA54Xg5K9ZmiI1zRgqiHMpKdGe",
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczO09dJwC2XurfaIFbyQrFriWvZdL-gwnkR57GhN_t-mLKxqKP7Cr3GnFsxcsO5GkwmgGymJFw7MUD_ai95OWIC07HA8zV_J0icNJAJJSlkl-P2z9pqY",
       "largeur": 576,
       "hauteur": 1024,
       "video": true,
@@ -126,7 +126,7 @@
       "sortie": "Ô Gravel Surprise ride #8"
     },
     {
-      "url": "https://lh3.googleusercontent.com/pw/AP1GczPOiw2EI1Y_x6T487YZ8NLwFrkTXGcI9jeWIg5fKjs9dy5zrt9O1l5Te59qgu4CnJSS8OLvxS61fLN6CPMWZrCVkYjC_p_CgJZO4vu7vAGLtqKyosTE",
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczPY60N5-JPxE3gmheEaPsU2hSifXxZ7jB11R140gOmyl2M1KjfIO5Fk7epJED1fn6OATOXElvOb7ebAyRnNbua3hVoiGeWeIHA6DQmw2O3Rxj5uKqgC",
       "largeur": 1080,
       "hauteur": 1920,
       "video": true,
@@ -365,7 +365,7 @@
       "sortie": "Ô Gravel Surprise ride #8"
     },
     {
-      "url": "https://lh3.googleusercontent.com/pw/AP1GczMlpdZynTdkwNs6ArMkR3RsfPDqiCK4WmeR1Qltcn7bA0RW_4P5I5Go5jyu_mX4nh7-1Zma4UtdW4WDaJq_xziv6tOYXlgodFqVJIySr3qKL4peq5yZ",
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczMUk_9cqxO-BnzALLWDQT70owXMYGIKeqB3IkDhyXO1rX-KPhisGqKUqHG2mfYqXl-c2_XnQUFU-ExgfXzf7QCzlZCxOC0xuQmf6ZYl_Esiq4zIg0xs",
       "largeur": 478,
       "hauteur": 850,
       "video": true,
@@ -383,7 +383,7 @@
       "sortie": "Ô Gravel Surprise ride #8"
     },
     {
-      "url": "https://lh3.googleusercontent.com/pw/AP1GczNINWrF5G2zBDvLBovx3NLPRYHIH7Dzx7XXIHyU5SDU3pYCDm3Qp7nYASpai_4yQVdO2AKIk8cqOYYIrz8iIUwvk5VJYJn2vFbDyJjMltqnAKRJZ1qu",
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczNdfHljLyklERl1-pSnpaHcRt22oEO-jfUAAPriNbrE3rUm1ojJ9uG_plqAMpFSP47ud49nR7-yIRi4TsqF_qv0ifsO6VOwuQM7N9JjWiHCK7dxK2UZ",
       "largeur": 848,
       "hauteur": 478,
       "video": true,
@@ -1053,6 +1053,42 @@
       "sortie": "Ô Gravel Surprise ride #8"
     },
     {
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczPxecHjSf2iSUPMmqPKbEdhHvddHXNeMjZaV31UWiXcrUVUGOPIt_gSN_Ebd5R1Ohiij5KvHv74EwAe11BJAizaZ_fA54Xg5K9ZmiI1zRgqiHMpKdGe",
+      "largeur": 576,
+      "hauteur": 1024,
+      "video": true,
+      "duree": 15,
+      "date": "2026-10-17",
+      "sortie": "Ô Gravel Surprise ride #8"
+    },
+    {
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczPOiw2EI1Y_x6T487YZ8NLwFrkTXGcI9jeWIg5fKjs9dy5zrt9O1l5Te59qgu4CnJSS8OLvxS61fLN6CPMWZrCVkYjC_p_CgJZO4vu7vAGLtqKyosTE",
+      "largeur": 1080,
+      "hauteur": 1920,
+      "video": true,
+      "duree": 30,
+      "date": "2026-10-17",
+      "sortie": "Ô Gravel Surprise ride #8"
+    },
+    {
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczMlpdZynTdkwNs6ArMkR3RsfPDqiCK4WmeR1Qltcn7bA0RW_4P5I5Go5jyu_mX4nh7-1Zma4UtdW4WDaJq_xziv6tOYXlgodFqVJIySr3qKL4peq5yZ",
+      "largeur": 478,
+      "hauteur": 850,
+      "video": true,
+      "duree": 12,
+      "date": "2026-10-17",
+      "sortie": "Ô Gravel Surprise ride #8"
+    },
+    {
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczNINWrF5G2zBDvLBovx3NLPRYHIH7Dzx7XXIHyU5SDU3pYCDm3Qp7nYASpai_4yQVdO2AKIk8cqOYYIrz8iIUwvk5VJYJn2vFbDyJjMltqnAKRJZ1qu",
+      "largeur": 848,
+      "hauteur": 478,
+      "video": true,
+      "duree": 19,
+      "date": "2026-10-17",
+      "sortie": "Ô Gravel Surprise ride #8"
+    },
+    {
       "url": "https://lh3.googleusercontent.com/pw/AP1GczOgWeF6lInEjFShSXScz3XaZ-yJ1Kx8b87nCtitb_n1A9YfYzoH_2WdnJdHNudNlN5PiME8Rep_JNbzYsKwO3rl4V21IlLJNv03gcYAsxmoeokpRjSs",
       "largeur": 480,
       "hauteur": 856,
@@ -1086,6 +1122,12 @@
       "hauteur": 480,
       "date": "2026-10-17",
       "sortie": "Ô Gravel Surprise ride #8"
+    },
+    {
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczNk44qLLKRL4PfeKahgT8OPePfCKVz678a7gWVVtl9x_7lX9pHva4IqTrjB18nqZTz6_YywvXsUQ_8F-Q8kTwnXl3eTHoe9k0YkQfLLyzdKFdslb6SI",
+      "largeur": 2048,
+      "hauteur": 1536,
+      "date": "2026-10-12"
     },
     {
       "url": "https://lh3.googleusercontent.com/pw/AP1GczPUQCds2jtvVBeuW52JIXE3MAi9uF0hlnXSr4ZpRx3nGuhhP8z0_vBq4wWkkfs2rGf0qQeJakdAAHnWEsA8S42FGS8UZ7ywIMYAIhCq1aXt5u-X_NRZ",
@@ -1682,7 +1724,7 @@
       "sortie": "Dralha Blanca"
     },
     {
-      "url": "https://lh3.googleusercontent.com/pw/AP1GczMHy1HXzflnpTbM5Dl46ua7tCf89E5Oxlm9fxc2xSpRwM5SHcq61HfSHX5CT9u50IJDEjbB6By8TJ4T5UVP4BF4R6YDeJpugDwJ1ihAd2dncXNE-toi",
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczOS_iR6bY2b0Wdkkn8Ai3E6DqoZV43mmgiL8WwXcjtjqSv4zFaEgv3VHEdnAK8_9I_BbiV37d8Dtu9t99v5x0bvVnSZFksQbZe0F3joSiRExT-uDSwm",
       "largeur": 848,
       "hauteur": 478,
       "video": true,
@@ -1729,6 +1771,15 @@
       "url": "https://lh3.googleusercontent.com/pw/AP1GczM1Wnb3HNvTrwmVHgZTenY4Q7NZCumMjNBFv12vbXA2BEfwKEzm4DkvPff8vj8At-4lU2zz-oejlwxUMHuQGuir3gp0p5KCN_bNvt5uYARNMlhNgJsm",
       "largeur": 4000,
       "hauteur": 2252,
+      "date": "2026-10-03",
+      "sortie": "Dralha Blanca"
+    },
+    {
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczMHy1HXzflnpTbM5Dl46ua7tCf89E5Oxlm9fxc2xSpRwM5SHcq61HfSHX5CT9u50IJDEjbB6By8TJ4T5UVP4BF4R6YDeJpugDwJ1ihAd2dncXNE-toi",
+      "largeur": 848,
+      "hauteur": 478,
+      "video": true,
+      "duree": 62,
       "date": "2026-10-03",
       "sortie": "Dralha Blanca"
     },
@@ -2192,18 +2243,18 @@
       "sortie": "Family musclé + Special rides gaillacois"
     },
     {
-      "url": "https://lh3.googleusercontent.com/pw/AP1GczN5HyvZJBo7h40SirT5Q2sVdszq4zXVKkRhswHgf60yE6atuV1GJjm0V1lPOAXTLYr5hB1nml6kySvuZBh8UGklUf1_GE13lceLKpfv-eGcZzbneLPu",
-      "largeur": 4000,
-      "hauteur": 2252,
-      "date": "2026-08-29",
-      "sortie": "Family musclé + Special rides gaillacois"
-    },
-    {
       "url": "https://lh3.googleusercontent.com/pw/AP1GczNvF3Q3JUYlb3iIDnch9EwC1EOv56JQGMBL58c-IgAEvDKl392svBYchECqtbgs3U95-3cwSp3cYr0pM06iRIy7beJ0liAUZR0jkOn_N5-Kigx-jqZl",
       "largeur": 4000,
       "hauteur": 2252,
       "sortie": "Family musclé + Special rides gaillacois",
       "date": "2026-08-29"
+    },
+    {
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczN5HyvZJBo7h40SirT5Q2sVdszq4zXVKkRhswHgf60yE6atuV1GJjm0V1lPOAXTLYr5hB1nml6kySvuZBh8UGklUf1_GE13lceLKpfv-eGcZzbneLPu",
+      "largeur": 4000,
+      "hauteur": 2252,
+      "date": "2026-08-29",
+      "sortie": "Family musclé + Special rides gaillacois"
     },
     {
       "url": "https://lh3.googleusercontent.com/pw/AP1GczOo-nLAFgFsbulFunbgW2vby9gmymI6zFSQqifqybzhE2oYu1sp1XiMq9YDONUbAeHSXVFE2x89yCgHgwqoNIfMDh0Zio2MElR74JOMSRLSEVmb4DqC",
