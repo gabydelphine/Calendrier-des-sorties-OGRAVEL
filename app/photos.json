@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-18",
+  "updated": "2026-10-19",
   "album": "https://photos.app.goo.gl/xDjK9YYXGkt55fAh7",
   "photos": [
     {
@@ -19,7 +19,7 @@
       "date": "2026-10-18"
     },
     {
-      "url": "https://lh3.googleusercontent.com/pw/AP1GczNs3YRnCOCSLndzKxuARSR6eHYEFY6RGt3EFNsuHDPeX6Db274LPbk8JrfKSzKFp4PJ7esDpAwoCt6aTdXeLXFEmhk-86a4nMCCKKocSM5OttIejfOv",
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczM2X2ZOCTjhIMHpLjWz_MeKB9W_6gCQGoTVsltvEvL8NKC82WR2iurPkgoGs4Hv6uKjOyE4GHwp7lykNKyJdPM-cT1WGgOML-7JbdZDDjJsO-YqOuIe",
       "largeur": 1920,
       "hauteur": 816,
       "video": true,
@@ -57,7 +57,7 @@
       "date": "2026-10-18"
     },
     {
-      "url": "https://lh3.googleusercontent.com/pw/AP1GczNBHU1K05vZ4WuPTdP1wSQZeL7EaLX9Q6sFoXMGUUCc-l4QSb9WRzeGidXORbEpiJ0p0zQLjyqkHEQvECIEOaEgx-HGEoB6sQGpntocDyU1qxJWyPJa",
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczOxF48cj6DGPvWjkGgMEtKkimgH_jxG_EPSohOEn5WMji0Y2_y_7JNK3dDUpD8AsRUKa8wnGmFl3Vnd0j-wgYmGDXVFhMvmEcPwyJOSbOyNUABJXGW2",
       "largeur": 1080,
       "hauteur": 1920,
       "video": true,
@@ -78,6 +78,22 @@
       "hauteur": 1920,
       "video": true,
       "duree": 24,
+      "date": "2026-10-18"
+    },
+    {
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczNs3YRnCOCSLndzKxuARSR6eHYEFY6RGt3EFNsuHDPeX6Db274LPbk8JrfKSzKFp4PJ7esDpAwoCt6aTdXeLXFEmhk-86a4nMCCKKocSM5OttIejfOv",
+      "largeur": 1920,
+      "hauteur": 816,
+      "video": true,
+      "duree": 83,
+      "date": "2026-10-18"
+    },
+    {
+      "url": "https://lh3.googleusercontent.com/pw/AP1GczNBHU1K05vZ4WuPTdP1wSQZeL7EaLX9Q6sFoXMGUUCc-l4QSb9WRzeGidXORbEpiJ0p0zQLjyqkHEQvECIEOaEgx-HGEoB6sQGpntocDyU1qxJWyPJa",
+      "largeur": 1080,
+      "hauteur": 1920,
+      "video": true,
+      "duree": 59,
       "date": "2026-10-18"
     },
     {
