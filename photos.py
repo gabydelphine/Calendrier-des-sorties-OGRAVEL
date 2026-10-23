@@ -89,26 +89,38 @@ def date_iso(valeur):
 
 def titres_formulaire(sorties):
     """Noms d'événements donnés par les membres dans l'appli (formulaire Google),
-    corrigés d'après les événements connus (fautes, accents, majuscules)."""
+    corrigés d'après les événements connus (fautes, accents, majuscules).
+
+    Les réponses commençant par « § » viennent de la gestion des albums (admin) :
+    « §Nom » renomme les photos de ce jour, « §#masquer » les retire de la galerie.
+    Pour un même jour, la dernière réponse admin l'emporte.
+    Renvoie (titres des membres, titres admin, jours masqués)."""
     try:
         _, texte = lire(FORMULAIRE_CSV)
     except Exception as exc:
         print(f"! Formulaire : {exc}")
-        return {}
+        return {}, {}, set()
     connus = [(d, f, t) for d, f, t in sorties if t]
     try:
         _, agenda = lire(AGENDA)
         connus += [(e["date"], e.get("end_date"), e.get("title", "")) for e in json.loads(agenda).get("events", []) if e.get("title")]
     except Exception as exc:
         print(f"! Agenda : {exc}")
-    reponses = {}
+    reponses, admin = {}, {}
     for ligne in list(csv.reader(io.StringIO(texte)))[1:]:
         if len(ligne) < 3 or not ligne[1].strip():
             continue
         date = date_iso(ligne[2])
         if not date:
             continue
-        reponses.setdefault(date, []).append(ligne[1].strip())
+        nom = ligne[1].strip()
+        if nom.startswith("§"):
+            admin[date] = re.sub(r"\s+", " ", nom[1:]).strip()  # la dernière l'emporte
+        else:
+            reponses.setdefault(date, []).append(nom)
+    masques = {d for d, n in admin.items() if n == "#masquer"}
+    admin = {d: n for d, n in admin.items() if n and n != "#masquer"}
+    print(f"Gestion des albums : {len(admin)} jour(s) renommé(s), {len(masques)} masqué(s)")
     titres = {}
     for date, noms in reponses.items():
         jour = datetime.date.fromisoformat(date)
@@ -139,7 +151,7 @@ def titres_formulaire(sorties):
             print(f"   nom libre pour le {date} : {choisi}")
         titres[date] = choisi
     print(f"{len(titres)} jour(s) titré(s) par les membres")
-    return titres
+    return titres, admin, masques
 
 
 def sortie_du_jour(date, sorties, manuels=None):
@@ -220,8 +232,9 @@ def main():
 
     # Tri par date (les plus récentes d'abord) et association à la sortie du jour.
     sorties = sorties_connues()
-    # Priorité : titres donnés à la main > noms donnés par les membres > calendrier.
-    manuels = {**titres_formulaire(sorties), **titres_manuels()}
+    # Priorité : gestion des albums (admin) > titres donnés à la main > noms donnés par les membres > calendrier.
+    membres, admin, masques = titres_formulaire(sorties)
+    manuels = {**membres, **titres_manuels(), **admin}
     une_par_une = photos_manuelles()
     for p in photos:
         fixe = une_par_une.get(p["url"])
@@ -229,11 +242,19 @@ def main():
             p["sortie"] = fixe.get("sortie") or p.get("sortie")
             if fixe.get("date"):
                 p["date"] = fixe["date"]
+            if p.get("date") in admin:
+                p["sortie"] = admin[p["date"]]
+            p.pop("masque", None)
+            if p.get("date") in masques:
+                p["masque"] = True
             continue
         if p.get("date"):
             titre = sortie_du_jour(p["date"], sorties, manuels)
             if titre:
                 p["sortie"] = titre
+        p.pop("masque", None)
+        if p.get("date") in masques:  # album retiré de la galerie par un admin
+            p["masque"] = True
     photos.sort(key=lambda p: p.get("date", ""), reverse=True)
     print(f"{sum(1 for p in photos if p.get('date'))} photos datées, {sum(1 for p in photos if p.get('sortie'))} rattachées à une sortie")
     inconnues = sorted({p["date"] for p in photos if p.get("date") and not p.get("sortie")}, reverse=True)
