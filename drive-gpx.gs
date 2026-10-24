@@ -38,7 +38,10 @@ function majDossiers() {
     if (m) existants[m[1]] = d;
   }
   const sorties = sortiesDuCalendrier_();
+  // Un dossier n'est créé qu'une fois la sortie commencée ou passée (jamais à l'avance).
+  const aujourdhui = Utilities.formatDate(new Date(), 'Europe/Paris', 'yyyy-MM-dd');
   Object.keys(sorties).forEach(date => {
+    if (date > aujourdhui) return;
     if (!existants[date]) {
       existants[date] = racine.createFolder(date + ' ' + sorties[date]);
       Logger.log('Dossier créé : ' + date + ' ' + sorties[date]);
