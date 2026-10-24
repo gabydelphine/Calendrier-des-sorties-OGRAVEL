@@ -10,78 +10,6 @@
       "denivele_m": 830
     },
     {
-      "date": "2026-10-17",
-      "nom": "GPS drawing autour de Toulouse : Woody Woodpecker",
-      "auto": true,
-      "lien": "https://www.visugpx.com/PYafeTPDIj",
-      "distance_km": 104,
-      "denivele_m": 830
-    },
-    {
-      "date": "2026-10-17",
-      "nom": "Gravel near Toulouse : Sausse, Seillonne",
-      "auto": true,
-      "lien": "https://www.visugpx.com/bCv5nLItXB",
-      "distance_km": 104,
-      "denivele_m": 830
-    },
-    {
-      "date": "2026-10-17",
-      "nom": "Gravel automnal du côté de Garidech",
-      "auto": true,
-      "lien": "https://www.visugpx.com/yVMkQKy4TH",
-      "distance_km": 104,
-      "denivele_m": 830
-    },
-    {
-      "date": "2026-10-17",
-      "nom": "Route vers le Tarn",
-      "auto": true,
-      "lien": "https://www.visugpx.com/mTpFLm7FWK",
-      "distance_km": 104,
-      "denivele_m": 830
-    },
-    {
-      "date": "2026-10-17",
-      "nom": "Boucle cyclo dans les Landes",
-      "auto": true,
-      "lien": "https://www.visugpx.com/eSSjPy8b8D",
-      "distance_km": 104,
-      "denivele_m": 830
-    },
-    {
-      "date": "2026-10-17",
-      "nom": "Bosses sur les terres du CVM",
-      "auto": true,
-      "lien": "https://www.visugpx.com/gRvUMLXIlP",
-      "distance_km": 104,
-      "denivele_m": 830
-    },
-    {
-      "date": "2026-10-17",
-      "nom": "200 km entre Toulouse, Montagne Noire, Ganguise et Canal du Midi",
-      "auto": true,
-      "lien": "https://www.visugpx.com/MQ2bhknzmE",
-      "distance_km": 104,
-      "denivele_m": 830
-    },
-    {
-      "date": "2026-10-17",
-      "nom": "Cyclo entre Trèbes et Gruissan",
-      "auto": true,
-      "lien": "https://www.visugpx.com/PkfN9Rch1r",
-      "distance_km": 104,
-      "denivele_m": 830
-    },
-    {
-      "date": "2026-10-17",
-      "nom": "petite boucle sur Gratentour",
-      "auto": true,
-      "lien": "https://www.visugpx.com/1404369389",
-      "distance_km": 104,
-      "denivele_m": 830
-    },
-    {
       "date": "2026-10-10",
       "nom": "Journée Ô Gravel",
       "distance_km": 53,
@@ -283,6 +211,15 @@
     }
   ],
   "_exclus": [
-    "gDdqt5GCd4"
+    "1404369389",
+    "MQ2bhknzmE",
+    "PYafeTPDIj",
+    "PkfN9Rch1r",
+    "bCv5nLItXB",
+    "eSSjPy8b8D",
+    "gDdqt5GCd4",
+    "gRvUMLXIlP",
+    "mTpFLm7FWK",
+    "yVMkQKy4TH"
   ]
 }
