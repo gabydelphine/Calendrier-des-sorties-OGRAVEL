@@ -23,6 +23,8 @@ BASE = Path(__file__).resolve().parent
 CONFIG = BASE / "app" / "config.json"
 PARCOURS = BASE / "app" / "parcours.json"
 CACHE = BASE / "gpx-cache.json"
+# Copie des GPX dans l'appli : le bouton « GPX » les envoie directement aux applis du téléphone.
+COPIES = BASE / "app" / "gpx"
 TELECHARGER = "https://drive.google.com/uc?export=download&id={}"
 VOIR = "https://drive.google.com/file/d/{}/view"
 # Dénivelé : variations ignorées en dessous du seuil. 4 m pour VisuGPX et Komoot (altitudes
@@ -120,11 +122,13 @@ def main():
     index = json.loads(lire(adresse))
     cache = charger(CACHE, {})
     parcours = []
+    gardes = set()
     for s in index.get("sorties", []):
         choix = []
         for f in s.get("gpx", []):
             cle = f"{f['id']}|{f.get('modifie', '')}|s{SEUIL}-l{LISSAGE}"
-            if cle not in cache:
+            copie = COPIES / f"{f['id']}.gpx"
+            if cle not in cache or not copie.exists():
                 try:
                     gpx = lire(TELECHARGER.format(f["id"]))
                 except Exception as exc:
@@ -133,6 +137,12 @@ def main():
                 if b"<gpx" not in gpx[:2000]:
                     print(f"! {s['nom']} / {f['nom']} : pas lisible (fichier partagé par lien ?)", file=sys.stderr)
                     continue
+                COPIES.mkdir(exist_ok=True)
+                copie.write_bytes(gpx)
+                gardes.add(copie.name)
+                if cle in cache:
+                    choix.append((f, cache[cle]))
+                    continue
                 o = origine(gpx)
                 if o in ("visugpx", "komoot"):
                     km, dplus = mesurer(gpx, SEUIL)
@@ -140,6 +150,7 @@ def main():
                     km, dplus = mesurer(gpx, 0, LISSAGE)
                     dplus = dplus_annonce(f["nom"]) or dplus  # le chiffre de l'auteur prime
                 cache[cle] = {"km": km, "dplus": dplus, "origine": o}
+            gardes.add(copie.name)
             choix.append((f, cache[cle]))
         if not choix:
             # Dossier encore vide : la sortie s'affiche avec « Trace bientôt disponible ».
@@ -150,10 +161,12 @@ def main():
         choix.sort(key=lambda c: (rang.get(c[1]["origine"], 1), c[0].get("nom", "")))
         f, m = choix[0]
         entree = {"date": s["date"], "nom": s["nom"], "distance_km": m["km"], "denivele_m": m["dplus"],
-                  "lien": VOIR.format(f["id"]), "telecharger": TELECHARGER.format(f["id"])}
+                  "lien": VOIR.format(f["id"]), "telecharger": TELECHARGER.format(f["id"]),
+                  "fichier": f"gpx/{f['id']}.gpx", "nom_fichier": joli_nom(f["nom"])}
         if len(choix) > 1:  # plusieurs parcours (ex. 2000 m et 3000 m) ou plusieurs étapes
             entree["fichiers"] = [{"nom": joli_nom(ff["nom"]), "distance_km": mm["km"], "denivele_m": mm["dplus"],
-                                   "lien": VOIR.format(ff["id"]), "telecharger": TELECHARGER.format(ff["id"])}
+                                   "lien": VOIR.format(ff["id"]), "telecharger": TELECHARGER.format(ff["id"]),
+                                   "fichier": f"gpx/{ff['id']}.gpx"}
                                   for ff, mm in choix]
         parcours.append(entree)
         print(f"+ {s['date']} {s['nom']} : {m['km']} km, {m['dplus']} m ({m['origine']})")
@@ -162,6 +175,9 @@ def main():
         print("Aucun GPX lisible : parcours inchangés")
         return
     parcours.sort(key=lambda p: p["date"], reverse=True)
+    for vieux in COPIES.glob("*.gpx"):  # GPX retirés du Drive
+        if vieux.name not in gardes:
+            vieux.unlink()
     PARCOURS.write_text(json.dumps({"_aide": "Rempli par gpx_drive.py depuis le dossier gpx du Google Drive ÔGravel.",
                                     "parcours": parcours}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"{len(parcours)} parcours, dont {sum(1 for p in parcours if p.get('en_attente'))} en attente de GPX")
