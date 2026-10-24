@@ -104,6 +104,8 @@ def main():
                 cache[cle] = {"km": km, "dplus": dplus, "origine": o}
             choix.append((f, cache[cle]))
         if not choix:
+            # Dossier encore vide : la sortie s'affiche avec « Trace bientôt disponible ».
+            parcours.append({"date": s["date"], "nom": s["nom"], "en_attente": True})
             continue
         # VisuGPX d'abord, puis tout autre GPX, Komoot en dernier ; puis le plus récent.
         rang = {"visugpx": 0, "autre": 1, "komoot": 2}
@@ -112,13 +114,13 @@ def main():
                          "lien": VOIR.format(f["id"]), "telecharger": TELECHARGER.format(f["id"])})
         print(f"+ {s['date']} {s['nom']} : {m['km']} km, {m['dplus']} m ({m['origine']})")
     CACHE.write_text(json.dumps(cache, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    if not parcours and index.get("sorties"):
+    if not any(not p.get("en_attente") for p in parcours) and index.get("sorties"):
         print("Aucun GPX lisible : parcours inchangés")
         return
     parcours.sort(key=lambda p: p["date"], reverse=True)
     PARCOURS.write_text(json.dumps({"_aide": "Rempli par gpx_drive.py depuis le dossier gpx du Google Drive ÔGravel.",
                                     "parcours": parcours}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"{len(parcours)} parcours")
+    print(f"{len(parcours)} parcours, dont {sum(1 for p in parcours if p.get('en_attente'))} en attente de GPX")
 
 
 if __name__ == "__main__":

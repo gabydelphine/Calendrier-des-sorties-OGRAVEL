@@ -38,10 +38,10 @@ function majDossiers() {
     if (m) existants[m[1]] = d;
   }
   const sorties = sortiesDuCalendrier_();
-  // Un dossier n'est créé qu'une fois la sortie commencée ou passée (jamais à l'avance).
-  const aujourdhui = Utilities.formatDate(new Date(), 'Europe/Paris', 'yyyy-MM-dd');
+  // Le dossier d'une sortie est créé la veille (jamais plus tôt).
+  const demain = Utilities.formatDate(new Date(Date.now() + 864e5), 'Europe/Paris', 'yyyy-MM-dd');
   Object.keys(sorties).forEach(date => {
-    if (date > aujourdhui) return;
+    if (date > demain) return;
     if (!existants[date]) {
       existants[date] = racine.createFolder(date + ' ' + sorties[date]);
       Logger.log('Dossier créé : ' + date + ' ' + sorties[date]);
