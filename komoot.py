@@ -196,12 +196,17 @@ def traces_visugpx():
         if code in vus:
             continue
         bloc, texte = a, ""
-        for _ in range(6):  # remonte jusqu'au bloc qui contient la date de la trace
-            bloc = bloc.parent
-            if bloc is None:
+        for _ in range(6):  # remonte jusqu'au bloc de CETTE trace (date, km, D+)
+            parent = bloc.parent
+            if parent is None:
                 break
+            # S'arrêter avant un bloc qui contient aussi d'autres traces.
+            autres = {x["href"] for x in parent.find_all("a", href=re.compile(r"^/[A-Za-z0-9]{10}$"))}
+            if len(autres) > 1:
+                break
+            bloc = parent
             texte = bloc.get_text(" ", strip=True)
-            if re.search(r"\d{2}\.\d{2}\.\d{4}", texte):
+            if re.search(r"\d{2}\.\d{2}\.\d{4}", texte) and re.search(r"km", texte):
                 break
         m = re.search(r"(\d{2})\.(\d{2})\.(\d{4})", texte)
         if not m:
@@ -216,6 +221,20 @@ def traces_visugpx():
     return traces
 
 
+def ressemble(nom, sortie):
+    """La trace VisuGPX est-elle celle de la sortie ? (la date VisuGPX est la date
+    d'ajout de la trace : Thierry en ajoute parfois plusieurs le même jour)."""
+    import difflib
+    def simple(t):
+        import unicodedata
+        t = unicodedata.normalize("NFKD", t or "")
+        return re.sub(r"[^a-z0-9]+", " ", "".join(c for c in t if not unicodedata.combining(c)).lower()).strip()
+    n, s = simple(nom), simple(sortie)
+    if re.search(r"\bo ?gravel\b|\bogravel\b", n):
+        return True
+    return difflib.SequenceMatcher(None, n, s).ratio() >= 0.6
+
+
 def visugpx(parcours, sorties, aujourdhui):
     """Préfère la trace VisuGPX (parcours proposé, GPX en accès libre) publiée
     le jour d'une sortie : remplace le lien Komoot, ou ajoute la sortie."""
@@ -226,15 +245,19 @@ def visugpx(parcours, sorties, aujourdhui):
     for t in traces:
         if t["code"] in exclus or any(t["code"] in (p.get("lien") or "") for p in parcours["parcours"]):
             continue
+        if any(p.get("date") == t["date"] and "visugpx.com" in (p.get("lien") or "") for p in parcours["parcours"]):
+            continue  # une seule trace VisuGPX par sortie
         existant = next((p for p in parcours["parcours"]
                          if p.get("date") == t["date"] and "visugpx.com" not in (p.get("lien") or "")), None)
+        s = sortie_du_jour(t["date"], sorties, aujourdhui)
+        titre_sortie = (existant or {}).get("nom") or (s or {}).get("title", "")
+        if not (existant or s) or not ressemble(t["nom"], titre_sortie):
+            continue
         if existant:
             existant["lien_komoot"] = existant.get("lien_komoot") or existant.get("lien")
-        elif sortie_du_jour(t["date"], sorties, aujourdhui):
+        else:
             existant = {"date": t["date"], "nom": t["nom"], "auto": True}
             parcours["parcours"].append(existant)
-        else:
-            continue
         existant["lien"] = "https://www.visugpx.com/" + t["code"]
         if t["km"]:
             existant["distance_km"] = t["km"]
