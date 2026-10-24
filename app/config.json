@@ -47,5 +47,7 @@
     "fonds/fond-2",
     "fonds/fond-3",
     "fonds/fond-4"
-  ]
+  ],
+  "_gpx_drive": "Adresse de l'application Web du script Google « dossier gpx » (liste des GPX du Drive ÔGravel, lue par le robot gpx_drive.py).",
+  "gpx_drive": "https://script.google.com/macros/s/AKfycbw3f640LcJ7Yev0VvUoydSCx5y1Wser94YWS6ft0uVvE8uPSPaJcC6q1Zc3RlKi2q0D/exec"
 }

@@ -174,6 +174,9 @@ body{background:transparent}
 .groupe.retire{opacity:.4}
 .lien-admin{display:block;margin:18px auto 0;border:0;background:none;color:var(--gris);font:inherit;font-size:.8rem;text-decoration:underline;cursor:pointer}
 #gestion input{width:100%;box-sizing:border-box;font:inherit;padding:9px;border:1px solid #aaa;border-radius:8px;margin:4px 0 12px}
+.trace{position:relative}
+.tgpx{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--bordeaux);color:#fff;border-radius:999px;padding:5px 10px;font-size:.76rem;font-weight:700;text-decoration:none}
+.trace .tnom,.trace .tchiffres{padding-right:70px}
 </style>
 </head>
 <body>
@@ -235,7 +238,7 @@ body{background:transparent}
   <!-- PARCOURS -->
   <section data-onglet="parcours">
     <h2>Parcours</h2>
-    <p class="petit">Les traces des sorties ÔGravel publiées par Thierry. Touchez une sortie pour voir la carte et récupérer le GPX : en libre accès sur VisuGPX, avec un compte gratuit sur Komoot.</p>
+    <p class="petit">Les traces des sorties ÔGravel. Touchez une sortie pour voir la trace, ou « ⬇ GPX » pour la mettre dans votre compteur ou votre téléphone.</p>
     <div id="parcours">Chargement…</div>
   </section>
 
@@ -323,6 +326,7 @@ let choisie = null;
 function el(tag, attrs = {}, ...enfants) {
   const n = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
+    if (v == null) continue;
     if (k === 'class') n.className = v; else if (k === 'text') n.textContent = v; else n.setAttribute(k, v);
   }
   for (const e of enfants) if (e != null) n.append(e);
@@ -475,12 +479,15 @@ function rendreParcours(liste) {
     const an = d ? String(d.getFullYear()) : '';
     if (an !== annee) { annee = an; if (an) zone.append(el('div', {class: 'mois', text: an})); ul = el('div', {class: 'traces'}); zone.append(ul); }
     const lien = urlSure(p.lien);
-    const ligne = el(lien ? 'a' : 'div', lien ? {class: 'trace', href: lien, target: '_blank', rel: 'noopener'} : {class: 'trace'},
+    const ligne = el('div', {class: 'trace', role: lien ? 'link' : null, tabindex: lien ? '0' : null},
       el('span', {class: 'tdate', text: d ? d.getDate() + ' ' + MOIS_COURTS[d.getMonth()] : ''}),
       el('span', {class: 'tnom', text: p.nom || 'Parcours'}),
-      el('span', {class: 'tchiffres', text: [p.distance_km ? p.distance_km + ' km' : '', p.denivele_m ? p.denivele_m + ' m D+' : '', /visugpx\.com/.test(lien || '') ? 'VisuGPX' : /komoot\./.test(lien || '') ? 'Komoot' : ''].filter(Boolean).join(' · ')}));
+      el('span', {class: 'tchiffres', text: [p.distance_km ? p.distance_km + ' km' : '', p.denivele_m ? p.denivele_m + ' m D+' : ''].filter(Boolean).join(' · ')}));
+    // Le GPX est rangé sur le Drive ÔGravel : on touche la sortie pour voir la trace, ⬇ pour la télécharger.
+    const dl = urlSure(p.telecharger);
+    if (dl) ligne.append(el('a', {class: 'tgpx', href: dl, rel: 'noopener', 'aria-label': 'Télécharger le GPX', text: '⬇ GPX'}));
+    if (lien) ligne.addEventListener('click', e => { if (!e.target.closest('.tgpx')) window.open(lien, '_blank', 'noopener'); });
     ul.append(ligne);
-    if (p.gpx && /^[\w.\- ]+\.gpx$/i.test(p.gpx)) ul.append(el('a', {class: 'bouton secondaire', href: 'traces/' + encodeURIComponent(p.gpx), download: '', text: '⬇️ GPX'}));
   }
 }
 
