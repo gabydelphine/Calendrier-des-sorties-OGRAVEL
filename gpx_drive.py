@@ -25,6 +25,8 @@ PARCOURS = BASE / "app" / "parcours.json"
 CACHE = BASE / "gpx-cache.json"
 TELECHARGER = "https://drive.google.com/uc?export=download&id={}"
 VOIR = "https://drive.google.com/file/d/{}/view"
+# Dénivelé : variations de moins de 4 m ignorées (réglé pour retrouver les chiffres de VisuGPX).
+SEUIL = 4
 
 
 def lire(url):
@@ -87,7 +89,7 @@ def main():
     for s in index.get("sorties", []):
         choix = []
         for f in s.get("gpx", []):
-            cle = f"{f['id']}|{f.get('modifie', '')}"
+            cle = f"{f['id']}|{f.get('modifie', '')}|s{SEUIL}"
             if cle not in cache:
                 try:
                     gpx = lire(TELECHARGER.format(f["id"]))
@@ -97,8 +99,8 @@ def main():
                 if b"<gpx" not in gpx[:2000]:
                     print(f"! {s['nom']} / {f['nom']} : pas lisible (fichier partagé par lien ?)", file=sys.stderr)
                     continue
-                o = origine(gpx)  # VisuGPX et Komoot lissent déjà les altitudes
-                km, dplus = mesurer(gpx, 0 if o in ("visugpx", "komoot") else 3)
+                o = origine(gpx)
+                km, dplus = mesurer(gpx, SEUIL)
                 cache[cle] = {"km": km, "dplus": dplus, "origine": o}
             choix.append((f, cache[cle]))
         if not choix:
