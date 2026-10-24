@@ -8,20 +8,24 @@
       "denivele_m": 2000,
       "lien": "https://drive.google.com/file/d/1dCXLM7PXnItDMN7hIEwQo2EAnyku5sA8/view",
       "telecharger": "https://drive.google.com/uc?export=download&id=1dCXLM7PXnItDMN7hIEwQo2EAnyku5sA8",
+      "fichier": "gpx/1dCXLM7PXnItDMN7hIEwQo2EAnyku5sA8.gpx",
+      "nom_fichier": "challenge 2000 m 93km piemont",
       "fichiers": [
         {
           "nom": "challenge 2000 m 93km piemont",
           "distance_km": 93,
           "denivele_m": 2000,
           "lien": "https://drive.google.com/file/d/1dCXLM7PXnItDMN7hIEwQo2EAnyku5sA8/view",
-          "telecharger": "https://drive.google.com/uc?export=download&id=1dCXLM7PXnItDMN7hIEwQo2EAnyku5sA8"
+          "telecharger": "https://drive.google.com/uc?export=download&id=1dCXLM7PXnItDMN7hIEwQo2EAnyku5sA8",
+          "fichier": "gpx/1dCXLM7PXnItDMN7hIEwQo2EAnyku5sA8.gpx"
         },
         {
           "nom": "challenge 3000m 116km",
           "distance_km": 117,
           "denivele_m": 3000,
           "lien": "https://drive.google.com/file/d/1Q-Zj3g2kH0Yuct3LOWU6iJdlRx2Wp3La/view",
-          "telecharger": "https://drive.google.com/uc?export=download&id=1Q-Zj3g2kH0Yuct3LOWU6iJdlRx2Wp3La"
+          "telecharger": "https://drive.google.com/uc?export=download&id=1Q-Zj3g2kH0Yuct3LOWU6iJdlRx2Wp3La",
+          "fichier": "gpx/1Q-Zj3g2kH0Yuct3LOWU6iJdlRx2Wp3La.gpx"
         }
       ]
     },
@@ -32,20 +36,24 @@
       "denivele_m": 379,
       "lien": "https://drive.google.com/file/d/1jINyMTlFTrtd70iJwp0v2fWUYeAOaIin/view",
       "telecharger": "https://drive.google.com/uc?export=download&id=1jINyMTlFTrtd70iJwp0v2fWUYeAOaIin",
+      "fichier": "gpx/1jINyMTlFTrtd70iJwp0v2fWUYeAOaIin.gpx",
+      "nom_fichier": "sr 8 part 1",
       "fichiers": [
         {
           "nom": "sr 8 part 1",
           "distance_km": 49,
           "denivele_m": 379,
           "lien": "https://drive.google.com/file/d/1jINyMTlFTrtd70iJwp0v2fWUYeAOaIin/view",
-          "telecharger": "https://drive.google.com/uc?export=download&id=1jINyMTlFTrtd70iJwp0v2fWUYeAOaIin"
+          "telecharger": "https://drive.google.com/uc?export=download&id=1jINyMTlFTrtd70iJwp0v2fWUYeAOaIin",
+          "fichier": "gpx/1jINyMTlFTrtd70iJwp0v2fWUYeAOaIin.gpx"
         },
         {
           "nom": "sr 8 part 2",
           "distance_km": 58,
           "denivele_m": 523,
           "lien": "https://drive.google.com/file/d/11JXutYYFTqDL2BPkZ4JRVSnqX9thq4LV/view",
-          "telecharger": "https://drive.google.com/uc?export=download&id=11JXutYYFTqDL2BPkZ4JRVSnqX9thq4LV"
+          "telecharger": "https://drive.google.com/uc?export=download&id=11JXutYYFTqDL2BPkZ4JRVSnqX9thq4LV",
+          "fichier": "gpx/11JXutYYFTqDL2BPkZ4JRVSnqX9thq4LV.gpx"
         }
       ]
     },
@@ -56,34 +64,40 @@
       "denivele_m": 276,
       "lien": "https://drive.google.com/file/d/1PL3wYWaEyQaHexV3FkRDG-iN9rBaCi09/view",
       "telecharger": "https://drive.google.com/uc?export=download&id=1PL3wYWaEyQaHexV3FkRDG-iN9rBaCi09",
+      "fichier": "gpx/1PL3wYWaEyQaHexV3FkRDG-iN9rBaCi09.gpx",
+      "nom_fichier": "tanis family high 22km 276m",
       "fichiers": [
         {
           "nom": "tanis family high 22km 276m",
           "distance_km": 22,
           "denivele_m": 276,
           "lien": "https://drive.google.com/file/d/1PL3wYWaEyQaHexV3FkRDG-iN9rBaCi09/view",
-          "telecharger": "https://drive.google.com/uc?export=download&id=1PL3wYWaEyQaHexV3FkRDG-iN9rBaCi09"
+          "telecharger": "https://drive.google.com/uc?export=download&id=1PL3wYWaEyQaHexV3FkRDG-iN9rBaCi09",
+          "fichier": "gpx/1PL3wYWaEyQaHexV3FkRDG-iN9rBaCi09.gpx"
         },
         {
           "nom": "tanis family light 17 km 197m",
           "distance_km": 17,
           "denivele_m": 197,
           "lien": "https://drive.google.com/file/d/1VBOxdVdFq-olv5grnMBpw17dUiK2AOLK/view",
-          "telecharger": "https://drive.google.com/uc?export=download&id=1VBOxdVdFq-olv5grnMBpw17dUiK2AOLK"
+          "telecharger": "https://drive.google.com/uc?export=download&id=1VBOxdVdFq-olv5grnMBpw17dUiK2AOLK",
+          "fichier": "gpx/1VBOxdVdFq-olv5grnMBpw17dUiK2AOLK.gpx"
         },
         {
           "nom": "tanis special 1 45 km 612m",
           "distance_km": 45,
           "denivele_m": 612,
           "lien": "https://drive.google.com/file/d/16o9blgLb30GVSEJgqIvhGoInMHh-bF8I/view",
-          "telecharger": "https://drive.google.com/uc?export=download&id=16o9blgLb30GVSEJgqIvhGoInMHh-bF8I"
+          "telecharger": "https://drive.google.com/uc?export=download&id=16o9blgLb30GVSEJgqIvhGoInMHh-bF8I",
+          "fichier": "gpx/16o9blgLb30GVSEJgqIvhGoInMHh-bF8I.gpx"
         },
         {
           "nom": "tanis special 2 79 km",
           "distance_km": 79,
           "denivele_m": 727,
           "lien": "https://drive.google.com/file/d/19Rs0ELs5qdBUFZebMmqhmkO9NiVlxT-w/view",
-          "telecharger": "https://drive.google.com/uc?export=download&id=19Rs0ELs5qdBUFZebMmqhmkO9NiVlxT-w"
+          "telecharger": "https://drive.google.com/uc?export=download&id=19Rs0ELs5qdBUFZebMmqhmkO9NiVlxT-w",
+          "fichier": "gpx/19Rs0ELs5qdBUFZebMmqhmkO9NiVlxT-w.gpx"
         }
       ]
     },
@@ -94,20 +108,24 @@
       "denivele_m": 535,
       "lien": "https://drive.google.com/file/d/1g1OinQKXwU5lv-hDvUtYBF24VCulAMqH/view",
       "telecharger": "https://drive.google.com/uc?export=download&id=1g1OinQKXwU5lv-hDvUtYBF24VCulAMqH",
+      "fichier": "gpx/1g1OinQKXwU5lv-hDvUtYBF24VCulAMqH.gpx",
+      "nom_fichier": "special 53 km",
       "fichiers": [
         {
           "nom": "special 53 km",
           "distance_km": 53,
           "denivele_m": 535,
           "lien": "https://drive.google.com/file/d/1g1OinQKXwU5lv-hDvUtYBF24VCulAMqH/view",
-          "telecharger": "https://drive.google.com/uc?export=download&id=1g1OinQKXwU5lv-hDvUtYBF24VCulAMqH"
+          "telecharger": "https://drive.google.com/uc?export=download&id=1g1OinQKXwU5lv-hDvUtYBF24VCulAMqH",
+          "fichier": "gpx/1g1OinQKXwU5lv-hDvUtYBF24VCulAMqH.gpx"
         },
         {
           "nom": "special 86km",
           "distance_km": 86,
           "denivele_m": 706,
           "lien": "https://drive.google.com/file/d/13IhZTPEFGohT04bpujigWFPF_mfqwrjq/view",
-          "telecharger": "https://drive.google.com/uc?export=download&id=13IhZTPEFGohT04bpujigWFPF_mfqwrjq"
+          "telecharger": "https://drive.google.com/uc?export=download&id=13IhZTPEFGohT04bpujigWFPF_mfqwrjq",
+          "fichier": "gpx/13IhZTPEFGohT04bpujigWFPF_mfqwrjq.gpx"
         }
       ]
     },
@@ -117,7 +135,9 @@
       "distance_km": 158,
       "denivele_m": 1321,
       "lien": "https://drive.google.com/file/d/1iABj0hSCJe2Benq6MhAuu0CHwgv_aRD7/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1iABj0hSCJe2Benq6MhAuu0CHwgv_aRD7"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1iABj0hSCJe2Benq6MhAuu0CHwgv_aRD7",
+      "fichier": "gpx/1iABj0hSCJe2Benq6MhAuu0CHwgv_aRD7.gpx",
+      "nom_fichier": "Family musclé + Special rides gaillacois"
     },
     {
       "date": "2026-07-05",
@@ -125,7 +145,9 @@
       "distance_km": 112,
       "denivele_m": 450,
       "lien": "https://drive.google.com/file/d/1AVkIGBh1H3abe5TQVDfxRj-Y6Dk6gM-F/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1AVkIGBh1H3abe5TQVDfxRj-Y6Dk6gM-F"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1AVkIGBh1H3abe5TQVDfxRj-Y6Dk6gM-F",
+      "fichier": "gpx/1AVkIGBh1H3abe5TQVDfxRj-Y6Dk6gM-F.gpx",
+      "nom_fichier": "Family + Special rides et un peu +"
     },
     {
       "date": "2026-06-13",
@@ -134,34 +156,40 @@
       "denivele_m": 880,
       "lien": "https://drive.google.com/file/d/1uGsLyyLd9-WLT8Fq89PHvOeEtD0z5Jbq/view",
       "telecharger": "https://drive.google.com/uc?export=download&id=1uGsLyyLd9-WLT8Fq89PHvOeEtD0z5Jbq",
+      "fichier": "gpx/1uGsLyyLd9-WLT8Fq89PHvOeEtD0z5Jbq.gpx",
+      "nom_fichier": "naurouze st pons 124",
       "fichiers": [
         {
           "nom": "naurouze st pons 124",
           "distance_km": 125,
           "denivele_m": 880,
           "lien": "https://drive.google.com/file/d/1uGsLyyLd9-WLT8Fq89PHvOeEtD0z5Jbq/view",
-          "telecharger": "https://drive.google.com/uc?export=download&id=1uGsLyyLd9-WLT8Fq89PHvOeEtD0z5Jbq"
+          "telecharger": "https://drive.google.com/uc?export=download&id=1uGsLyyLd9-WLT8Fq89PHvOeEtD0z5Jbq",
+          "fichier": "gpx/1uGsLyyLd9-WLT8Fq89PHvOeEtD0z5Jbq.gpx"
         },
         {
           "nom": "family olargues heric 42 394m",
           "distance_km": 42,
           "denivele_m": 394,
           "lien": "https://drive.google.com/file/d/1-78drF3UHXVUjdaWUPp2NlqbkWAfG8aj/view",
-          "telecharger": "https://drive.google.com/uc?export=download&id=1-78drF3UHXVUjdaWUPp2NlqbkWAfG8aj"
+          "telecharger": "https://drive.google.com/uc?export=download&id=1-78drF3UHXVUjdaWUPp2NlqbkWAfG8aj",
+          "fichier": "gpx/1-78drF3UHXVUjdaWUPp2NlqbkWAfG8aj.gpx"
         },
         {
           "nom": "special 69 km",
           "distance_km": 69,
           "denivele_m": 1385,
           "lien": "https://drive.google.com/file/d/1GbprPfCqAgUeb7Ge4nNmg32bc8zTBVf-/view",
-          "telecharger": "https://drive.google.com/uc?export=download&id=1GbprPfCqAgUeb7Ge4nNmg32bc8zTBVf-"
+          "telecharger": "https://drive.google.com/uc?export=download&id=1GbprPfCqAgUeb7Ge4nNmg32bc8zTBVf-",
+          "fichier": "gpx/1GbprPfCqAgUeb7Ge4nNmg32bc8zTBVf-.gpx"
         },
         {
           "nom": "special longo 92 km",
           "distance_km": 92,
           "denivele_m": 1641,
           "lien": "https://drive.google.com/file/d/18GKnunuSW7esuciF6IKFPS7IWo6Seb9B/view",
-          "telecharger": "https://drive.google.com/uc?export=download&id=18GKnunuSW7esuciF6IKFPS7IWo6Seb9B"
+          "telecharger": "https://drive.google.com/uc?export=download&id=18GKnunuSW7esuciF6IKFPS7IWo6Seb9B",
+          "fichier": "gpx/18GKnunuSW7esuciF6IKFPS7IWo6Seb9B.gpx"
         }
       ]
     },
@@ -171,7 +199,9 @@
       "distance_km": 204,
       "denivele_m": 1746,
       "lien": "https://drive.google.com/file/d/1k-iW8Dg7f0IyqroMSgOLvoMOMRAgfcp6/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1k-iW8Dg7f0IyqroMSgOLvoMOMRAgfcp6"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1k-iW8Dg7f0IyqroMSgOLvoMOMRAgfcp6",
+      "fichier": "gpx/1k-iW8Dg7f0IyqroMSgOLvoMOMRAgfcp6.gpx",
+      "nom_fichier": "Family et Special rides Seuil de Naurouze"
     },
     {
       "date": "2026-02-07",
@@ -179,7 +209,9 @@
       "distance_km": 103,
       "denivele_m": 621,
       "lien": "https://drive.google.com/file/d/1h5IttU0zkpWq_jeJKDDa0al_g7eQem_t/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1h5IttU0zkpWq_jeJKDDa0al_g7eQem_t"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1h5IttU0zkpWq_jeJKDDa0al_g7eQem_t",
+      "fichier": "gpx/1h5IttU0zkpWq_jeJKDDa0al_g7eQem_t.gpx",
+      "nom_fichier": "Special ride vallées du Tarn et de l'Agout"
     },
     {
       "date": "2026-01-25",
@@ -187,7 +219,9 @@
       "distance_km": 68,
       "denivele_m": 105,
       "lien": "https://drive.google.com/file/d/1HwNF-sHt-J-daC8aSponEXBE-gKRH_YO/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1HwNF-sHt-J-daC8aSponEXBE-gKRH_YO"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1HwNF-sHt-J-daC8aSponEXBE-gKRH_YO",
+      "fichier": "gpx/1HwNF-sHt-J-daC8aSponEXBE-gKRH_YO.gpx",
+      "nom_fichier": "Family et Special ride"
     },
     {
       "date": "2025-12-21",
@@ -195,7 +229,9 @@
       "distance_km": 72,
       "denivele_m": 1262,
       "lien": "https://drive.google.com/file/d/1_Oh3K8lKxt48UIZkj6jv-tQRZ6h1vMbv/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1_Oh3K8lKxt48UIZkj6jv-tQRZ6h1vMbv"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1_Oh3K8lKxt48UIZkj6jv-tQRZ6h1vMbv",
+      "fichier": "gpx/1_Oh3K8lKxt48UIZkj6jv-tQRZ6h1vMbv.gpx",
+      "nom_fichier": "Pèlerinage en Montagne Noire"
     },
     {
       "date": "2025-11-23",
@@ -203,7 +239,9 @@
       "distance_km": 105,
       "denivele_m": 852,
       "lien": "https://drive.google.com/file/d/1hVfLLQS0A4Hrt0d2WCxU9FzSU391PQFU/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1hVfLLQS0A4Hrt0d2WCxU9FzSU391PQFU"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1hVfLLQS0A4Hrt0d2WCxU9FzSU391PQFU",
+      "fichier": "gpx/1hVfLLQS0A4Hrt0d2WCxU9FzSU391PQFU.gpx",
+      "nom_fichier": "Family et Special rides Mirepoix"
     },
     {
       "date": "2025-10-18",
@@ -211,7 +249,9 @@
       "distance_km": 114,
       "denivele_m": 537,
       "lien": "https://drive.google.com/file/d/1mA9TcI7cWK3fXGzNHjpYl9tTd0q_r8Hs/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1mA9TcI7cWK3fXGzNHjpYl9tTd0q_r8Hs"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1mA9TcI7cWK3fXGzNHjpYl9tTd0q_r8Hs",
+      "fichier": "gpx/1mA9TcI7cWK3fXGzNHjpYl9tTd0q_r8Hs.gpx",
+      "nom_fichier": "Surprise ride #7"
     },
     {
       "date": "2025-10-05",
@@ -219,7 +259,9 @@
       "distance_km": 84,
       "denivele_m": 744,
       "lien": "https://drive.google.com/file/d/1zriEtTEIJu0ttRlHrhvNbfQVO8_glRhp/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1zriEtTEIJu0ttRlHrhvNbfQVO8_glRhp"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1zriEtTEIJu0ttRlHrhvNbfQVO8_glRhp",
+      "fichier": "gpx/1zriEtTEIJu0ttRlHrhvNbfQVO8_glRhp.gpx",
+      "nom_fichier": "Special rides Saint-Paul-Cap-de-Joux"
     },
     {
       "date": "2025-09-13",
@@ -227,7 +269,9 @@
       "distance_km": 119,
       "denivele_m": 527,
       "lien": "https://drive.google.com/file/d/1jdIXIOkAs0eUkei7ihbAjqOHEv0ZFuTj/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1jdIXIOkAs0eUkei7ihbAjqOHEv0ZFuTj"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1jdIXIOkAs0eUkei7ihbAjqOHEv0ZFuTj",
+      "fichier": "gpx/1jdIXIOkAs0eUkei7ihbAjqOHEv0ZFuTj.gpx",
+      "nom_fichier": "Family et Special ride Grenade"
     },
     {
       "date": "2025-06-28",
@@ -235,7 +279,9 @@
       "distance_km": 164,
       "denivele_m": 1902,
       "lien": "https://drive.google.com/file/d/1z8LWgkJjSLmOqsjgX6NZPCeQURocm1cU/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1z8LWgkJjSLmOqsjgX6NZPCeQURocm1cU"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1z8LWgkJjSLmOqsjgX6NZPCeQURocm1cU",
+      "fichier": "gpx/1z8LWgkJjSLmOqsjgX6NZPCeQURocm1cU.gpx",
+      "nom_fichier": "Family et Special rides Carcassonne Alaric"
     },
     {
       "date": "2025-05-17",
@@ -243,7 +289,9 @@
       "distance_km": 73,
       "denivele_m": 1221,
       "lien": "https://drive.google.com/file/d/1XsUjIcjI480rO56FNOBfI9uVaJDVnxHK/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1XsUjIcjI480rO56FNOBfI9uVaJDVnxHK"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1XsUjIcjI480rO56FNOBfI9uVaJDVnxHK",
+      "fichier": "gpx/1XsUjIcjI480rO56FNOBfI9uVaJDVnxHK.gpx",
+      "nom_fichier": "Special ride collines du vent"
     },
     {
       "date": "2025-03-14",
@@ -251,7 +299,9 @@
       "distance_km": 113,
       "denivele_m": 1018,
       "lien": "https://drive.google.com/file/d/15K2qQ7bCdCxuzZEm-geK0Jp6XWKWv3GP/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=15K2qQ7bCdCxuzZEm-geK0Jp6XWKWv3GP"
+      "telecharger": "https://drive.google.com/uc?export=download&id=15K2qQ7bCdCxuzZEm-geK0Jp6XWKWv3GP",
+      "fichier": "gpx/15K2qQ7bCdCxuzZEm-geK0Jp6XWKWv3GP.gpx",
+      "nom_fichier": "Bivouac et Special ride"
     },
     {
       "date": "2025-02-09",
@@ -259,7 +309,9 @@
       "distance_km": 115,
       "denivele_m": 316,
       "lien": "https://drive.google.com/file/d/1GyuU1-EbEEJ3IHTfzh7C6tBk9AyS8Fcb/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1GyuU1-EbEEJ3IHTfzh7C6tBk9AyS8Fcb"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1GyuU1-EbEEJ3IHTfzh7C6tBk9AyS8Fcb",
+      "fichier": "gpx/1GyuU1-EbEEJ3IHTfzh7C6tBk9AyS8Fcb.gpx",
+      "nom_fichier": "Family et Special rides Garonne"
     },
     {
       "date": "2024-12-22",
@@ -267,7 +319,9 @@
       "distance_km": 43,
       "denivele_m": 982,
       "lien": "https://drive.google.com/file/d/1erHVHbCzpIt0Ew3biS5ne4p3KVeLfaDa/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1erHVHbCzpIt0Ew3biS5ne4p3KVeLfaDa"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1erHVHbCzpIt0Ew3biS5ne4p3KVeLfaDa",
+      "fichier": "gpx/1erHVHbCzpIt0Ew3biS5ne4p3KVeLfaDa.gpx",
+      "nom_fichier": "Pèlerinage en Montagne Noire"
     },
     {
       "date": "2024-12-14",
@@ -275,7 +329,9 @@
       "distance_km": 68,
       "denivele_m": 475,
       "lien": "https://drive.google.com/file/d/1PhngRMoM08xBrnxmSuKL0D0pq5ENQbGr/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1PhngRMoM08xBrnxmSuKL0D0pq5ENQbGr"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1PhngRMoM08xBrnxmSuKL0D0pq5ENQbGr",
+      "fichier": "gpx/1PhngRMoM08xBrnxmSuKL0D0pq5ENQbGr.gpx",
+      "nom_fichier": "Special ride urbain et péri-urbain"
     },
     {
       "date": "2024-11-24",
@@ -283,7 +339,9 @@
       "distance_km": 159,
       "denivele_m": 307,
       "lien": "https://drive.google.com/file/d/1myyXyPvi9PwkshBpNeL1vXJaAdxP72pd/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1myyXyPvi9PwkshBpNeL1vXJaAdxP72pd"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1myyXyPvi9PwkshBpNeL1vXJaAdxP72pd",
+      "fichier": "gpx/1myyXyPvi9PwkshBpNeL1vXJaAdxP72pd.gpx",
+      "nom_fichier": "Family et Special rides Montech"
     },
     {
       "date": "2024-11-21",
@@ -291,7 +349,9 @@
       "distance_km": 86,
       "denivele_m": 510,
       "lien": "https://drive.google.com/file/d/1bSQYQQj3xOmM8S7MnBxsnPWaJPPgAv8D/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1bSQYQQj3xOmM8S7MnBxsnPWaJPPgAv8D"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1bSQYQQj3xOmM8S7MnBxsnPWaJPPgAv8D",
+      "fichier": "gpx/1bSQYQQj3xOmM8S7MnBxsnPWaJPPgAv8D.gpx",
+      "nom_fichier": "Urban pizza ride Chez Félix"
     },
     {
       "date": "2024-11-16",
@@ -299,7 +359,9 @@
       "distance_km": 213,
       "denivele_m": 1113,
       "lien": "https://drive.google.com/file/d/186hGlYDyAdhI19BT1rm_jyvQ3AhVy6--/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=186hGlYDyAdhI19BT1rm_jyvQ3AhVy6--"
+      "telecharger": "https://drive.google.com/uc?export=download&id=186hGlYDyAdhI19BT1rm_jyvQ3AhVy6--",
+      "fichier": "gpx/186hGlYDyAdhI19BT1rm_jyvQ3AhVy6--.gpx",
+      "nom_fichier": "Cassoulet ride"
     },
     {
       "date": "2024-10-13",
@@ -307,7 +369,9 @@
       "distance_km": 106,
       "denivele_m": 1176,
       "lien": "https://drive.google.com/file/d/17Iw0_4L2iuZy8oDDA7VTRLIFSDEoKq6a/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=17Iw0_4L2iuZy8oDDA7VTRLIFSDEoKq6a"
+      "telecharger": "https://drive.google.com/uc?export=download&id=17Iw0_4L2iuZy8oDDA7VTRLIFSDEoKq6a",
+      "fichier": "gpx/17Iw0_4L2iuZy8oDDA7VTRLIFSDEoKq6a.gpx",
+      "nom_fichier": "Surprise ride #6"
     },
     {
       "date": "2024-09-29",
@@ -315,7 +379,9 @@
       "distance_km": 74,
       "denivele_m": 982,
       "lien": "https://drive.google.com/file/d/1dBJ1S4V1XfL8LNNW_abLkhI2HwcZv4eb/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1dBJ1S4V1XfL8LNNW_abLkhI2HwcZv4eb"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1dBJ1S4V1XfL8LNNW_abLkhI2HwcZv4eb",
+      "fichier": "gpx/1dBJ1S4V1XfL8LNNW_abLkhI2HwcZv4eb.gpx",
+      "nom_fichier": "Family et Special rides en Montagne Noire"
     },
     {
       "date": "2024-06-23",
@@ -323,7 +389,9 @@
       "distance_km": 88,
       "denivele_m": 227,
       "lien": "https://drive.google.com/file/d/1hqIbiMrcONJyr9EzSvsnGcCtDlfipTYW/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1hqIbiMrcONJyr9EzSvsnGcCtDlfipTYW"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1hqIbiMrcONJyr9EzSvsnGcCtDlfipTYW",
+      "fichier": "gpx/1hqIbiMrcONJyr9EzSvsnGcCtDlfipTYW.gpx",
+      "nom_fichier": "Special ride Garonne Frontonnais"
     },
     {
       "date": "2024-04-27",
@@ -331,7 +399,9 @@
       "distance_km": 41,
       "denivele_m": 162,
       "lien": "https://drive.google.com/file/d/1oGiGvDUQugMBztga5Zx949B28Vce33T4/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1oGiGvDUQugMBztga5Zx949B28Vce33T4"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1oGiGvDUQugMBztga5Zx949B28Vce33T4",
+      "fichier": "gpx/1oGiGvDUQugMBztga5Zx949B28Vce33T4.gpx",
+      "nom_fichier": "Family ride Seuil de Naurouze"
     },
     {
       "date": "2024-03-16",
@@ -339,7 +409,9 @@
       "distance_km": 125,
       "denivele_m": 695,
       "lien": "https://drive.google.com/file/d/1wNTU8pgbk0cISIZd4yoB5Le538cMd8qB/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1wNTU8pgbk0cISIZd4yoB5Le538cMd8qB"
+      "telecharger": "https://drive.google.com/uc?export=download&id=1wNTU8pgbk0cISIZd4yoB5Le538cMd8qB",
+      "fichier": "gpx/1wNTU8pgbk0cISIZd4yoB5Le538cMd8qB.gpx",
+      "nom_fichier": "Special et family rides Forêt de Bouconne"
     }
   ]
 }
