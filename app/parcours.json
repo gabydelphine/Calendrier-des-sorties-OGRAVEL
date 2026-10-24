@@ -2,12 +2,17 @@
   "_aide": "Rempli par gpx_drive.py depuis le dossier gpx du Google Drive ÔGravel.",
   "parcours": [
     {
+      "date": "2026-10-24",
+      "nom": "Challenges 2000 m ou 3000 m",
+      "distance_km": 117,
+      "denivele_m": 4466,
+      "lien": "https://drive.google.com/file/d/1Q-Zj3g2kH0Yuct3LOWU6iJdlRx2Wp3La/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1Q-Zj3g2kH0Yuct3LOWU6iJdlRx2Wp3La"
+    },
+    {
       "date": "2026-10-17",
       "nom": "Ô Gravel Surprise ride #8",
-      "distance_km": 105,
-      "denivele_m": 732,
-      "lien": "https://drive.google.com/file/d/1mKBEZQFSI4Frz-aXlZmzRSexspLfDuoE/view",
-      "telecharger": "https://drive.google.com/uc?export=download&id=1mKBEZQFSI4Frz-aXlZmzRSexspLfDuoE"
+      "en_attente": true
     },
     {
       "date": "2026-10-10",
