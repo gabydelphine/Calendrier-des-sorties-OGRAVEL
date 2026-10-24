@@ -26,9 +26,17 @@ CACHE = BASE / "gpx-cache.json"
 TELECHARGER = "https://drive.google.com/uc?export=download&id={}"
 VOIR = "https://drive.google.com/file/d/{}/view"
 # Dénivelé : variations ignorées en dessous du seuil. 4 m pour VisuGPX et Komoot (altitudes
-# déjà propres, réglé sur les chiffres de VisuGPX), 10 m pour un GPX brut de montre ou de compteur.
+# déjà propres, réglé sur les chiffres de VisuGPX). Pour un GPX brut (montre, compteur, export
+# d'appli), altitudes lissées sur LISSAGE mètres de parcours (réglé sur les D+ annoncés : ±5 %).
 SEUIL = 4
-SEUIL_BRUT = 10
+LISSAGE = 400
+
+
+def dplus_annonce(fichier):
+    """D+ écrit dans le nom du fichier (« ..._22km_276m », « challenge 3000m ») ou None."""
+    n = joli_nom(fichier).lower()
+    m = re.findall(r"(?<![\d.,k])(\d{2,4})\s?m(?:\s?d\+)?(?![a-z])", n)
+    return int(m[-1]) if m and 30 <= int(m[-1]) <= 6000 else None
 
 
 def joli_nom(fichier):
@@ -53,15 +61,16 @@ def charger(chemin, defaut):
         return defaut
 
 
-def mesurer(gpx, seuil=0):
+def mesurer(gpx, seuil=0, lissage=0):
     """Distance (km) et dénivelé positif (m) d'un fichier GPX.
-    seuil : variation d'altitude ignorée (m), utile pour un GPX brut de montre ou de téléphone."""
+    seuil : variation d'altitude ignorée (m) ; lissage : moyenne des altitudes sur ce nombre
+    de mètres de parcours, pour un GPX brut dont l'altitude « tremble »."""
     texte = gpx.decode("utf-8", "replace")
     pts = re.findall(r'<(?:trkpt|rtept)[^>]*?lat="([-\d.]+)"[^>]*?lon="([-\d.]+)"[^>]*?>(.*?)</(?:trkpt|rtept)>', texte, re.S)
     if not pts:  # lon avant lat
         pts = [(la, lo, rest) for lo, la, rest in
                re.findall(r'<(?:trkpt|rtept)[^>]*?lon="([-\d.]+)"[^>]*?lat="([-\d.]+)"[^>]*?>(.*?)</(?:trkpt|rtept)>', texte, re.S)]
-    dist, dplus, prec, ref = 0.0, 0.0, None, None
+    dist, prec, D, E = 0.0, None, [], []
     for la, lo, rest in pts:
         la, lo = float(la), float(lo)
         if prec:
@@ -72,14 +81,28 @@ def mesurer(gpx, seuil=0):
         prec = (la, lo)
         m = re.search(r"<ele>([-\d.]+)</ele>", rest)
         if m:
-            ele = float(m.group(1))
-            if ref is None:
-                ref = ele
-            elif ele - ref >= seuil:
-                dplus += ele - ref
-                ref = ele
-            elif ele < ref:
-                ref = ele
+            D.append(dist * 1000)
+            E.append(float(m.group(1)))
+    if lissage and E:  # moyenne glissante sur ± lissage/2 mètres
+        lisse, j0, j1, somme = [], 0, 0, 0.0
+        for i in range(len(E)):
+            while j1 < len(E) and D[j1] <= D[i] + lissage / 2:
+                somme += E[j1]
+                j1 += 1
+            while D[j0] < D[i] - lissage / 2:
+                somme -= E[j0]
+                j0 += 1
+            lisse.append(somme / (j1 - j0))
+        E = lisse
+    dplus, ref = 0.0, None
+    for ele in E:
+        if ref is None:
+            ref = ele
+        elif ele - ref >= seuil:
+            dplus += ele - ref
+            ref = ele
+        elif ele < ref:
+            ref = ele
     return round(dist), round(dplus)
 
 
@@ -100,7 +123,7 @@ def main():
     for s in index.get("sorties", []):
         choix = []
         for f in s.get("gpx", []):
-            cle = f"{f['id']}|{f.get('modifie', '')}|s{SEUIL}-{SEUIL_BRUT}"
+            cle = f"{f['id']}|{f.get('modifie', '')}|s{SEUIL}-l{LISSAGE}"
             if cle not in cache:
                 try:
                     gpx = lire(TELECHARGER.format(f["id"]))
@@ -111,7 +134,11 @@ def main():
                     print(f"! {s['nom']} / {f['nom']} : pas lisible (fichier partagé par lien ?)", file=sys.stderr)
                     continue
                 o = origine(gpx)
-                km, dplus = mesurer(gpx, SEUIL if o in ("visugpx", "komoot") else SEUIL_BRUT)
+                if o in ("visugpx", "komoot"):
+                    km, dplus = mesurer(gpx, SEUIL)
+                else:
+                    km, dplus = mesurer(gpx, 0, LISSAGE)
+                    dplus = dplus_annonce(f["nom"]) or dplus  # le chiffre de l'auteur prime
                 cache[cle] = {"km": km, "dplus": dplus, "origine": o}
             choix.append((f, cache[cle]))
         if not choix:
