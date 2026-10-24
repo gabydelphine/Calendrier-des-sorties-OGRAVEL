@@ -241,7 +241,7 @@ body{background:transparent}
   <!-- PARCOURS -->
   <section data-onglet="parcours">
     <h2>Parcours</h2>
-    <p class="petit">Les traces des sorties ÔGravel. Touchez une sortie pour voir la trace, ou « ⬇ GPX » pour la mettre dans votre compteur ou votre téléphone.</p>
+    <p class="petit">Les traces des sorties ÔGravel. Touchez une sortie ou « GPX » pour ouvrir la trace.</p>
     <div id="parcours">Chargement…</div>
   </section>
 
@@ -487,19 +487,19 @@ function rendreParcours(liste) {
       el('span', {class: 'tdate', text: d ? d.getDate() + ' ' + MOIS_COURTS[d.getMonth()] : ''}),
       el('span', {class: 'tnom', text: p.nom || 'Parcours'}),
       el('span', {class: 'tchiffres', text: plusieurs ? p.fichiers.length + ' traces' : [p.distance_km ? p.distance_km + ' km' : '', p.denivele_m ? p.denivele_m + ' m D+' : ''].filter(Boolean).join(' · ')}));
-    // Le GPX est rangé sur le Drive ÔGravel : on touche la sortie pour voir la trace, ⬇ pour la télécharger.
-    const dl = plusieurs ? null : urlSure(p.telecharger);
-    if (dl) ligne.append(el('a', {class: 'tgpx', href: dl, rel: 'noopener', 'aria-label': 'Télécharger le GPX', text: '⬇ GPX'}));
+    // Le GPX est rangé sur le Drive ÔGravel : la sortie et le bouton GPX ouvrent le fichier (pas de téléchargement).
+    const dl = plusieurs ? null : lien;
+    if (dl) ligne.append(el('a', {class: 'tgpx', href: dl, target: '_blank', rel: 'noopener', 'aria-label': 'Ouvrir le GPX', text: 'GPX'}));
     else if (p.en_attente) ligne.append(el('span', {class: 'tgpx attente', text: 'Trace bientôt disponible'}));
     if (lien && !plusieurs) ligne.addEventListener('click', e => { if (!e.target.closest('.tgpx')) window.open(lien, '_blank', 'noopener'); });
     ul.append(ligne);
     // Plusieurs GPX pour une sortie (deux parcours, ou deux étapes) : une petite ligne par trace.
     if (plusieurs) for (const f of p.fichiers) {
-      const fl = urlSure(f.lien), fd = urlSure(f.telecharger);
+      const fl = urlSure(f.lien), fd = fl;
       const sous = el('div', {class: 'trace sous', role: fl ? 'link' : null, tabindex: fl ? '0' : null},
         el('span', {class: 'tnom', text: f.nom || 'Trace'}),
         el('span', {class: 'tchiffres', text: [f.distance_km ? f.distance_km + ' km' : '', f.denivele_m ? f.denivele_m + ' m D+' : ''].filter(Boolean).join(' · ')}));
-      if (fd) sous.append(el('a', {class: 'tgpx', href: fd, rel: 'noopener', 'aria-label': 'Télécharger le GPX', text: '⬇ GPX'}));
+      if (fd) sous.append(el('a', {class: 'tgpx', href: fd, target: '_blank', rel: 'noopener', 'aria-label': 'Ouvrir le GPX', text: 'GPX'}));
       if (fl) sous.addEventListener('click', e => { if (!e.target.closest('.tgpx')) window.open(fl, '_blank', 'noopener'); });
       ul.append(sous);
     }
