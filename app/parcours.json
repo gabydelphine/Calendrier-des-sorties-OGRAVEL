@@ -1,225 +1,229 @@
 {
-  "_aide": "Liste des parcours (sorties ÔGravel publiées sur Komoot par Thierry SCHIAVI). Pour en ajouter un : copier un bloc et le modifier. 'lien' : page Komoot, Strava, OpenRunner… 'gpx' (facultatif) : fichier .gpx déposé dans app/traces/. km et D+ : valeurs enregistrées sur Komoot. Le lien est VisuGPX quand la trace y est publiée (parcours proposé, GPX en libre accès), sinon Komoot ; 'lien_komoot' garde l'ancien lien.",
+  "_aide": "Rempli par gpx_drive.py depuis le dossier gpx du Google Drive ÔGravel.",
   "parcours": [
     {
       "date": "2026-10-17",
-      "nom": "Ô Gravel Surprise ride 8 – 17 octobre",
-      "auto": true,
-      "lien": "https://www.visugpx.com/ojzTAG8L2G",
-      "distance_km": 104,
-      "denivele_m": 830
+      "nom": "Ô Gravel Surprise ride #8",
+      "distance_km": 105,
+      "denivele_m": 836,
+      "lien": "https://drive.google.com/file/d/1mKBEZQFSI4Frz-aXlZmzRSexspLfDuoE/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1mKBEZQFSI4Frz-aXlZmzRSexspLfDuoE"
     },
     {
       "date": "2026-10-10",
       "nom": "Journée Ô Gravel",
-      "distance_km": 53,
-      "denivele_m": 472,
-      "lien": "https://www.komoot.com/fr-fr/tour/3342482904"
+      "distance_km": 51,
+      "denivele_m": 436,
+      "lien": "https://drive.google.com/file/d/1eFokhJNKxTSAPzIy1zDv1olA0p1wgS8I/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1eFokhJNKxTSAPzIy1zDv1olA0p1wgS8I"
     },
     {
       "date": "2026-09-27",
       "nom": "Special rides entre Garonne et Ariège",
-      "distance_km": 47,
-      "denivele_m": 310,
-      "lien": "https://www.visugpx.com/IeCcnlyPVC",
-      "lien_komoot": "https://www.komoot.com/fr-fr/tour/3315361634"
+      "distance_km": 48,
+      "denivele_m": 405,
+      "lien": "https://drive.google.com/file/d/1lPFLI8PLijuqlf214bsHZoXZyyb5W1q-/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1lPFLI8PLijuqlf214bsHZoXZyyb5W1q-"
     },
     {
       "date": "2026-08-28",
       "nom": "Family musclé + Special rides gaillacois",
-      "distance_km": 157,
-      "denivele_m": 1280,
-      "lien": "https://www.visugpx.com/YFadmpYHL9",
-      "lien_komoot": "https://www.komoot.com/fr-fr/tour/3247202341"
+      "distance_km": 158,
+      "denivele_m": 1490,
+      "lien": "https://drive.google.com/file/d/1iABj0hSCJe2Benq6MhAuu0CHwgv_aRD7/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1iABj0hSCJe2Benq6MhAuu0CHwgv_aRD7"
     },
     {
       "date": "2026-07-05",
       "nom": "Family + Special rides et un peu +",
-      "distance_km": 114,
-      "denivele_m": 590,
-      "lien": "https://www.komoot.com/fr-fr/tour/3087905602"
+      "distance_km": 112,
+      "denivele_m": 534,
+      "lien": "https://drive.google.com/file/d/1AVkIGBh1H3abe5TQVDfxRj-Y6Dk6gM-F/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1AVkIGBh1H3abe5TQVDfxRj-Y6Dk6gM-F"
     },
     {
       "date": "2026-06-13",
       "nom": "Week-end à Saint-Pons-de-Thomières",
       "distance_km": 66,
       "denivele_m": 1066,
-      "lien": "https://www.komoot.com/fr-fr/tour/3047963664"
+      "lien": "https://drive.google.com/file/d/14tZ4HPZiIoUUko4BSfdVE6Ck_1rY8nrF/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=14tZ4HPZiIoUUko4BSfdVE6Ck_1rY8nrF"
     },
     {
       "date": "2026-04-10",
       "nom": "Family et Special rides Seuil de Naurouze",
-      "distance_km": 202,
-      "denivele_m": 1660,
-      "lien": "https://www.visugpx.com/R9WHn1Wf9T",
-      "lien_komoot": "https://www.komoot.com/fr-fr/tour/2881390436"
+      "distance_km": 204,
+      "denivele_m": 1947,
+      "lien": "https://drive.google.com/file/d/1k-iW8Dg7f0IyqroMSgOLvoMOMRAgfcp6/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1k-iW8Dg7f0IyqroMSgOLvoMOMRAgfcp6"
     },
     {
       "date": "2026-02-07",
       "nom": "Special ride vallées du Tarn et de l'Agout",
-      "distance_km": 102,
-      "denivele_m": 620,
-      "lien": "https://www.visugpx.com/1yZRvJEio9",
-      "lien_komoot": "https://www.komoot.com/fr-fr/tour/2778870490"
+      "distance_km": 103,
+      "denivele_m": 702,
+      "lien": "https://drive.google.com/file/d/1h5IttU0zkpWq_jeJKDDa0al_g7eQem_t/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1h5IttU0zkpWq_jeJKDDa0al_g7eQem_t"
     },
     {
       "date": "2026-01-25",
       "nom": "Family et Special ride",
-      "distance_km": 69,
-      "denivele_m": 170,
-      "lien": "https://www.komoot.com/fr-fr/tour/2767086018"
+      "distance_km": 68,
+      "denivele_m": 169,
+      "lien": "https://drive.google.com/file/d/1HwNF-sHt-J-daC8aSponEXBE-gKRH_YO/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1HwNF-sHt-J-daC8aSponEXBE-gKRH_YO"
     },
     {
       "date": "2025-12-21",
       "nom": "Pèlerinage en Montagne Noire",
-      "distance_km": 70,
-      "denivele_m": 1250,
-      "lien": "https://www.visugpx.com/rcoPXxdSib",
-      "lien_komoot": "https://www.komoot.com/fr-fr/tour/2723851535"
+      "distance_km": 72,
+      "denivele_m": 1335,
+      "lien": "https://drive.google.com/file/d/1_Oh3K8lKxt48UIZkj6jv-tQRZ6h1vMbv/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1_Oh3K8lKxt48UIZkj6jv-tQRZ6h1vMbv"
     },
     {
       "date": "2025-11-23",
       "nom": "Family et Special rides Mirepoix",
-      "distance_km": 103,
-      "denivele_m": 800,
-      "lien": "https://www.visugpx.com/j1K7QUuOoX",
-      "lien_komoot": "https://www.komoot.com/fr-fr/tour/2696242147"
+      "distance_km": 105,
+      "denivele_m": 924,
+      "lien": "https://drive.google.com/file/d/1hVfLLQS0A4Hrt0d2WCxU9FzSU391PQFU/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1hVfLLQS0A4Hrt0d2WCxU9FzSU391PQFU"
     },
     {
       "date": "2025-10-18",
       "nom": "Surprise ride #7",
-      "distance_km": 112,
-      "denivele_m": 530,
-      "lien": "https://www.visugpx.com/s5ccl1F7Ji",
-      "lien_komoot": "https://www.komoot.com/fr-fr/tour/2643056106"
+      "distance_km": 114,
+      "denivele_m": 641,
+      "lien": "https://drive.google.com/file/d/1mA9TcI7cWK3fXGzNHjpYl9tTd0q_r8Hs/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1mA9TcI7cWK3fXGzNHjpYl9tTd0q_r8Hs"
     },
     {
       "date": "2025-10-05",
       "nom": "Special rides Saint-Paul-Cap-de-Joux",
-      "distance_km": 86,
-      "denivele_m": 822,
-      "lien": "https://www.komoot.com/fr-fr/tour/2619049891"
+      "distance_km": 84,
+      "denivele_m": 819,
+      "lien": "https://drive.google.com/file/d/1zriEtTEIJu0ttRlHrhvNbfQVO8_glRhp/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1zriEtTEIJu0ttRlHrhvNbfQVO8_glRhp"
     },
     {
       "date": "2025-09-13",
       "nom": "Family et Special ride Grenade",
-      "distance_km": 120,
-      "denivele_m": 618,
-      "lien": "https://www.komoot.com/fr-fr/tour/2576066566"
+      "distance_km": 119,
+      "denivele_m": 609,
+      "lien": "https://drive.google.com/file/d/1jdIXIOkAs0eUkei7ihbAjqOHEv0ZFuTj/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1jdIXIOkAs0eUkei7ihbAjqOHEv0ZFuTj"
     },
     {
       "date": "2025-06-28",
       "nom": "Family et Special rides Carcassonne Alaric",
       "distance_km": 164,
       "denivele_m": 1976,
-      "lien": "https://www.komoot.com/fr-fr/tour/2370866948"
+      "lien": "https://drive.google.com/file/d/1z8LWgkJjSLmOqsjgX6NZPCeQURocm1cU/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1z8LWgkJjSLmOqsjgX6NZPCeQURocm1cU"
     },
     {
       "date": "2025-05-17",
       "nom": "Special ride collines du vent",
-      "distance_km": 71,
-      "denivele_m": 1180,
-      "lien": "https://www.visugpx.com/E47qS63TTY",
-      "lien_komoot": "https://www.komoot.com/fr-fr/tour/2267048401"
+      "distance_km": 73,
+      "denivele_m": 1301,
+      "lien": "https://drive.google.com/file/d/1XsUjIcjI480rO56FNOBfI9uVaJDVnxHK/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1XsUjIcjI480rO56FNOBfI9uVaJDVnxHK"
     },
     {
       "date": "2025-03-14",
       "nom": "Bivouac et Special ride",
-      "distance_km": 111,
-      "denivele_m": 1020,
-      "lien": "https://www.visugpx.com/Awaddo3OaV",
-      "lien_komoot": "https://www.komoot.com/fr-fr/tour/2103990637"
+      "distance_km": 113,
+      "denivele_m": 1132,
+      "lien": "https://drive.google.com/file/d/15K2qQ7bCdCxuzZEm-geK0Jp6XWKWv3GP/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=15K2qQ7bCdCxuzZEm-geK0Jp6XWKWv3GP"
     },
     {
       "date": "2025-02-09",
       "nom": "Family et Special rides Garonne",
-      "distance_km": 116,
+      "distance_km": 115,
       "denivele_m": 394,
-      "lien": "https://www.komoot.com/fr-fr/tour/2050415839"
+      "lien": "https://drive.google.com/file/d/1GyuU1-EbEEJ3IHTfzh7C6tBk9AyS8Fcb/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1GyuU1-EbEEJ3IHTfzh7C6tBk9AyS8Fcb"
     },
     {
       "date": "2024-12-22",
       "nom": "Pèlerinage en Montagne Noire",
       "distance_km": 43,
       "denivele_m": 988,
-      "lien": "https://www.komoot.com/fr-fr/tour/1989918803"
+      "lien": "https://drive.google.com/file/d/1erHVHbCzpIt0Ew3biS5ne4p3KVeLfaDa/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1erHVHbCzpIt0Ew3biS5ne4p3KVeLfaDa"
     },
     {
       "date": "2024-12-14",
       "nom": "Special ride urbain et péri-urbain",
-      "distance_km": 67,
-      "denivele_m": 680,
-      "lien": "https://www.visugpx.com/piDMjad4v6",
-      "lien_komoot": "https://www.komoot.com/fr-fr/tour/1983421966"
+      "distance_km": 68,
+      "denivele_m": 700,
+      "lien": "https://drive.google.com/file/d/1PhngRMoM08xBrnxmSuKL0D0pq5ENQbGr/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1PhngRMoM08xBrnxmSuKL0D0pq5ENQbGr"
     },
     {
       "date": "2024-11-24",
       "nom": "Family et Special rides Montech",
-      "distance_km": 160,
-      "denivele_m": 417,
-      "lien": "https://www.komoot.com/fr-fr/tour/1967198930"
+      "distance_km": 159,
+      "denivele_m": 393,
+      "lien": "https://drive.google.com/file/d/1myyXyPvi9PwkshBpNeL1vXJaAdxP72pd/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1myyXyPvi9PwkshBpNeL1vXJaAdxP72pd"
     },
     {
       "date": "2024-11-21",
       "nom": "Urban pizza ride Chez Félix",
-      "distance_km": 88,
-      "denivele_m": 565,
-      "lien": "https://www.komoot.com/fr-fr/tour/1964627198"
+      "distance_km": 86,
+      "denivele_m": 570,
+      "lien": "https://drive.google.com/file/d/1bSQYQQj3xOmM8S7MnBxsnPWaJPPgAv8D/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1bSQYQQj3xOmM8S7MnBxsnPWaJPPgAv8D"
     },
     {
       "date": "2024-11-16",
       "nom": "Cassoulet ride",
-      "distance_km": 215,
-      "denivele_m": 1276,
-      "lien": "https://www.komoot.com/fr-fr/tour/1960362558"
+      "distance_km": 213,
+      "denivele_m": 1260,
+      "lien": "https://drive.google.com/file/d/186hGlYDyAdhI19BT1rm_jyvQ3AhVy6--/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=186hGlYDyAdhI19BT1rm_jyvQ3AhVy6--"
     },
     {
       "date": "2024-10-13",
       "nom": "Surprise ride #6",
-      "distance_km": 105,
-      "denivele_m": 1080,
-      "lien": "https://www.visugpx.com/Bf8hB5YSLU",
-      "lien_komoot": "https://www.komoot.com/fr-fr/tour/1911744879"
+      "distance_km": 106,
+      "denivele_m": 1415,
+      "lien": "https://drive.google.com/file/d/17Iw0_4L2iuZy8oDDA7VTRLIFSDEoKq6a/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=17Iw0_4L2iuZy8oDDA7VTRLIFSDEoKq6a"
     },
     {
       "date": "2024-09-29",
       "nom": "Family et Special rides en Montagne Noire",
       "distance_km": 74,
-      "denivele_m": 1038,
-      "lien": "https://www.komoot.com/fr-fr/tour/1888957663"
+      "denivele_m": 1036,
+      "lien": "https://drive.google.com/file/d/1dBJ1S4V1XfL8LNNW_abLkhI2HwcZv4eb/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1dBJ1S4V1XfL8LNNW_abLkhI2HwcZv4eb"
     },
     {
       "date": "2024-06-23",
       "nom": "Special ride Garonne Frontonnais",
       "distance_km": 88,
-      "denivele_m": 304,
-      "lien": "https://www.komoot.com/fr-fr/tour/1666127468"
+      "denivele_m": 303,
+      "lien": "https://drive.google.com/file/d/1hqIbiMrcONJyr9EzSvsnGcCtDlfipTYW/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1hqIbiMrcONJyr9EzSvsnGcCtDlfipTYW"
     },
     {
       "date": "2024-04-27",
       "nom": "Family ride Seuil de Naurouze",
       "distance_km": 41,
       "denivele_m": 218,
-      "lien": "https://www.komoot.com/fr-fr/tour/1535747533"
+      "lien": "https://drive.google.com/file/d/1oGiGvDUQugMBztga5Zx949B28Vce33T4/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1oGiGvDUQugMBztga5Zx949B28Vce33T4"
     },
     {
       "date": "2024-03-16",
       "nom": "Special et family rides Forêt de Bouconne",
-      "distance_km": 126,
-      "denivele_m": 850,
-      "lien": "https://www.komoot.com/fr-fr/tour/1479499901"
+      "distance_km": 125,
+      "denivele_m": 821,
+      "lien": "https://drive.google.com/file/d/1wNTU8pgbk0cISIZd4yoB5Le538cMd8qB/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=1wNTU8pgbk0cISIZd4yoB5Le538cMd8qB"
     }
-  ],
-  "_exclus": [
-    "1404369389",
-    "MQ2bhknzmE",
-    "PYafeTPDIj",
-    "PkfN9Rch1r",
-    "bCv5nLItXB",
-    "eSSjPy8b8D",
-    "gDdqt5GCd4",
-    "gRvUMLXIlP",
-    "mTpFLm7FWK",
-    "yVMkQKy4TH"
   ]
 }
