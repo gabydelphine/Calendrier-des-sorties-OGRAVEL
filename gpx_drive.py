@@ -25,8 +25,19 @@ PARCOURS = BASE / "app" / "parcours.json"
 CACHE = BASE / "gpx-cache.json"
 TELECHARGER = "https://drive.google.com/uc?export=download&id={}"
 VOIR = "https://drive.google.com/file/d/{}/view"
-# Dénivelé : variations de moins de 4 m ignorées (réglé pour retrouver les chiffres de VisuGPX).
+# Dénivelé : variations ignorées en dessous du seuil. 4 m pour VisuGPX et Komoot (altitudes
+# déjà propres, réglé sur les chiffres de VisuGPX), 10 m pour un GPX brut de montre ou de compteur.
 SEUIL = 4
+SEUIL_BRUT = 10
+
+
+def joli_nom(fichier):
+    """« 2026_10_24_challenge_3000m_116km-25430012-1791880543-978.gpx » -> « challenge 3000m 116km »."""
+    n = re.sub(r"\.gpx$", "", fichier, flags=re.I)
+    n = re.sub(r"(-\d{6,})+(-\d{1,5})?$", "", n)  # numéros ajoutés par les sites
+    n = re.sub(r"^\d{4}[_-]\d{2}[_-]\d{2}[_ -]*", "", n)  # date en tête
+    n = re.sub(r"[_]+", " ", n).strip()
+    return n or fichier
 
 
 def lire(url):
@@ -89,7 +100,7 @@ def main():
     for s in index.get("sorties", []):
         choix = []
         for f in s.get("gpx", []):
-            cle = f"{f['id']}|{f.get('modifie', '')}|s{SEUIL}"
+            cle = f"{f['id']}|{f.get('modifie', '')}|s{SEUIL}-{SEUIL_BRUT}"
             if cle not in cache:
                 try:
                     gpx = lire(TELECHARGER.format(f["id"]))
@@ -100,7 +111,7 @@ def main():
                     print(f"! {s['nom']} / {f['nom']} : pas lisible (fichier partagé par lien ?)", file=sys.stderr)
                     continue
                 o = origine(gpx)
-                km, dplus = mesurer(gpx, SEUIL)
+                km, dplus = mesurer(gpx, SEUIL if o in ("visugpx", "komoot") else SEUIL_BRUT)
                 cache[cle] = {"km": km, "dplus": dplus, "origine": o}
             choix.append((f, cache[cle]))
         if not choix:
@@ -109,9 +120,15 @@ def main():
             continue
         # VisuGPX d'abord, puis tout autre GPX, Komoot en dernier ; puis le plus récent.
         rang = {"visugpx": 0, "autre": 1, "komoot": 2}
-        f, m = sorted(choix, key=lambda c: (rang.get(c[1]["origine"], 1), c[0].get("modifie", "")), reverse=False)[0]
-        parcours.append({"date": s["date"], "nom": s["nom"], "distance_km": m["km"], "denivele_m": m["dplus"],
-                         "lien": VOIR.format(f["id"]), "telecharger": TELECHARGER.format(f["id"])})
+        choix.sort(key=lambda c: (rang.get(c[1]["origine"], 1), c[0].get("nom", "")))
+        f, m = choix[0]
+        entree = {"date": s["date"], "nom": s["nom"], "distance_km": m["km"], "denivele_m": m["dplus"],
+                  "lien": VOIR.format(f["id"]), "telecharger": TELECHARGER.format(f["id"])}
+        if len(choix) > 1:  # plusieurs parcours (ex. 2000 m et 3000 m) ou plusieurs étapes
+            entree["fichiers"] = [{"nom": joli_nom(ff["nom"]), "distance_km": mm["km"], "denivele_m": mm["dplus"],
+                                   "lien": VOIR.format(ff["id"]), "telecharger": TELECHARGER.format(ff["id"])}
+                                  for ff, mm in choix]
+        parcours.append(entree)
         print(f"+ {s['date']} {s['nom']} : {m['km']} km, {m['dplus']} m ({m['origine']})")
     CACHE.write_text(json.dumps(cache, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     if not any(not p.get("en_attente") for p in parcours) and index.get("sorties"):

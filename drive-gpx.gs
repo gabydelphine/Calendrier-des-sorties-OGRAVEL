@@ -72,6 +72,10 @@ function doGet() {
     while (f.hasNext()) {
       const fichier = f.next();
       if (!/\.gpx$/i.test(fichier.getName())) continue;
+      // Un GPX tout juste déposé devient lisible par lien tout de suite.
+      if (fichier.getSharingAccess() !== DriveApp.Access.ANYONE_WITH_LINK) {
+        fichier.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      }
       gpx.push({id: fichier.getId(), nom: fichier.getName(), taille: fichier.getSize(),
                 modifie: fichier.getLastUpdated().toISOString(),
                 public: fichier.getSharingAccess() === DriveApp.Access.ANYONE_WITH_LINK});
