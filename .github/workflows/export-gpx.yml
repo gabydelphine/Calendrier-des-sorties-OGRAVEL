@@ -1,0 +1,25 @@
+name: Export GPX
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python export_gpx.py
+      - name: Publier sur la branche gpx-export (hors de l'appli)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B gpx-export
+          git add gpx
+          git commit -m "Export GPX VisuGPX"
+          git push -f origin gpx-export
