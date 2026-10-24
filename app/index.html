@@ -178,6 +178,8 @@ body{background:transparent}
 .tgpx{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--bordeaux);color:#fff;border-radius:999px;padding:5px 10px;font-size:.76rem;font-weight:700;text-decoration:none}
 .trace .tnom,.trace .tchiffres{padding-right:70px}
 .tgpx.attente{background:var(--sable);color:var(--gris);font-weight:600;font-size:.7rem;max-width:90px;text-align:center;line-height:1.2;padding:4px 8px;border-radius:10px}
+.trace.sous{margin-left:28px;padding-top:6px;padding-bottom:6px;grid-template-columns:1fr}
+.trace.sous .tnom{font-size:.84rem;font-weight:600}
 </style>
 </head>
 <body>
@@ -480,16 +482,27 @@ function rendreParcours(liste) {
     const an = d ? String(d.getFullYear()) : '';
     if (an !== annee) { annee = an; if (an) zone.append(el('div', {class: 'mois', text: an})); ul = el('div', {class: 'traces'}); zone.append(ul); }
     const lien = urlSure(p.lien);
-    const ligne = el('div', {class: 'trace', role: lien ? 'link' : null, tabindex: lien ? '0' : null},
+    const plusieurs = Array.isArray(p.fichiers) && p.fichiers.length > 1;
+    const ligne = el('div', {class: 'trace', role: lien && !plusieurs ? 'link' : null, tabindex: lien && !plusieurs ? '0' : null},
       el('span', {class: 'tdate', text: d ? d.getDate() + ' ' + MOIS_COURTS[d.getMonth()] : ''}),
       el('span', {class: 'tnom', text: p.nom || 'Parcours'}),
-      el('span', {class: 'tchiffres', text: [p.distance_km ? p.distance_km + ' km' : '', p.denivele_m ? p.denivele_m + ' m D+' : ''].filter(Boolean).join(' · ')}));
+      el('span', {class: 'tchiffres', text: plusieurs ? p.fichiers.length + ' traces' : [p.distance_km ? p.distance_km + ' km' : '', p.denivele_m ? p.denivele_m + ' m D+' : ''].filter(Boolean).join(' · ')}));
     // Le GPX est rangé sur le Drive ÔGravel : on touche la sortie pour voir la trace, ⬇ pour la télécharger.
-    const dl = urlSure(p.telecharger);
+    const dl = plusieurs ? null : urlSure(p.telecharger);
     if (dl) ligne.append(el('a', {class: 'tgpx', href: dl, rel: 'noopener', 'aria-label': 'Télécharger le GPX', text: '⬇ GPX'}));
     else if (p.en_attente) ligne.append(el('span', {class: 'tgpx attente', text: 'Trace bientôt disponible'}));
-    if (lien) ligne.addEventListener('click', e => { if (!e.target.closest('.tgpx')) window.open(lien, '_blank', 'noopener'); });
+    if (lien && !plusieurs) ligne.addEventListener('click', e => { if (!e.target.closest('.tgpx')) window.open(lien, '_blank', 'noopener'); });
     ul.append(ligne);
+    // Plusieurs GPX pour une sortie (deux parcours, ou deux étapes) : une petite ligne par trace.
+    if (plusieurs) for (const f of p.fichiers) {
+      const fl = urlSure(f.lien), fd = urlSure(f.telecharger);
+      const sous = el('div', {class: 'trace sous', role: fl ? 'link' : null, tabindex: fl ? '0' : null},
+        el('span', {class: 'tnom', text: f.nom || 'Trace'}),
+        el('span', {class: 'tchiffres', text: [f.distance_km ? f.distance_km + ' km' : '', f.denivele_m ? f.denivele_m + ' m D+' : ''].filter(Boolean).join(' · ')}));
+      if (fd) sous.append(el('a', {class: 'tgpx', href: fd, rel: 'noopener', 'aria-label': 'Télécharger le GPX', text: '⬇ GPX'}));
+      if (fl) sous.addEventListener('click', e => { if (!e.target.closest('.tgpx')) window.open(fl, '_blank', 'noopener'); });
+      ul.append(sous);
+    }
   }
 }
 
