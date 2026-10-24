@@ -241,7 +241,7 @@ body{background:transparent}
   <!-- PARCOURS -->
   <section data-onglet="parcours">
     <h2>Parcours</h2>
-    <p class="petit">Les traces des sorties ÔGravel. Touchez une sortie ou « GPX » pour ouvrir la trace.</p>
+    <p class="petit">Les traces des sorties ÔGravel. Touchez une sortie pour voir la trace, ou « GPX » pour l'envoyer dans votre appli (Komoot, Garmin…).</p>
     <div id="parcours">Chargement…</div>
   </section>
 
@@ -465,6 +465,32 @@ document.getElementById('form-inscription').addEventListener('submit', ev => {
 });
 
 /* ---------- Parcours ---------- */
+/* Bouton « GPX » : récupère le fichier et le donne au téléphone.
+   iPhone (et Android quand c'est permis) : la feuille de partage s'ouvre, on choisit Komoot, Garmin, OsmAnd…
+   Sinon : le fichier est téléchargé, Android propose alors « Ouvrir » avec l'appli voulue. */
+function boutonGpx(fichier, nom, secours) {
+  const b = el('a', {class: 'tgpx', href: fichier || secours, rel: 'noopener', 'aria-label': 'Envoyer le GPX vers une appli', text: 'GPX'});
+  if (!fichier) { b.target = '_blank'; return b; }
+  const nomFichier = (String(nom || 'trace').replace(/[\\/:*?"<>|]+/g, '-').trim() || 'trace') + '.gpx';
+  let pret = null;  // fichier préparé dès que le doigt touche le bouton, pour garder la feuille de partage autorisée
+  const preparer = () => pret || (pret = fetch(fichier).then(r => { if (!r.ok) throw new Error(r.status); return r.blob(); })
+    .then(bl => new File([bl], nomFichier, {type: 'application/gpx+xml'})).catch(e => { pret = null; throw e; }));
+  b.addEventListener('pointerdown', () => { preparer().catch(() => {}); });
+  b.addEventListener('click', async e => {
+    e.preventDefault(); e.stopPropagation();
+    let f;
+    try { f = await preparer(); } catch (_) { window.open(secours, '_blank', 'noopener'); return; }
+    if (navigator.canShare && navigator.canShare({files: [f]})) {
+      try { await navigator.share({files: [f], title: nomFichier}); return; }
+      catch (err) { if (err && err.name === 'AbortError') return; }
+    }
+    const u = URL.createObjectURL(f), a = el('a', {href: u, download: nomFichier});
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(u), 60000);
+  });
+  return b;
+}
+
 function rendreParcours(liste) {
   const zone = document.getElementById('parcours'); zone.replaceChildren();
   if (!liste.length) {
@@ -487,19 +513,18 @@ function rendreParcours(liste) {
       el('span', {class: 'tdate', text: d ? d.getDate() + ' ' + MOIS_COURTS[d.getMonth()] : ''}),
       el('span', {class: 'tnom', text: p.nom || 'Parcours'}),
       el('span', {class: 'tchiffres', text: plusieurs ? p.fichiers.length + ' traces' : [p.distance_km ? p.distance_km + ' km' : '', p.denivele_m ? p.denivele_m + ' m D+' : ''].filter(Boolean).join(' · ')}));
-    // Le GPX est rangé sur le Drive ÔGravel : la sortie et le bouton GPX ouvrent le fichier (pas de téléchargement).
-    const dl = plusieurs ? null : lien;
-    if (dl) ligne.append(el('a', {class: 'tgpx', href: dl, target: '_blank', rel: 'noopener', 'aria-label': 'Ouvrir le GPX', text: 'GPX'}));
+    // Toucher la sortie : voir la trace sur le Drive. Bouton GPX : le fichier part dans une appli du téléphone.
+    if (lien && !plusieurs) ligne.append(boutonGpx(p.fichier, p.nom_fichier || p.nom, lien));
     else if (p.en_attente) ligne.append(el('span', {class: 'tgpx attente', text: 'Trace bientôt disponible'}));
     if (lien && !plusieurs) ligne.addEventListener('click', e => { if (!e.target.closest('.tgpx')) window.open(lien, '_blank', 'noopener'); });
     ul.append(ligne);
     // Plusieurs GPX pour une sortie (deux parcours, ou deux étapes) : une petite ligne par trace.
     if (plusieurs) for (const f of p.fichiers) {
-      const fl = urlSure(f.lien), fd = fl;
+      const fl = urlSure(f.lien);
       const sous = el('div', {class: 'trace sous', role: fl ? 'link' : null, tabindex: fl ? '0' : null},
         el('span', {class: 'tnom', text: f.nom || 'Trace'}),
         el('span', {class: 'tchiffres', text: [f.distance_km ? f.distance_km + ' km' : '', f.denivele_m ? f.denivele_m + ' m D+' : ''].filter(Boolean).join(' · ')}));
-      if (fd) sous.append(el('a', {class: 'tgpx', href: fd, target: '_blank', rel: 'noopener', 'aria-label': 'Ouvrir le GPX', text: 'GPX'}));
+      if (fl) sous.append(boutonGpx(f.fichier, f.nom || p.nom, fl));
       if (fl) sous.addEventListener('click', e => { if (!e.target.closest('.tgpx')) window.open(fl, '_blank', 'noopener'); });
       ul.append(sous);
     }
