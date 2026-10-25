@@ -501,10 +501,13 @@ function gpxTelecharge(nomFichier) {
     d = el('dialog', {id: 'gpxok'},
       el('h3', {text: '✅ Trace téléchargée'}),
       el('p', {id: 'gpxok-nom', style: 'font-weight:650;margin:6px 0'}),
-      el('p', {class: 'petit', text: 'Pour l\'ouvrir dans Garmin, Komoot… : touchez la notification « Téléchargement terminé » '
-        + '(glissez le haut de l\'écran vers le bas) et choisissez votre appli. '
-        + 'Pas de notification ? Activez les notifications de Chrome dans les Paramètres du téléphone, '
-        + 'ou retrouvez le fichier dans « Mes fichiers » › Téléchargements.'}),
+      el('p', {class: 'petit', text: /iPhone|iPad|iPod|Macintosh/i.test(navigator.userAgent)
+        ? 'Pour l\'ouvrir dans Garmin, Komoot… : appli « Fichiers » › Téléchargements, touchez le fichier, '
+          + 'puis le bouton Partager (carré avec une flèche) et choisissez votre appli.'
+        : 'Pour l\'ouvrir dans Garmin, Komoot… : touchez la notification « Téléchargement terminé » '
+          + '(glissez le haut de l\'écran vers le bas) et choisissez votre appli. '
+          + 'Pas de notification ? Activez les notifications de Chrome dans les Paramètres du téléphone, '
+          + 'ou retrouvez le fichier dans « Mes fichiers » › Téléchargements.'}),
       el('div', {class: 'actions'}, el('button', {class: 'bouton', type: 'button', text: 'OK'})));
     d.querySelector('button').onclick = () => d.close();
     document.body.append(d);
