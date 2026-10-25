@@ -468,10 +468,11 @@ document.getElementById('form-inscription').addEventListener('submit', ev => {
 /* Bouton « GPX » : donne le fichier à une appli du téléphone (Komoot, Garmin, OsmAnd…).
    - Téléphone qui sait partager un GPX (iPhone) : feuille de partage. Si le fichier arrive trop tard et que
      le téléphone refuse, une petite fenêtre « Envoyer » apparaît : un 2e appui suffit.
-   - Sinon (Android) : simple téléchargement, puis « Ouvrir » dans la notification. */
-const PARTAGE_GPX = (() => { try { return !!(navigator.canShare && navigator.canShare({files: [new File(['<gpx/>'], 't.gpx', {type: 'application/gpx+xml'})]})); } catch (_) { return false; } })();
+   - Android (le partage d'un GPX y est refusé) : simple téléchargement, puis « Ouvrir » dans la notification.
+   - Si le partage échoue malgré tout : téléchargement. */
+const PARTAGE_GPX = !/Android/i.test(navigator.userAgent) && (() => { try { return !!(navigator.canShare && navigator.canShare({files: [new File(['<gpx/>'], 't.gpx', {type: 'application/gpx+xml'})]})); } catch (_) { return false; } })();
 function boutonGpx(fichier, nom, secours) {
-  const nomFichier = (String(nom || 'trace').replace(/[\\/:*?"<>|]+/g, '-').trim() || 'trace') + '.gpx';
+  const nomFichier = (String(nom || 'trace').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[\\/:*?"<>|]+/g, '-').trim() || 'trace') + '.gpx';
   const b = el('a', {class: 'tgpx', href: fichier || secours, rel: 'noopener', 'aria-label': 'Envoyer le GPX vers une appli', text: 'GPX'});
   b.addEventListener('click', e => e.stopPropagation());
   if (!fichier) { b.target = '_blank'; return b; }
@@ -486,11 +487,15 @@ function boutonGpx(fichier, nom, secours) {
     e.preventDefault();
     try { await preparer(); } catch (_) { window.open(secours, '_blank', 'noopener'); return; }
     try { await partager(); }
-    catch (err) { if (!err || err.name !== 'AbortError') envoiGpx(nomFichier, partager); }
+    catch (err) { if (!err || err.name !== 'AbortError') envoiGpx(nomFichier, partager, () => telechargerGpx(fichier, nomFichier)); }
   });
   return b;
 }
-function envoiGpx(nomFichier, partager) {
+function telechargerGpx(fichier, nomFichier) {
+  const a = el('a', {href: new URL(fichier, location.href).href, download: nomFichier});
+  document.body.append(a); a.click(); a.remove();
+}
+function envoiGpx(nomFichier, partager, telecharger) {
   let d = document.getElementById('envoigpx');
   if (!d) {
     d = el('dialog', {id: 'envoigpx'},
@@ -503,7 +508,7 @@ function envoiGpx(nomFichier, partager) {
     document.body.append(d);
   }
   d.querySelector('#envoigpx-nom').textContent = nomFichier;
-  d.querySelector('#envoigpx-ok').onclick = () => { d.close(); partager().catch(() => {}); };
+  d.querySelector('#envoigpx-ok').onclick = () => { d.close(); partager().catch(err => { if (!err || err.name !== 'AbortError') telecharger(); }); };
   d.showModal();
 }
 
