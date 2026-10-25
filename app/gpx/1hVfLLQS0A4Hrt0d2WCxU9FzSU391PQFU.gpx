@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- OGravel -->
-<gpx version="1.1" creator="OGravel" xmlns="http://www.topografix.com/GPX/1/1">
-<metadata><name>Family et Special rides Mirepoix</name></metadata>
-<trk><name>Family et Special rides Mirepoix</name><trkseg>
+<gpx version="1.1" creator="OGravel v2" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<metadata><name>Family et Special rides Mirepoix</name><time>2026-01-01T00:00:00Z</time></metadata>
+<trk><name>Family et Special rides Mirepoix</name><type>cycling</type><trkseg>
 <trkpt lat="43.115990" lon="1.619430"><ele>298.6</ele></trkpt>
 <trkpt lat="43.115940" lon="1.619350"><ele>298.6</ele></trkpt>
 <trkpt lat="43.115910" lon="1.619250"><ele>298.6</ele></trkpt>

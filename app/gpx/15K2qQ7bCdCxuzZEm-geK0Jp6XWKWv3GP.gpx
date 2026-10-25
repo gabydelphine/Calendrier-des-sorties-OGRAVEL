@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- OGravel -->
-<gpx version="1.1" creator="OGravel" xmlns="http://www.topografix.com/GPX/1/1">
-<metadata><name>Bivouac et Special ride</name></metadata>
-<trk><name>Bivouac et Special ride</name><trkseg>
+<gpx version="1.1" creator="OGravel v2" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<metadata><name>Bivouac et Special ride</name><time>2026-01-01T00:00:00Z</time></metadata>
+<trk><name>Bivouac et Special ride</name><type>cycling</type><trkseg>
 <trkpt lat="43.492450" lon="1.143480"><ele>259.1</ele></trkpt>
 <trkpt lat="43.492360" lon="1.143530"><ele>259.1</ele></trkpt>
 <trkpt lat="43.492290" lon="1.143580"><ele>259.2</ele></trkpt>

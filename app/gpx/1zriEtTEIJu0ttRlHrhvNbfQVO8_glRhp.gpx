@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- OGravel -->
-<gpx version="1.1" creator="OGravel" xmlns="http://www.topografix.com/GPX/1/1">
-<metadata><name>Special rides Saint-Paul-Cap-de-Joux</name></metadata>
-<trk><name>Special rides Saint-Paul-Cap-de-Joux</name><trkseg>
+<gpx version="1.1" creator="OGravel v2" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<metadata><name>Special rides Saint-Paul-Cap-de-Joux</name><time>2026-01-01T00:00:00Z</time></metadata>
+<trk><name>Special rides Saint-Paul-Cap-de-Joux</name><type>cycling</type><trkseg>
 <trkpt lat="43.707203" lon="1.567676"><ele>150.7</ele></trkpt>
 <trkpt lat="43.707327" lon="1.567740"><ele>150.7</ele></trkpt>
 <trkpt lat="43.707438" lon="1.567825"><ele>150.7</ele></trkpt>

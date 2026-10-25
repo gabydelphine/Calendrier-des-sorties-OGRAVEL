@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- OGravel -->
-<gpx version="1.1" creator="OGravel" xmlns="http://www.topografix.com/GPX/1/1">
-<metadata><name>tanis family light 17 km 197m</name></metadata>
-<trk><name>tanis family light 17 km 197m</name><trkseg>
+<gpx version="1.1" creator="OGravel v2" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<metadata><name>tanis family light 17 km 197m</name><time>2026-01-01T00:00:00Z</time></metadata>
+<trk><name>tanis family light 17 km 197m</name><type>cycling</type><trkseg>
 <trkpt lat="43.718890" lon="1.712320"><ele>221.0</ele></trkpt>
 <trkpt lat="43.718800" lon="1.712350"><ele>222.0</ele></trkpt>
 <trkpt lat="43.718920" lon="1.713460"><ele>223.0</ele></trkpt>

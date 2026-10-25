@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- OGravel -->
-<gpx version="1.1" creator="OGravel" xmlns="http://www.topografix.com/GPX/1/1">
-<metadata><name>Special et family rides Forêt de Bouconne</name></metadata>
-<trk><name>Special et family rides Forêt de Bouconne</name><trkseg>
+<gpx version="1.1" creator="OGravel v2" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<metadata><name>Special et family rides Forêt de Bouconne</name><time>2026-01-01T00:00:00Z</time></metadata>
+<trk><name>Special et family rides Forêt de Bouconne</name><type>cycling</type><trkseg>
 <trkpt lat="43.698510" lon="1.561010"><ele>139.1</ele></trkpt>
 <trkpt lat="43.698090" lon="1.560720"><ele>139.1</ele></trkpt>
 <trkpt lat="43.697860" lon="1.560430"><ele>139.1</ele></trkpt>

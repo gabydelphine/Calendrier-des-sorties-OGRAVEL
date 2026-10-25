@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- OGravel -->
-<gpx version="1.1" creator="OGravel" xmlns="http://www.topografix.com/GPX/1/1">
-<metadata><name>Special ride urbain et péri-urbain</name></metadata>
-<trk><name>Special ride urbain et péri-urbain</name><trkseg>
+<gpx version="1.1" creator="OGravel v2" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<metadata><name>Special ride urbain et péri-urbain</name><time>2026-01-01T00:00:00Z</time></metadata>
+<trk><name>Special ride urbain et péri-urbain</name><type>cycling</type><trkseg>
 <trkpt lat="43.601660" lon="1.439870"><ele>142.0</ele></trkpt>
 <trkpt lat="43.601570" lon="1.439780"><ele>141.8</ele></trkpt>
 <trkpt lat="43.601470" lon="1.439740"><ele>141.8</ele></trkpt>

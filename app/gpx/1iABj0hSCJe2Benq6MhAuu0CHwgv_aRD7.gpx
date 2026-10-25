@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- OGravel -->
-<gpx version="1.1" creator="OGravel" xmlns="http://www.topografix.com/GPX/1/1">
-<metadata><name>Family musclé + Special rides gaillacois</name></metadata>
-<trk><name>Family musclé + Special rides gaillacois</name><trkseg>
+<gpx version="1.1" creator="OGravel v2" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<metadata><name>Family musclé + Special rides gaillacois</name><time>2026-01-01T00:00:00Z</time></metadata>
+<trk><name>Family musclé + Special rides gaillacois</name><type>cycling</type><trkseg>
 <trkpt lat="43.703820" lon="1.560710"><ele>150.9</ele></trkpt>
 <trkpt lat="43.703820" lon="1.560820"><ele>151.0</ele></trkpt>
 <trkpt lat="43.703860" lon="1.560950"><ele>151.0</ele></trkpt>

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- OGravel -->
-<gpx version="1.1" creator="OGravel" xmlns="http://www.topografix.com/GPX/1/1">
-<metadata><name>challenge 2000 m 93km piemont</name></metadata>
-<trk><name>challenge 2000 m 93km piemont</name><trkseg>
+<gpx version="1.1" creator="OGravel v2" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<metadata><name>challenge 2000 m 93km piemont</name><time>2026-01-01T00:00:00Z</time></metadata>
+<trk><name>challenge 2000 m 93km piemont</name><type>cycling</type><trkseg>
 <trkpt lat="42.937850" lon="0.982870"><ele>597.0</ele></trkpt>
 <trkpt lat="42.937860" lon="0.983210"><ele>597.0</ele></trkpt>
 <trkpt lat="42.937840" lon="0.983470"><ele>597.0</ele></trkpt>

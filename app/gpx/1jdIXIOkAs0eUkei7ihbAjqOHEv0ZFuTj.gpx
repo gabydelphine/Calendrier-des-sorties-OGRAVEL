@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- OGravel -->
-<gpx version="1.1" creator="OGravel" xmlns="http://www.topografix.com/GPX/1/1">
-<metadata><name>Family et Special ride Grenade</name></metadata>
-<trk><name>Family et Special ride Grenade</name><trkseg>
+<gpx version="1.1" creator="OGravel v2" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<metadata><name>Family et Special ride Grenade</name><time>2026-01-01T00:00:00Z</time></metadata>
+<trk><name>Family et Special ride Grenade</name><type>cycling</type><trkseg>
 <trkpt lat="43.775218" lon="1.294888"><ele>105.6</ele></trkpt>
 <trkpt lat="43.775297" lon="1.294888"><ele>105.6</ele></trkpt>
 <trkpt lat="43.775365" lon="1.294854"><ele>105.6</ele></trkpt>

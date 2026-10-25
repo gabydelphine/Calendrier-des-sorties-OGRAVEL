@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- OGravel -->
-<gpx version="1.1" creator="OGravel" xmlns="http://www.topografix.com/GPX/1/1">
-<metadata><name>Cassoulet ride</name></metadata>
-<trk><name>Cassoulet ride</name><trkseg>
+<gpx version="1.1" creator="OGravel v2" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<metadata><name>Cassoulet ride</name><time>2026-01-01T00:00:00Z</time></metadata>
+<trk><name>Cassoulet ride</name><type>cycling</type><trkseg>
 <trkpt lat="43.700249" lon="1.567735"><ele>151.1</ele></trkpt>
 <trkpt lat="43.700216" lon="1.567892"><ele>151.1</ele></trkpt>
 <trkpt lat="43.700192" lon="1.568045"><ele>151.1</ele></trkpt>

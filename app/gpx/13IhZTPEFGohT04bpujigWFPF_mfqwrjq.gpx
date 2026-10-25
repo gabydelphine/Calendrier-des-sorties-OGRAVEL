@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- OGravel -->
-<gpx version="1.1" creator="OGravel" xmlns="http://www.topografix.com/GPX/1/1">
-<metadata><name>special 86km</name></metadata>
-<trk><name>special 86km</name><trkseg>
+<gpx version="1.1" creator="OGravel v2" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<metadata><name>special 86km</name><time>2026-01-01T00:00:00Z</time></metadata>
+<trk><name>special 86km</name><type>cycling</type><trkseg>
 <trkpt lat="43.465680" lon="1.325470"><ele>171.0</ele></trkpt>
 <trkpt lat="43.465550" lon="1.325380"><ele>171.0</ele></trkpt>
 <trkpt lat="43.465230" lon="1.325170"><ele>171.0</ele></trkpt>
