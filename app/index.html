@@ -477,15 +477,7 @@ function boutonGpx(fichier, nom, secours) {
   b.addEventListener('click', e => e.stopPropagation());
   if (!fichier) { b.target = '_blank'; return b; }
   b.setAttribute('download', nomFichier);
-  if (/Android/i.test(navigator.userAgent)) {
-    // Android : on demande au téléphone d'ouvrir le GPX dans une appli (Komoot, OsmAnd, Garmin…).
-    // Si aucune appli ne sait l'ouvrir, le fichier est simplement téléchargé.
-    const u = new URL(fichier, location.href);
-    b.removeAttribute('download');
-    b.href = 'intent://' + u.host + u.pathname + '#Intent;scheme=https;action=android.intent.action.VIEW;type=application/gpx+xml;'
-      + 'S.browser_fallback_url=' + encodeURIComponent(u.href) + ';end';
-    return b;
-  }
+  // Android : simple téléchargement (Garmin refuse une trace ouverte depuis un lien), puis « Ouvrir ».
   if (!PARTAGE_GPX) return b;  // téléchargement direct par le navigateur
   let pret = null, f = null;
   const preparer = () => pret || (pret = fetch(fichier).then(r => { if (!r.ok) throw new Error(r.status); return r.blob(); })
