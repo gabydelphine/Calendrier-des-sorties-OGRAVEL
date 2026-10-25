@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ÔGravel — Traces GPX</title>
+<style>
+body{font:16px system-ui,Arial;background:#f8f6f1;color:#26312b;margin:0}.wrap{max-width:650px;margin:auto;padding:24px 18px}h1{font-size:1.6rem;color:#873c46}h2{font-size:1rem;color:#873c46;margin-top:28px;text-transform:uppercase}
+.item{background:white;border-radius:12px;padding:15px;margin:10px 0;box-shadow:0 2px 8px #0001;display:flex;gap:14px}.date{color:#873c46;font-weight:800;min-width:62px}.corps{flex:1;min-width:0}.title{font-weight:700}.small{color:#647169;font-size:.9rem;margin-top:4px}
+.trace{display:flex;align-items:center;gap:10px;justify-content:space-between;border-top:1px solid #eee;padding:9px 0 0;margin-top:9px}.trace:first-of-type{border-top:0;margin-top:6px;padding-top:0}
+.gpx{background:#873c46;color:white;border-radius:8px;padding:8px 12px;text-decoration:none;font-weight:700;white-space:nowrap}.attente{background:#e4e1dc;color:#555;border-radius:999px;padding:5px 10px;font-size:.8rem;font-weight:700}
+.aide{background:white;border-radius:12px;padding:14px 15px;margin:14px 0 6px;box-shadow:0 2px 8px #0001;font-size:.92rem}.aide ol{margin:6px 0 0;padding-left:20px}.aide li{margin:4px 0}
+a{color:#873c46}footer{margin:30px 0;font-size:.85rem;color:#647169}
+#ok{position:fixed;left:12px;right:12px;top:12px;max-width:620px;margin:auto;background:#26312b;color:#fff;border-radius:12px;padding:12px 14px;box-shadow:0 8px 25px #0005;font-size:.92rem;display:none}#ok.vu{display:block}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>🗺️ ÔGravel — Traces GPX</h1>
+<p>Les traces des sorties ÔGravel, à mettre dans Garmin, Komoot, Wahoo…</p>
+<div class="aide">
+<b>Comment faire</b>
+<ol>
+<li>Touchez <b>GPX</b> : la trace se télécharge.</li>
+<li>Touchez <b>Ouvrir</b> dans le bandeau qui apparaît en bas de l'écran (ou dans la notification « Téléchargement terminé »).</li>
+<li>Choisissez votre appli : Garmin Connect, Komoot…</li>
+</ol>
+<div class="small">Astuce : ouvrez cette page dans Chrome (Android) ou Safari (iPhone) et ajoutez-la à l'écran d'accueil.</div>
+</div>
+<div id="liste">Chargement des traces…</div>
+<footer>Traces rangées par l'association sur son Drive, mises à jour plusieurs fois par jour.<div id="maj"></div><a href="./">Prochaines sorties</a> · <a href="./app/">Appli des membres</a></footer>
+</main>
+<div id="ok" role="status"></div>
+<script>
+const MOIS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function nomFichier(n){return (String(n||'trace').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[\\/:*?"<>|]+/g,'-').trim()||'trace')+'.gpx'}
+function chiffres(t){return [t.distance_km?t.distance_km+' km':'',t.denivele_m?t.denivele_m+' m D+':''].filter(Boolean).join(' · ')}
+function sur(f){return /^gpx\/[\w-]+\.gpx$/.test(f||'')?'app/'+f:null}
+function bouton(f,nom){const u=sur(f);return u?'<a class="gpx" href="'+u+'" download="'+esc(nomFichier(nom))+'">⬇ GPX</a>':''}
+fetch('app/parcours.json?'+Date.now()).then(r=>{if(!r.ok)throw Error();return r.json()}).then(d=>{
+  const L=(d.parcours||[]).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  let h='',an='';
+  for(const p of L){
+    const j=new Date(p.date+'T12:00:00'),a=String(j.getFullYear());
+    if(a!==an){an=a;h+='<h2>'+a+'</h2>'}
+    let corps='<div class="title">'+esc(p.nom)+'</div>';
+    if(p.en_attente) corps+='<div class="trace"><span class="small">Trace bientôt disponible</span><span class="attente">bientôt</span></div>';
+    else if(Array.isArray(p.fichiers)&&p.fichiers.length>1) for(const f of p.fichiers) corps+='<div class="trace"><div><div>'+esc(f.nom)+'</div><div class="small">'+chiffres(f)+'</div></div>'+bouton(f.fichier,f.nom)+'</div>';
+    else corps+='<div class="trace"><div class="small">'+chiffres(p)+'</div>'+bouton(p.fichier,p.nom_fichier||p.nom)+'</div>';
+    h+='<div class="item"><div class="date">'+j.getDate()+' '+MOIS[j.getMonth()]+'</div><div class="corps">'+corps+'</div></div>';
+  }
+  document.getElementById('liste').innerHTML=h||'Aucune trace pour le moment.';
+}).catch(()=>{document.getElementById('liste').textContent='Les traces ne sont pas disponibles pour le moment.'});
+let minuterie;
+document.addEventListener('click',e=>{const a=e.target.closest('a.gpx');if(!a)return;const ok=document.getElementById('ok');
+  ok.innerHTML='✅ <b>'+esc(a.getAttribute('download'))+'</b> téléchargé. Touchez <b>Ouvrir</b> en bas de l\'écran, puis choisissez votre appli.';
+  ok.classList.add('vu');clearTimeout(minuterie);minuterie=setTimeout(()=>ok.classList.remove('vu'),9000)});
+</script>
+</body>
+</html>
