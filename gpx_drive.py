@@ -50,11 +50,14 @@ def joli_nom(fichier):
     return n or fichier
 
 
+MARQUE = b'creator="OGravel v2"'
+
+
 def alleger(gpx, nom):
     """GPX allégé pour le téléphone : un point tous les ~8 m, sans heures ni extensions.
     Les fichiers de 6 Mo tombent à quelques centaines de Ko : ils partent tout de suite vers l'appli."""
     texte = gpx.decode("utf-8", "replace")
-    if "<!-- OGravel -->" in texte[:300]:
+    if MARQUE.decode() in texte[:600]:
         return gpx
     pts = re.findall(r'<(?:trkpt|rtept)[^>]*?lat="([-\d.]+)"[^>]*?lon="([-\d.]+)"[^>]*?>(.*?)</(?:trkpt|rtept)>', texte, re.S)
     if not pts:
@@ -75,9 +78,12 @@ def alleger(gpx, nom):
         ele = f"<ele>{float(m.group(1)):.1f}</ele>" if m else ""
         lignes.append(f'<trkpt lat="{la:.6f}" lon="{lo:.6f}">{ele}</trkpt>')
     nom = re.sub(r"[<>&]", " ", nom)
-    return ('<?xml version="1.0" encoding="UTF-8"?>\n<!-- OGravel -->\n'
-            '<gpx version="1.1" creator="OGravel" xmlns="http://www.topografix.com/GPX/1/1">\n'
-            f"<metadata><name>{nom}</name></metadata>\n<trk><name>{nom}</name><trkseg>\n"
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<gpx version="1.1" creator="OGravel v2" xmlns="http://www.topografix.com/GPX/1/1" '
+            'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+            'xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">\n'
+            f"<metadata><name>{nom}</name><time>2026-01-01T00:00:00Z</time></metadata>\n"
+            f"<trk><name>{nom}</name><type>cycling</type><trkseg>\n"
             + "\n".join(lignes) + "\n</trkseg></trk>\n</gpx>\n").encode("utf-8")
 
 
@@ -181,7 +187,7 @@ def main():
                     km, dplus = mesurer(gpx, 0, LISSAGE)
                     dplus = dplus_annonce(f["nom"]) or dplus  # le chiffre de l'auteur prime
                 cache[cle] = {"km": km, "dplus": dplus, "origine": o}
-            if b"<!-- OGravel -->" not in copie.read_bytes()[:300]:  # anciennes copies complètes
+            if MARQUE not in copie.read_bytes()[:600]:  # copies d'un ancien format
                 copie.write_bytes(alleger(copie.read_bytes(), joli_nom(f["nom"])))
             gardes.add(copie.name)
             choix.append((f, cache[cle]))
