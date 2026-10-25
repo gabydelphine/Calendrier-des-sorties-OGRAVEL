@@ -50,6 +50,37 @@ def joli_nom(fichier):
     return n or fichier
 
 
+def alleger(gpx, nom):
+    """GPX allégé pour le téléphone : un point tous les ~8 m, sans heures ni extensions.
+    Les fichiers de 6 Mo tombent à quelques centaines de Ko : ils partent tout de suite vers l'appli."""
+    texte = gpx.decode("utf-8", "replace")
+    if "<!-- OGravel -->" in texte[:300]:
+        return gpx
+    pts = re.findall(r'<(?:trkpt|rtept)[^>]*?lat="([-\d.]+)"[^>]*?lon="([-\d.]+)"[^>]*?>(.*?)</(?:trkpt|rtept)>', texte, re.S)
+    if not pts:
+        pts = [(la, lo, r) for lo, la, r in
+               re.findall(r'<(?:trkpt|rtept)[^>]*?lon="([-\d.]+)"[^>]*?lat="([-\d.]+)"[^>]*?>(.*?)</(?:trkpt|rtept)>', texte, re.S)]
+    if len(pts) < 2:
+        return gpx
+    lignes, prec = [], None
+    for i, (la, lo, r) in enumerate(pts):
+        la, lo = float(la), float(lo)
+        if prec and i < len(pts) - 1:
+            dy = (la - prec[0]) * 111320
+            dx = (lo - prec[1]) * 111320 * math.cos(math.radians(la))
+            if dx * dx + dy * dy < 64:
+                continue
+        prec = (la, lo)
+        m = re.search(r"<ele>([-\d.]+)</ele>", r)
+        ele = f"<ele>{float(m.group(1)):.1f}</ele>" if m else ""
+        lignes.append(f'<trkpt lat="{la:.6f}" lon="{lo:.6f}">{ele}</trkpt>')
+    nom = re.sub(r"[<>&]", " ", nom)
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n<!-- OGravel -->\n'
+            '<gpx version="1.1" creator="OGravel" xmlns="http://www.topografix.com/GPX/1/1">\n'
+            f"<metadata><name>{nom}</name></metadata>\n<trk><name>{nom}</name><trkseg>\n"
+            + "\n".join(lignes) + "\n</trkseg></trk>\n</gpx>\n").encode("utf-8")
+
+
 def lire(url):
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (compatible; OGravel-parcours)"})
     with urllib.request.urlopen(req, timeout=60) as r:
@@ -138,7 +169,7 @@ def main():
                     print(f"! {s['nom']} / {f['nom']} : pas lisible (fichier partagé par lien ?)", file=sys.stderr)
                     continue
                 COPIES.mkdir(exist_ok=True)
-                copie.write_bytes(gpx)
+                copie.write_bytes(alleger(gpx, joli_nom(f["nom"])))
                 gardes.add(copie.name)
                 if cle in cache:
                     choix.append((f, cache[cle]))
@@ -150,6 +181,8 @@ def main():
                     km, dplus = mesurer(gpx, 0, LISSAGE)
                     dplus = dplus_annonce(f["nom"]) or dplus  # le chiffre de l'auteur prime
                 cache[cle] = {"km": km, "dplus": dplus, "origine": o}
+            if b"<!-- OGravel -->" not in copie.read_bytes()[:300]:  # anciennes copies complètes
+                copie.write_bytes(alleger(copie.read_bytes(), joli_nom(f["nom"])))
             gardes.add(copie.name)
             choix.append((f, cache[cle]))
         if not choix:
