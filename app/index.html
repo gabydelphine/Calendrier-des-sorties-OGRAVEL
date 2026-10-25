@@ -242,7 +242,6 @@ body{background:transparent}
   <section data-onglet="parcours">
     <h2>Parcours</h2>
     <p class="petit">Les traces des sorties ÔGravel. Touchez une sortie pour voir la trace, ou « GPX » pour l'envoyer dans votre appli (Komoot, Garmin…).</p>
-    <a class="bouton" href="https://gabydelphine.github.io/Calendrier-des-sorties-OGRAVEL/traces.html" target="_blank" rel="noopener" style="margin:4px 0 12px;padding:8px 12px;font-size:.9rem">🗺️ Page Traces GPX : télécharger et ouvrir dans Garmin</a>
     <div id="parcours">Chargement…</div>
   </section>
 
@@ -502,8 +501,10 @@ function gpxTelecharge(nomFichier) {
     d = el('dialog', {id: 'gpxok'},
       el('h3', {text: '✅ Trace téléchargée'}),
       el('p', {id: 'gpxok-nom', style: 'font-weight:650;margin:6px 0'}),
-      el('p', {class: 'petit', text: 'Pour l\'ouvrir dans Garmin, Komoot… : appli « Mes fichiers » › Téléchargements, '
-        + 'touchez le fichier (il est en premier) et choisissez votre appli.'}),
+      el('p', {class: 'petit', text: 'Pour l\'ouvrir dans Garmin, Komoot… : touchez la notification « Téléchargement terminé » '
+        + '(glissez le haut de l\'écran vers le bas) et choisissez votre appli. '
+        + 'Pas de notification ? Activez les notifications de Chrome dans les Paramètres du téléphone, '
+        + 'ou retrouvez le fichier dans « Mes fichiers » › Téléchargements.'}),
       el('div', {class: 'actions'}, el('button', {class: 'bouton', type: 'button', text: 'OK'})));
     d.querySelector('button').onclick = () => d.close();
     document.body.append(d);
