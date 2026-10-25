@@ -478,7 +478,10 @@ function boutonGpx(fichier, nom, secours) {
   if (!fichier) { b.target = '_blank'; return b; }
   b.setAttribute('download', nomFichier);
   // Android : simple téléchargement (Garmin refuse une trace ouverte depuis un lien), puis « Ouvrir ».
-  if (!PARTAGE_GPX) return b;  // téléchargement direct par le navigateur
+  if (!PARTAGE_GPX) {  // téléchargement direct par le navigateur, puis un message pour dire où le trouver
+    b.addEventListener('click', () => setTimeout(() => gpxTelecharge(nomFichier), 700));
+    return b;
+  }
   let pret = null, f = null;
   const preparer = () => pret || (pret = fetch(fichier).then(r => { if (!r.ok) throw new Error(r.status); return r.blob(); })
     .then(bl => (f = new File([bl], nomFichier, {type: 'application/gpx+xml'}))).catch(e => { pret = null; throw e; }));
@@ -492,9 +495,30 @@ function boutonGpx(fichier, nom, secours) {
   });
   return b;
 }
+function gpxTelecharge(nomFichier) {
+  let d = document.getElementById('gpxok');
+  if (!d) {
+    d = el('dialog', {id: 'gpxok'},
+      el('h3', {text: '✅ Trace téléchargée'}),
+      el('p', {id: 'gpxok-nom', style: 'font-weight:650;margin:6px 0'}),
+      el('p', {class: 'petit', text: 'Pour l\'ouvrir dans Garmin, Komoot… : ouvrez vos téléchargements, '
+        + 'touchez le fichier (il est en premier) et choisissez votre appli.'}),
+      el('div', {class: 'actions'},
+        el('button', {class: 'bouton secondaire', type: 'button', text: 'OK'}),
+        // Android : ouvre directement l'écran des téléchargements du téléphone.
+        el('a', {class: 'bouton', id: 'gpxok-dl', href: 'intent:#Intent;action=android.intent.action.VIEW_DOWNLOADS;end', text: '📂 Mes téléchargements'})));
+    d.querySelector('#gpxok-dl').hidden = !/Android/i.test(navigator.userAgent);
+    d.querySelector('#gpxok-dl').addEventListener('click', () => setTimeout(() => d.close(), 300));
+    d.querySelector('button').onclick = () => d.close();
+    document.body.append(d);
+  }
+  d.querySelector('#gpxok-nom').textContent = nomFichier;
+  if (!d.open) d.showModal();
+}
 function telechargerGpx(fichier, nomFichier) {
   const a = el('a', {href: new URL(fichier, location.href).href, download: nomFichier});
   document.body.append(a); a.click(); a.remove();
+  setTimeout(() => gpxTelecharge(nomFichier), 700);
 }
 function envoiGpx(nomFichier, partager, telecharger) {
   let d = document.getElementById('envoigpx');
