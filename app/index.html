@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ÔGravel">
 <style>
-:root{--bordeaux:#873c46;--bordeaux-fonce:#6d2f38;--creme:#f8f6f1;--sable:#f3e6d8;--encre:#26312b;--gris:#647169;--vert:#2f6f4f;--carte:#fff;--trait:#e8e2da}
+:root{--bordeaux:#873c46;--bordeaux-fonce:#6d2f38;--creme:#f8f6f1;--sable:#f3e6d8;--encre:#26312b;--gris:#647169;--vert:#2f6f4f;--petrole:#2f6f73;--carte:#fff;--trait:#e8e2da}
 *{box-sizing:border-box}[hidden]{display:none!important}
 html,body{margin:0;background:var(--creme);color:var(--encre);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
 a{color:var(--bordeaux)}
@@ -38,12 +38,13 @@ h2{font-size:1.05rem;margin:22px 0 10px;color:var(--bordeaux)}
 .dans{display:inline-block;background:#ffffff26;border-radius:999px;padding:2px 10px;font-size:.75rem;white-space:nowrap}
 .bouton{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:10px;padding:11px 14px;font:inherit;font-weight:650;cursor:pointer;text-decoration:none;background:var(--bordeaux);color:#fff;margin-top:12px}
 .bouton.secondaire{background:transparent;color:var(--bordeaux);border:1.5px solid var(--bordeaux)}
-.grands{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
-.grand{display:grid;grid-template-columns:auto 1fr;column-gap:9px;row-gap:1px;align-items:center;background:var(--carte);border-radius:12px;padding:9px 10px;text-decoration:none;color:var(--encre);box-shadow:0 2px 10px #0000000f;border-left:4px solid var(--bordeaux)}
-.grand.vert{border-left-color:var(--vert)}
-.grand span.emoji{grid-row:span 2;font-size:1.5rem;line-height:1;color:inherit}
-.grand strong{font-size:.88rem;line-height:1.15;align-self:end}
-.grand span{font-size:.72rem;line-height:1.2;color:var(--gris);align-self:start}
+.grands{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}
+.grand{display:flex;flex-direction:column;gap:3px;background:var(--carte);border-radius:12px;padding:9px 9px 10px;text-decoration:none;color:var(--encre);box-shadow:0 2px 10px #0000000f;border-top:4px solid var(--bordeaux);min-width:0}
+.grand.vert{border-top-color:var(--vert)}
+.grand.petrole{border-top-color:var(--petrole)}
+.grand span.emoji{font-size:1.4rem;line-height:1;color:inherit}
+.grand strong{font-size:.86rem;line-height:1.15}
+.grand span{font-size:.7rem;line-height:1.2;color:var(--gris)}
 .liens{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
 .liens a{flex:0 1 calc((100% - 16px) / 3);max-width:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px;background:var(--carte);border-radius:10px;padding:10px 6px;text-decoration:none;color:var(--encre);font-weight:600;font-size:.84rem;line-height:1.2;border:1px solid var(--trait)}
 .liens a span{font-size:1.2rem}
@@ -206,6 +207,9 @@ body{background:transparent}
       </a>
       <a class="grand vert" href="https://gabydelphine.github.io/Agenda-Gravel-autres-associations/" target="_blank" rel="noopener">
         <span class="emoji">🗺️</span><strong>Agenda gravel</strong><span>Les épreuves des autres clubs à 200&nbsp;km</span>
+      </a>
+      <a class="grand petrole" href="https://gabydelphine.github.io/Agenda-Gravel-autres-associations/ultra.html" target="_blank" rel="noopener">
+        <span class="emoji">🏔️</span><strong>Ultra gravel</strong><span>Plus de 150&nbsp;km, départ à 350&nbsp;km</span>
       </a>
     </div>
 
