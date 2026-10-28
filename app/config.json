@@ -6,6 +6,13 @@
   "complets": [
     "2026-10-17"
   ],
+  "_compte_a_rebours": "Compte à rebours affiché en haut de l'accueil : nom, date et heure du départ (avec le décalage horaire), fin (le compteur disparaît après), lien d'inscription. Supprimer la rubrique pour le retirer.",
+  "compte_a_rebours": {
+    "nom": "Occitanie 600",
+    "date": "2027-04-03T21:30:00+02:00",
+    "fin": "2027-04-08T23:59:00+02:00",
+    "lien": "https://www.helloasso.com/associations/o-gravel/evenements/o-gravel-occitanie-600-2027"
+  },
   "liens": [
     {
       "nom": "Site ÔGravel",

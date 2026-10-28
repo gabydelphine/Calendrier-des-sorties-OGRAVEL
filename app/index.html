@@ -20,6 +20,24 @@ header{background:var(--bordeaux);color:#fff;padding:calc(14px + env(safe-area-i
 header img{width:44px;height:44px;border-radius:10px;background:#fff;object-fit:contain;padding:2px}
 header h1{font-size:1.25rem;margin:0;line-height:1.1}
 header p{margin:2px 0 0;font-size:.82rem;opacity:.85}
+/* Compte à rebours (config.json « compte_a_rebours ») : dans le bandeau, sans prendre de hauteur. */
+.compte{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;color:#fff;text-decoration:none;line-height:1.05;text-align:right;background:#ffffff1f;border-radius:10px;padding:5px 9px;min-width:0}
+.compte small{font-size:.6rem;text-transform:uppercase;letter-spacing:.07em;opacity:.9;white-space:nowrap}
+.compte b{font-size:1.3rem;font-weight:800;margin:1px 0}
+.compte span{font-size:.72rem;font-variant-numeric:tabular-nums;opacity:.95;white-space:nowrap}
+/* Accueil : tout doit tenir sur un écran de téléphone, sans faire défiler. */
+section[data-onglet="accueil"] h2{margin:12px 0 7px}
+section[data-onglet="accueil"] .prochaine{padding:10px 12px;margin:8px 0}
+section[data-onglet="accueil"] .prochaine .quand{font-size:1.08rem}
+section[data-onglet="accueil"] .prochaine .titre{font-size:.92rem}
+.prochaine .bas{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px}
+.prochaine .bas .bouton,.prochaine .bas .inscrire,.prochaine .bas .complet{margin-top:0}
+section[data-onglet="accueil"] .whatsapp{margin:10px 0 2px;padding:7px 10px}
+section[data-onglet="accueil"] .liens a{padding:7px 4px;font-size:.78rem;gap:2px}
+section[data-onglet="accueil"] .liens a span{font-size:1.05rem}
+section[data-onglet="accueil"] .reseaux{margin:10px 0 0}
+section[data-onglet="accueil"] .reseaux a{width:42px;height:42px}
+section[data-onglet="accueil"] .reseaux img{width:24px;height:24px}
 main{max-width:640px;margin:0 auto;padding:16px 16px calc(96px + env(safe-area-inset-bottom))}
 section[data-onglet]{display:none}
 section[data-onglet].actif{display:block}
@@ -188,6 +206,7 @@ body{background:transparent}
 <header>
   <img src="logo.jpg" alt="Logo ÔGravel">
   <div><h1>ÔGravel</h1><p>L'appli des membres</p></div>
+  <a class="compte" id="compte" target="_blank" rel="noopener" hidden></a>
 </header>
 
 <main>
@@ -203,13 +222,13 @@ body{background:transparent}
     <h2>Les calendriers</h2>
     <div class="grands">
       <a class="grand" href="#sorties">
-        <span class="emoji">🚴</span><strong>Sorties ÔGravel</strong><span>Les rendez-vous de l'association</span>
+        <span class="emoji">🚴</span><strong>Sorties ÔGravel</strong><span>Les rendez-vous de l'asso</span>
       </a>
       <a class="grand vert" href="https://gabydelphine.github.io/Agenda-Gravel-autres-associations/" target="_blank" rel="noopener">
-        <span class="emoji">🗺️</span><strong>Agenda gravel</strong><span>Les épreuves des autres clubs à 200&nbsp;km</span>
+        <span class="emoji">🗺️</span><strong>Agenda gravel</strong><span>Les autres clubs, à 200&nbsp;km</span>
       </a>
       <a class="grand petrole" href="https://gabydelphine.github.io/Agenda-Gravel-autres-associations/ultra.html" target="_blank" rel="noopener">
-        <span class="emoji">🏔️</span><strong>Ultra gravel</strong><span>150&nbsp;km et plus, départ à 350&nbsp;km</span>
+        <span class="emoji">🏔️</span><strong>Ultra gravel</strong><span>150&nbsp;km et +, à 350&nbsp;km</span>
       </a>
     </div>
 
@@ -217,7 +236,7 @@ body{background:transparent}
       <span class="wa-bulle" aria-hidden="true">
         <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 3C6.9 3 3 6.6 3 11c0 2.3 1.1 4.4 2.9 5.9L5 21l4.3-2.2c.9.2 1.8.3 2.7.3 5.1 0 9-3.6 9-8.1S17.1 3 12 3Zm-4 9.2a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm4 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm4 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Z"/></svg>
       </span>
-      <span class="wa-texte"><strong>La communauté ÔGravel sur WhatsApp</strong></span>
+      <span class="wa-texte"><strong>La communauté sur WhatsApp</strong></span>
       <span class="wa-go">Se connecter&nbsp;›</span>
     </a>
 
@@ -359,6 +378,27 @@ function afficher() {
 addEventListener('hashchange', afficher);
 
 /* ---------- Accueil ---------- */
+// Compte à rebours vers une grande sortie (réglé dans config.json, rubrique « compte_a_rebours »).
+let minuteurCompte = null;
+function rendreCompte() {
+  const zone = document.getElementById('compte'), c = config.compte_a_rebours;
+  clearInterval(minuteurCompte);
+  const depart = c && new Date(c.date), fin = c && new Date(c.fin || c.date);
+  if (!c || isNaN(depart) || new Date() > fin) { zone.hidden = true; return; }
+  const lien = urlSure(c.lien); if (lien) zone.href = lien; else zone.removeAttribute('href');
+  const nom = el('small', {text: c.nom || 'Grande sortie'}), jours = el('b'), reste = el('span');
+  zone.replaceChildren(nom, jours, reste); zone.hidden = false;
+  const deux = n => String(n).padStart(2, '0');
+  const tic = () => {
+    const ms = depart - new Date();
+    if (ms <= 0) { jours.textContent = 'C\'est parti !'; reste.textContent = ''; return; }
+    const s = Math.floor(ms / 1000), j = Math.floor(s / 86400);
+    jours.textContent = 'J-' + j;
+    reste.textContent = deux(Math.floor(s % 86400 / 3600)) + ' h ' + deux(Math.floor(s % 3600 / 60)) + ' min ' + deux(s % 60) + ' s';
+  };
+  tic(); minuteurCompte = setInterval(tic, 1000);
+  zone.setAttribute('aria-label', (c.nom || 'Grande sortie') + ' : compte à rebours');
+}
 function rendreLiens() {
   const wa = document.getElementById('whatsapp');
   // Ouvre simplement WhatsApp (aucun lien d'invitation : chacun retrouve la communauté dans l'appli).
@@ -390,8 +430,9 @@ function rendreProchaine() {
     el('div', {class: 'entete'}, el('div', {class: 'etiquette', text: 'Prochaine sortie'}), el('span', {class: 'dans', text: dans(d)})),
     el('div', {class: 'quand', text: dateLongue(d)}),
     el('div', {class: 'titre', text: s.title || 'Sortie ÔGravel'}),
-    s.location ? el('div', {class: 'lieu', text: '📍 ' + s.location}) : null);
-  carte.append(el('div', {}, boutonInscription(s)));
+  );
+  // Lieu et bouton d'inscription sur la même ligne : la carte reste basse.
+  carte.append(el('div', {class: 'bas'}, s.location ? el('div', {class: 'lieu', text: '📍 ' + s.location}) : el('span'), boutonInscription(s)));
   zone.append(carte);
 }
 
@@ -1088,7 +1129,7 @@ async function json(url) { const r = await fetch(url + '?v=' + Date.now(), {cach
 async function demarrer() {
   afficher();
   try { config = Object.assign(config, await json('config.json')); } catch {}
-  rendreLiens(); rendrePhotos(); rendreBlog();
+  rendreLiens(); rendreCompte(); rendrePhotos(); rendreBlog();
   try {
     const d = await json(SORTIES_URL);
     const auj = new Date(); auj.setHours(0, 0, 0, 0);
