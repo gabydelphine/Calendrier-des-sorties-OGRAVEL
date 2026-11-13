@@ -2,6 +2,11 @@
   "_aide": "Rempli par gpx_drive.py depuis le dossier gpx du Google Drive ÔGravel.",
   "parcours": [
     {
+      "date": "2026-11-14",
+      "nom": "Special rides Pech-David",
+      "en_attente": true
+    },
+    {
       "date": "2026-10-24",
       "nom": "Challenges 2000 m ou 3000 m",
       "distance_km": 93,
