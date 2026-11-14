@@ -191,6 +191,9 @@ body{background:transparent}
 .g-admin{display:flex;gap:8px;padding:0 12px 10px 68px}
 .g-admin button{border:1px solid var(--trait);background:#fff;border-radius:999px;padding:4px 10px;font:inherit;font-size:.78rem;font-weight:600;color:var(--bordeaux);cursor:pointer}
 .groupe.retire{opacity:.4}
+.barre-traces{display:flex;align-items:center;gap:10px;justify-content:space-between;border:1px dashed var(--bordeaux);border-radius:12px;padding:8px 12px;margin:0 0 12px}
+.barre-traces .petit{margin:0}
+#trace select,#trace input[type=file]{width:100%;box-sizing:border-box;font:inherit;padding:8px;border:1px solid #aaa;border-radius:8px;margin:4px 0 12px}
 .lien-admin{display:block;margin:18px auto 0;border:0;background:none;color:var(--gris);font:inherit;font-size:.8rem;text-decoration:underline;cursor:pointer}
 #gestion input{width:100%;box-sizing:border-box;font:inherit;padding:9px;border:1px solid #aaa;border-radius:8px;margin:4px 0 12px}
 .trace{position:relative}
@@ -286,6 +289,18 @@ body{background:transparent}
   <h3 id="gestion-titre">Gérer l'album</h3>
   <div id="gestion-corps"></div>
   <div class="actions"><button class="bouton secondaire" type="button" onclick="this.closest('dialog').close()">Annuler</button></div>
+</dialog>
+<dialog id="trace">
+  <h3>Ajouter une trace GPX</h3>
+  <label for="trace-sortie" class="petit">Sortie</label>
+  <select id="trace-sortie"></select>
+  <label for="trace-fichier" class="petit">Fichier GPX</label>
+  <input id="trace-fichier" type="file" accept=".gpx,application/gpx+xml,application/octet-stream">
+  <p class="petit" id="trace-etat" aria-live="polite"></p>
+  <div class="actions">
+    <button class="bouton secondaire" type="button" onclick="this.closest('dialog').close()">Fermer</button>
+    <button class="bouton" type="button" id="trace-envoyer">Envoyer</button>
+  </div>
 </dialog>
 <dialog id="depot">
   <h3>Partager des photos</h3>
@@ -582,13 +597,17 @@ function envoiGpx(nomFichier, partager, telecharger) {
   d.showModal();
 }
 
+let dernierParcours = [];
 function rendreParcours(liste) {
+  dernierParcours = liste;
   const zone = document.getElementById('parcours'); zone.replaceChildren();
+  if (modeAdmin()) zone.append(barreTraces());
   if (!liste.length) {
     zone.append(el('div', {class: 'carte vide'},
       el('div', {text: '🗺️'}),
       el('p', {text: "Aucun parcours publié pour l'instant."}),
       el('p', {class: 'petit', text: "Les traces des sorties (Strava, Komoot, GPX…) apparaîtront ici au fil de la saison."})));
+    zone.append(lienAdmin());
     return;
   }
   // Liste compacte, de la plus récente à la plus ancienne, groupée par année.
@@ -620,6 +639,75 @@ function rendreParcours(liste) {
       ul.append(sous);
     }
   }
+  zone.append(lienAdmin());
+}
+
+/* ---------- Ajout de traces (administrateur) ----------
+   Le GPX part vers le petit programme Google (config.gpx_drive) qui le range dans le
+   dossier « AAAA-MM-JJ Nom » du Drive ; le robot l'affiche à son prochain passage. */
+function lienAdmin() {
+  const b = el('button', {type: 'button', class: 'lien-admin', text: modeAdmin() ? '⚙️ Quitter le mode administrateur' : '⚙️ Administrateur'});
+  b.addEventListener('click', basculerAdmin);
+  return b;
+}
+function barreTraces() {
+  const b = el('button', {class: 'bouton', type: 'button', text: '＋ Ajouter une trace'});
+  b.addEventListener('click', () => ajouterTrace(null));
+  return el('div', {class: 'barre-traces'}, el('p', {class: 'petit', text: 'Mode administrateur'}), b);
+}
+async function sortiesPourTraces() {
+  const auj = new Date(); auj.setHours(12, 0, 0, 0);
+  const min = new Date(+auj - 120 * 864e5), max = new Date(+auj + 180 * 864e5);
+  const parDate = new Map();
+  const ajouter = (date, nom) => { const d = date && jour(date); if (d && d >= min && d <= max && nom && !parDate.has(date)) parDate.set(date, nom); };
+  try { ((await json('../events.json')).events || []).forEach(e => ajouter(e.date, e.title)); } catch {}
+  try { ((await json('../sorties-historique.json')).sorties || []).forEach(e => ajouter(e.date, e.title)); } catch {}
+  dernierParcours.forEach(p => ajouter(p.date, p.nom));
+  // La sortie la plus proche d'aujourd'hui en premier.
+  return [...parDate].map(([date, nom]) => ({date, nom}))
+    .sort((a, b) => Math.abs(jour(a.date) - auj) - Math.abs(jour(b.date) - auj));
+}
+async function ajouterTrace(choix) {
+  let code = '';
+  try { code = localStorage.getItem('ogravel-admin-code') || ''; } catch {}
+  if (!code) {
+    const c = prompt('Code administrateur :');
+    if (!c) return;
+    if (await empreinte(c) !== (config.code_admin || CODE_ADMIN)) { alert('Code incorrect.'); return; }
+    code = c.trim().toLowerCase();
+    try { localStorage.setItem('ogravel-admin-code', code); } catch {}
+  }
+  const dlg = document.getElementById('trace'), sel = document.getElementById('trace-sortie');
+  const fichier = document.getElementById('trace-fichier'), etat = document.getElementById('trace-etat');
+  const envoyer = document.getElementById('trace-envoyer');
+  const sorties = await sortiesPourTraces();
+  if (choix && !sorties.some(x => x.date === choix.date)) sorties.unshift(choix);
+  sel.replaceChildren(...sorties.map(x => el('option', {value: x.date, text: dateCourte(x.date) + ' — ' + x.nom})));
+  if (choix) sel.value = choix.date;
+  fichier.value = ''; etat.textContent = ''; envoyer.disabled = false;
+  envoyer.onclick = async () => {
+    const f = fichier.files[0];
+    if (!f) { etat.textContent = 'Choisissez un fichier GPX.'; return; }
+    if (!/\.gpx$/i.test(f.name)) { etat.textContent = 'Le fichier doit se terminer par .gpx.'; return; }
+    if (f.size > 15e6) { etat.textContent = 'Fichier trop gros (15 Mo au maximum).'; return; }
+    const contenu = await f.text();
+    if (!/<gpx[\s>]/i.test(contenu)) { etat.textContent = "Ce fichier n'est pas un GPX."; return; }
+    const sortie = sorties.find(x => x.date === sel.value) || {};
+    envoyer.disabled = true; etat.textContent = 'Envoi en cours…';
+    try {
+      const r = await fetch(config.gpx_drive, {method: 'POST', body: JSON.stringify({action: 'ajouter_trace', code, date: sortie.date, titre: sortie.nom, nom: f.name, contenu})});
+      const rep = await r.json();
+      if (!rep.ok) throw new Error(rep.erreur || 'refusé');
+      etat.textContent = '✅ « ' + rep.fichier + ' » est rangé dans « ' + rep.dossier + ' ». ' + PROCHAIN;
+      fichier.value = '';
+      envoyer.disabled = false;
+    } catch (err) {
+      if (/code/i.test(err.message)) { try { localStorage.removeItem('ogravel-admin-code'); } catch {} }
+      etat.textContent = "L'envoi n'a pas marché (" + err.message + '). Réessayez, ou déposez le fichier dans le Drive.';
+      envoyer.disabled = false;
+    }
+  };
+  dlg.showModal();
 }
 
 /* ---------- Photos ---------- */
@@ -826,11 +914,13 @@ async function empreinte(texte) {
   return [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, '0')).join('');
 }
 async function basculerAdmin() {
-  if (modeAdmin()) { try { localStorage.removeItem('ogravel-admin'); } catch {} return rendreGalerie(); }
-  const code = prompt('Code de gestion des albums :');
+  if (modeAdmin()) { try { localStorage.removeItem('ogravel-admin'); localStorage.removeItem('ogravel-admin-code'); } catch {} rendreParcours(dernierParcours); return rendreGalerie(); }
+  const code = prompt('Code administrateur :');
   if (!code) return;
   if (await empreinte(code) !== (config.code_admin || CODE_ADMIN)) { alert('Code incorrect.'); return; }
-  try { localStorage.setItem('ogravel-admin', '1'); } catch {}
+  // Le code reste sur ce téléphone : il accompagne chaque trace envoyée au Drive.
+  try { localStorage.setItem('ogravel-admin', '1'); localStorage.setItem('ogravel-admin-code', code.trim().toLowerCase()); } catch {}
+  rendreParcours(dernierParcours);
   rendreGalerie();
 }
 function envoyerGestion(texte, dates) {
