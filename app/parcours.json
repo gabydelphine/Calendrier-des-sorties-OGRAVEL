@@ -4,7 +4,38 @@
     {
       "date": "2026-11-14",
       "nom": "Special rides Pech-David",
-      "en_attente": true
+      "distance_km": 40,
+      "denivele_m": 590,
+      "lien": "https://drive.google.com/file/d/16FM9QDRPSSdaCdrtfSb3vMXIHgPsBP51/view",
+      "telecharger": "https://drive.google.com/uc?export=download&id=16FM9QDRPSSdaCdrtfSb3vMXIHgPsBP51",
+      "fichier": "gpx/16FM9QDRPSSdaCdrtfSb3vMXIHgPsBP51.gpx",
+      "nom_fichier": "new 40",
+      "fichiers": [
+        {
+          "nom": "new 40",
+          "distance_km": 40,
+          "denivele_m": 590,
+          "lien": "https://drive.google.com/file/d/16FM9QDRPSSdaCdrtfSb3vMXIHgPsBP51/view",
+          "telecharger": "https://drive.google.com/uc?export=download&id=16FM9QDRPSSdaCdrtfSb3vMXIHgPsBP51",
+          "fichier": "gpx/16FM9QDRPSSdaCdrtfSb3vMXIHgPsBP51.gpx"
+        },
+        {
+          "nom": "new 56 km",
+          "distance_km": 56,
+          "denivele_m": 717,
+          "lien": "https://drive.google.com/file/d/1QbO-2JCtHGdqHzqfad5usILPj26AK4Q8/view",
+          "telecharger": "https://drive.google.com/uc?export=download&id=1QbO-2JCtHGdqHzqfad5usILPj26AK4Q8",
+          "fichier": "gpx/1QbO-2JCtHGdqHzqfad5usILPj26AK4Q8.gpx"
+        },
+        {
+          "nom": "new 90 km",
+          "distance_km": 90,
+          "denivele_m": 1085,
+          "lien": "https://drive.google.com/file/d/18kHeDm6lVjUMartiF_7o_3c-yG_NEhJF/view",
+          "telecharger": "https://drive.google.com/uc?export=download&id=18kHeDm6lVjUMartiF_7o_3c-yG_NEhJF",
+          "fichier": "gpx/18kHeDm6lVjUMartiF_7o_3c-yG_NEhJF.gpx"
+        }
+      ]
     },
     {
       "date": "2026-10-24",
