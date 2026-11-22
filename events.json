@@ -5,12 +5,36 @@
     {
       "date": "2026-11-26",
       "title": "Special ride nocturne",
-      "location": "Toulouse"
+      "location": "Toulouse",
+      "description": "Nocturne ride (si ciel dégagé), Argoulets\n38,16 km / +257m / 45 % route",
+      "parcours": [
+        {
+          "type": "Special",
+          "km": "38,16",
+          "dplus": "257",
+          "libelle": "Special 38,16 km · D+ 257 m"
+        }
+      ]
     },
     {
       "date": "2026-12-19",
       "title": "Pèlerinage en Montagne Noire",
-      "location": "Saint-Papoul"
+      "location": "Saint-Papoul",
+      "description": "Special rides, 2 distances, pique-nique\nSpecial 58 km / +1081m (28,78 km communs + fin)\nSpecial 90 km / +1689m\nLes Cammazes, la Rigole de la montagne, Saissac, Les Cammazes, Lampy, Galaube, Le Cyprès de Saint-Roch arbres remarquables à Montolieu, les capitelles, etc.\nAller possible le vendredi soir (68 km par le Canal du Midi) pour un bivouac léger sous halle, retour par le Canal avec petite variante pour passer au Moulin de Cugarel à Castelnaudary\nFacebook\nInstagram\nStrava",
+      "parcours": [
+        {
+          "type": "Special",
+          "km": "58",
+          "dplus": "1081",
+          "libelle": "Special 58 km · D+ 1081 m"
+        },
+        {
+          "type": "Special",
+          "km": "90",
+          "dplus": "1689",
+          "libelle": "Special 90 km · D+ 1689 m"
+        }
+      ]
     }
   ]
 }
