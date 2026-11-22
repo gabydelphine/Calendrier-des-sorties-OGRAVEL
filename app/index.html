@@ -1137,12 +1137,12 @@ async function rendreVideoHasard() {
   const legende = el('span', {class: 'vh-legende'});
   const son = el('button', {type: 'button', class: 'vh-son', 'aria-label': 'Activer le son', text: '🔇'});
   const suivante = el('button', {type: 'button', class: 'vh-suiv', 'aria-label': 'Autre vidéo', text: '⟳'});
-  let derniere = -1;
+  let file = [];
   const jouer = () => {
-    let i = Math.floor(Math.random() * videos.length);
-    if (videos.length > 1 && i === derniere) i = (i + 1) % videos.length;
-    derniere = i;
-    const p = videos[i];
+    // File de lecture : les vidéos pas encore vues sur ce téléphone d'abord, puis les autres.
+    if (!file.length) file = melangerNeufs(videos, 'ogravel-vus-videos', x => x.url);
+    const p = file.shift();
+    noterVus('ogravel-vus-videos', [p.url], 200);
     v.poster = p.url + '=w900-h900';
     v.src = p.url + '=dv';
     legende.textContent = '🎬 ' + [p.sortie || 'Album ÔGravel', p.date ? dateCourte(p.date) : ''].filter(Boolean).join(' · ');
@@ -1165,11 +1165,34 @@ async function rendreVideoHasard() {
 
 /* ---------- Carrousel : album Google ÔGravel + photos du blog ---------- */
 const MEDIA_API = 'https://ogravel.com/wp-json/wp/v2/media?per_page=24&media_type=image&_fields=date,link,post,media_details,source_url';
+// Photos du blog : une page tirée au hasard parmi les plus récentes (pas toujours les 24 dernières).
+async function photosBlog() {
+  let pages = 1;
+  try { pages = Math.max(1, Math.min(8, Number(lireLocalTexte('ogravel-blog-pages')) || 1)); } catch {}
+  const page = 1 + Math.floor(Math.random() * pages);
+  let r = await fetch(MEDIA_API + '&page=' + page);
+  if (!r.ok && page > 1) r = await fetch(MEDIA_API);
+  if (!r.ok) return [];
+  try { localStorage.setItem('ogravel-blog-pages', r.headers.get('X-WP-TotalPages') || '1'); } catch {}
+  return r.json();
+}
+function lireLocalTexte(cle) { try { return localStorage.getItem(cle); } catch { return null; } }
 let minuterie = null;
 function melanger(liste) {
   const l = liste.slice();
   for (let i = l.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [l[i], l[j]] = [l[j], l[i]]; }
   return l;
+}
+// Mémoire des photos et vidéos déjà montrées sur ce téléphone : on présente d'abord celles pas encore vues.
+function dejaVus(cle) { try { return new Set(JSON.parse(localStorage.getItem(cle)) || []); } catch { return new Set(); } }
+function noterVus(cle, ids, max) {
+  try { const l = [...dejaVus(cle)].filter(x => !ids.includes(x)).concat(ids); localStorage.setItem(cle, JSON.stringify(l.slice(-max))); } catch {}
+}
+/** Mélange en mettant d'abord ce qui n'a pas été vu récemment. */
+function melangerNeufs(liste, cle, id) {
+  const vus = dejaVus(cle);
+  const neufs = melanger(liste.filter(x => !vus.has(id(x)))), revus = melanger(liste.filter(x => vus.has(id(x))));
+  return neufs.concat(revus);
 }
 async function rendreCarrousel(album) {
   const zone = document.getElementById('photos');
@@ -1185,7 +1208,7 @@ async function rendreCarrousel(album) {
       const quand = d0 ? d0.getDate() + ' ' + MOIS_COURTS[d0.getMonth()] + ' ' + d0.getFullYear() : '';
       return {src: p.url + '=w900-h675-c', photo: p.url, legende: [p.sortie || 'Album ÔGravel', quand].filter(Boolean).join(' · ')};
     })).catch(() => []),
-    fetch(MEDIA_API).then(r => r.ok ? r.json() : []).then(l => l.map(m => {
+    photosBlog().then(l => l.map(m => {
       const t = (m.media_details && m.media_details.sizes) || {};
       const src = urlSure((t.medium_large || t.large || t.medium || {}).source_url || m.source_url);
       const d = new Date(m.date);
@@ -1194,13 +1217,19 @@ async function rendreCarrousel(album) {
   ]);
   // Sélection tirée au hasard à chaque visite : 2 photos au plus par sortie, pour varier,
   // mélangées avec quelques photos du blog. 24 photos au plus.
+  // Les photos déjà vues récemment passent après les autres : chaque visite montre du neuf.
   const parSortie = {};
-  for (const p of melanger(albumPhotos)) {
-    const cle = p.legende.split(' · ')[0];
-    (parSortie[cle] = parSortie[cle] || []).length < 2 && parSortie[cle].push(p);
+  for (const p of melangerNeufs(albumPhotos, 'ogravel-vus-photos', x => x.photo)) {
+    const cle = p.legende;   // sortie + date : les photos sans sortie ne forment pas un seul gros paquet
+    (parSortie[cle] = parSortie[cle] || []).length < 3 && parSortie[cle].push(p);
   }
-  const tirage = melanger(Object.values(parSortie).flat()).slice(0, 18);
-  const blog = melanger(blogPhotos).slice(0, 6);
+  // Un tour de table : une photo de chaque sortie (dans un ordre tiré au hasard), puis une deuxième…
+  const groupes = melanger(Object.values(parSortie)), tirage = [];
+  for (let rang = 0; tirage.length < 18 && groupes.some(g => g[rang]); rang++)
+    for (const g of groupes) if (g[rang] && tirage.length < 18) tirage.push(g[rang]);
+  noterVus('ogravel-vus-photos', tirage.map(p => p.photo), 400);
+  const blog = melangerNeufs(blogPhotos, 'ogravel-vus-blog', x => x.src).slice(0, 6);
+  noterVus('ogravel-vus-blog', blog.map(p => p.src), 120);
   const selection = [];
   for (let i = 0; i < tirage.length || i < blog.length; i++) {
     if (tirage[i]) selection.push(tirage[i]);
@@ -1379,13 +1408,17 @@ async function demarrer() {
 }
 demarrer();
 
-/* ---------- Vidéo de fond : change chaque jour (liste « fonds » de config.json) ---------- */
+/* ---------- Vidéo de fond : tirée au hasard à chaque ouverture (liste « fonds » de config.json) ---------- */
 (async () => {
   const v = document.getElementById('fond');
   let fonds = ['fonds/fond-1', 'fonds/fond-2'];
   try { const c = await fetch('config.json', {cache: 'no-cache'}).then(r => r.json()); if (Array.isArray(c.fonds) && c.fonds.length) fonds = c.fonds; } catch {}
-  const auj = new Date(), jourN = Math.floor((auj - new Date(auj.getFullYear(), 0, 0)) / 864e5);
-  const nom = fonds[jourN % fonds.length];
+  // Fond tiré au hasard à chaque ouverture, jamais deux fois de suite le même.
+  let precedent = null;
+  try { precedent = localStorage.getItem('ogravel-fond'); } catch {}
+  const choix = fonds.length > 1 ? fonds.filter(f => f !== precedent) : fonds;
+  const nom = choix[Math.floor(Math.random() * choix.length)];
+  try { localStorage.setItem('ogravel-fond', nom); } catch {}
   v.poster = nom + '.jpg'; v.hidden = false; document.documentElement.classList.add('avec-fond');
   // Économie de données ou animations réduites : image fixe seulement.
   const sobre = matchMedia('(prefers-reduced-motion: reduce)').matches || (navigator.connection && navigator.connection.saveData);
