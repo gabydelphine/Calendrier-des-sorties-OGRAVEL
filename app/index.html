@@ -102,6 +102,18 @@ textarea{min-height:70px}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 .inscrire{display:inline-flex;align-items:center;gap:10px;margin-top:12px}
 .inscrire .bouton{margin:0}
+.inscrire{flex-wrap:wrap;gap:8px}
+.parcours-prevus{font-size:.82rem}
+.prochaine .parcours-prevus{opacity:.9;margin-top:2px}
+.prochaine .bas .lieu{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.demande-ok{font-weight:700;color:#1d7a3a;font-size:.9rem}
+.prochaine .demande-ok{color:#fff}
+.lien-texte{background:none;border:0;padding:0;font:inherit;font-size:.78rem;white-space:nowrap;color:inherit;text-decoration:underline;cursor:pointer;opacity:.85}
+.compteur{background:none;border:1px solid currentColor;border-radius:999px;padding:3px 10px;font:inherit;font-size:.8rem;color:inherit;cursor:pointer;opacity:.9}
+.deux-champs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#liste-inscrits ul{list-style:none;padding:0;margin:10px 0;max-height:55vh;overflow:auto}
+#liste-inscrits li{padding:7px 2px;border-bottom:1px solid var(--trait)}
+#inscription-etat{min-height:1.2em}
 .prix{font-size:.8rem;color:var(--gris);white-space:nowrap}
 .prochaine .prix{color:#fff;opacity:.85}
 .sortie .inscrire{margin-top:8px}
@@ -251,7 +263,7 @@ body{background:transparent}
   <!-- SORTIES -->
   <section data-onglet="sorties">
     <h2>Prochaines sorties</h2>
-    <p class="petit">Touchez « Je m'inscris » : selon la sortie, la page HelloAsso ou un e-mail prérempli s'ouvre.</p>
+    <p class="petit">Touchez « Je m'inscris » : selon la sortie, la page HelloAsso ou le formulaire de demande s'ouvre.</p>
     <div id="sorties">Chargement…</div>
     <a class="bouton secondaire" href="https://gabydelphine.github.io/Calendrier-des-sorties-OGRAVEL/#choix" target="_blank" rel="noopener">📅 Ajouter les sorties à mon agenda</a>
   </section>
@@ -328,21 +340,33 @@ body{background:transparent}
   <form id="form-inscription">
     <h3>Je m'inscris</h3>
     <p class="petit" id="inscription-sortie"></p>
-    <label for="nom">Prénom et nom *</label>
-    <input id="nom" required autocomplete="name" maxlength="100">
-    <label for="formule">Parcours *</label>
-    <select id="formule" required>
-      <option value="">— Choisir —</option>
-      <option>Family</option><option>Special</option><option>Distance</option><option>Je ne sais pas encore</option>
-    </select>
+    <div class="deux-champs">
+      <div><label for="prenom">Prénom *</label><input id="prenom" required autocomplete="given-name" maxlength="50"></div>
+      <div><label for="nom">Nom *</label><input id="nom" required autocomplete="family-name" maxlength="50"></div>
+    </div>
+    <label for="email">E-mail *</label>
+    <input id="email" type="email" required autocomplete="email" maxlength="120">
+    <div id="bloc-formule">
+      <label for="formule">Parcours *</label>
+      <select id="formule" required></select>
+    </div>
     <label for="message">Message (facultatif)</label>
     <textarea id="message" maxlength="1000" placeholder="Accompagnant, covoiturage, question…"></textarea>
-    <p class="petit">Votre messagerie va s'ouvrir avec l'e-mail prérempli : pensez à appuyer sur Envoyer.</p>
+    <p class="petit" id="inscription-aide">Votre demande part chez le président et vous recevez un e-mail de confirmation de demande. L'inscription est validée quand le président vous envoie les traces.</p>
+    <p class="petit" id="inscription-etat" aria-live="polite"></p>
     <div class="actions">
-      <button class="bouton" type="submit">Préparer l'e-mail</button>
+      <button class="bouton" type="submit" id="inscription-envoyer">Envoyer ma demande</button>
       <button class="bouton secondaire" type="button" id="annuler">Annuler</button>
     </div>
   </form>
+</dialog>
+
+<dialog id="liste-inscrits">
+  <h3>Inscrits</h3>
+  <p class="petit" id="liste-sortie"></p>
+  <ul id="liste-noms"></ul>
+  <p class="petit">✉️ = demande envoyée par e-mail. L'inscription est validée par l'envoi des traces par le président.</p>
+  <div class="actions"><button class="bouton secondaire" type="button" onclick="this.closest('dialog').close()">Fermer</button></div>
 </dialog>
 
 <dialog id="install">
@@ -363,6 +387,7 @@ let config = {liens: [], photos_url: '', inscription_email: ''};
 let sorties = [];
 let billetterie = [];  // événements HelloAsso (../helloasso.json)
 let choisie = null;
+let inscrits = {};    // demandes par date de sortie (programme Google « inscriptions »)
 
 function el(tag, attrs = {}, ...enfants) {
   const n = document.createElement(tag);
@@ -461,6 +486,11 @@ function prixDuJour(h) {
   const p = h.prix_apres;
   return p && p.a_partir_du && new Date() >= new Date(p.a_partir_du + 'T00:00:00') ? p.prix : h.prix;
 }
+function parcoursDe(s) { return (Array.isArray(s.parcours) ? s.parcours : []).map(c => c.libelle).filter(Boolean); }
+function ligneParcours(s) {
+  const p = parcoursDe(s);
+  return p.length ? el('div', {class: 'lieu parcours-prevus', text: '🚴 ' + p.join(' / ')}) : null;
+}
 function boutonInscription(s) {
   const h = billet(s);
   if (h) {
@@ -472,9 +502,18 @@ function boutonInscription(s) {
   }
   if ((config.complets || []).includes(s.date))
     return el('span', {class: 'complet', text: 'Complet'});
+  const liste = inscrits[s.date] || [];
+  const compteur = liste.length ? el('button', {type: 'button', class: 'compteur', 'aria-label': liste.length + ' inscrit(s) : voir la liste', text: '👥 ' + liste.length}) : null;
+  if (compteur) compteur.addEventListener('click', () => montrerInscrits(s));
+  const mienne = maDemande(s.date);
+  if (mienne && config.inscriptions_url) {
+    const annuler = el('button', {type: 'button', class: 'lien-texte', text: 'Me désinscrire'});
+    annuler.addEventListener('click', () => desinscrire(s, mienne, annuler));
+    return el('span', {class: 'inscrire'}, el('span', {class: 'demande-ok', text: '✅ Inscrit'}), compteur, annuler);
+  }
   const b = el('button', {class: 'bouton', type: 'button', text: "Je m'inscris"});
   b.addEventListener('click', () => ouvrirInscription(s));
-  return b;
+  return el('span', {class: 'inscrire'}, b, compteur);
 }
 
 /* ---------- Sorties ---------- */
@@ -492,37 +531,120 @@ function rendreSorties() {
       el('div', {},
         el('div', {class: 'titre', text: s.title || 'Sortie ÔGravel'}),
         s.location ? el('div', {class: 'lieu', text: '📍 ' + s.location}) : null,
+        ligneParcours(s),
         fin && fin > d ? el('div', {class: 'lieu', text: "Jusqu'au " + dateLongue(fin)}) : null,
         el('div', {class: 'lieu', text: dans(d)}),
         b)));
   }
 }
 
-/* ---------- Inscription par e-mail ---------- */
+/* ---------- Demandes d'inscription ----------
+   Avec config.inscriptions_url : la demande part au programme Google du club, qui prévient le
+   président et envoie au membre un e-mail de confirmation de DEMANDE. Sans lui (ou en cas
+   d'échec) : repli sur l'e-mail prérempli d'avant. */
 const dlg = document.getElementById('inscription');
+function lireLocal(cle, defaut) { try { return JSON.parse(localStorage.getItem(cle)) || defaut; } catch { return defaut; } }
+function ecrireLocal(cle, v) { try { localStorage.setItem(cle, JSON.stringify(v)); } catch {} }
+function maDemande(date) { return lireLocal('ogravel-demandes', {})[date] || null; }
+function rafraichirSorties() { rendreProchaine(); rendreSorties(); }
+async function chargerInscrits() {
+  if (!config.inscriptions_url) return;
+  try {
+    const r = await fetch(config.inscriptions_url, {cache: 'no-store'}).then(x => x.json());
+    inscrits = r.inscrits || {};
+    // Une demande annulée ailleurs (par e-mail, par le président) disparaît aussi de ce téléphone.
+    const miennes = lireLocal('ogravel-demandes', {}); let change = false;
+    for (const [date, m] of Object.entries(miennes)) {
+      const encore = (inscrits[date] || []).some(x => simplifier(x.prenom + ' ' + x.nom) === simplifier(m.prenom + ' ' + m.nom));
+      if (!encore && Date.now() - (m.quand || 0) > 10 * 60e3) { delete miennes[date]; change = true; }
+    }
+    if (change) ecrireLocal('ogravel-demandes', miennes);
+    rafraichirSorties();
+  } catch {}
+}
 function ouvrirInscription(s) {
   choisie = s;
   document.getElementById('form-inscription').reset();
-  try { document.getElementById('nom').value = localStorage.getItem('ogravel-nom') || ''; } catch {}
+  const m = lireLocal('ogravel-membre', {});
+  if (!m.prenom) { try { const ancien = localStorage.getItem('ogravel-nom') || ''; const p = ancien.trim().split(/\s+/); m.prenom = p.shift() || ''; m.nom = p.join(' '); } catch {} }
+  document.getElementById('prenom').value = m.prenom || '';
+  document.getElementById('nom').value = m.nom || '';
+  document.getElementById('email').value = m.email || '';
   document.getElementById('inscription-sortie').textContent = (s.title || 'Sortie ÔGravel') + ' — ' + dateLongue(jour(s.date));
+  document.getElementById('inscription-etat').textContent = '';
+  // Choix de parcours : exactement ceux annoncés sur le calendrier (distance et D+).
+  const choix = parcoursDe(s), sel = document.getElementById('formule');
+  const options = choix.map(t => el('option', {value: t, text: t}));
+  if (choix.length > 1) options.unshift(el('option', {value: '', text: '— Choisir —'}));
+  sel.replaceChildren(...options);
+  sel.required = choix.length > 0;
+  document.getElementById('bloc-formule').hidden = !choix.length;
+  const envoyer = document.getElementById('inscription-envoyer');
+  envoyer.disabled = false;
+  envoyer.textContent = config.inscriptions_url ? 'Envoyer ma demande' : "Préparer l'e-mail";
+  document.getElementById('inscription-aide').textContent = config.inscriptions_url
+    ? "Votre demande part chez le président et vous recevez un e-mail de confirmation de demande. L'inscription est validée quand le président vous envoie les traces."
+    : "Votre messagerie va s'ouvrir avec l'e-mail prérempli : pensez à appuyer sur Envoyer.";
   dlg.showModal();
 }
 document.getElementById('annuler').addEventListener('click', () => dlg.close());
-document.getElementById('form-inscription').addEventListener('submit', ev => {
-  ev.preventDefault(); if (!choisie) return;
-  const nom = document.getElementById('nom').value.trim();
-  const formule = document.getElementById('formule').value;
-  const message = document.getElementById('message').value.trim();
-  if (!nom || !formule) return;
-  try { localStorage.setItem('ogravel-nom', nom); } catch {}
-  const quand = dateLongue(jour(choisie.date));
-  const sujet = 'ÔGravel – Inscription – ' + (choisie.title || 'Sortie') + ' – ' + quand;
-  const corps = 'Bonjour,\n\nJe souhaite participer à la sortie ÔGravel suivante :\n\nSortie : ' + (choisie.title || '') +
-    '\nDate : ' + quand + '\nLieu : ' + (choisie.location || 'Non précisé') + '\n\nParticipant : ' + nom +
-    '\nParcours : ' + formule + (message ? '\n\nMessage : ' + message : '') + '\n\nSportivement,\n' + nom;
-  dlg.close();
+function emailPrerempli(s, prenom, nom, formule, message) {
+  const qui = prenom + ' ' + nom, quand = dateLongue(jour(s.date));
+  const sujet = 'ÔGravel – Inscription – ' + (s.title || 'Sortie') + ' – ' + quand;
+  const corps = 'Bonjour,\n\nJe souhaite participer à la sortie ÔGravel suivante :\n\nSortie : ' + (s.title || '') +
+    '\nDate : ' + quand + '\nLieu : ' + (s.location || 'Non précisé') + '\n\nParticipant : ' + qui +
+    (formule ? '\nParcours : ' + formule : '') + (message ? '\n\nMessage : ' + message : '') + '\n\nSportivement,\n' + qui;
   location.href = 'mailto:' + encodeURIComponent(config.inscription_email || '') + '?subject=' + encodeURIComponent(sujet) + '&body=' + encodeURIComponent(corps);
+}
+document.getElementById('form-inscription').addEventListener('submit', async ev => {
+  ev.preventDefault(); if (!choisie) return;
+  const prenom = document.getElementById('prenom').value.trim(), nom = document.getElementById('nom').value.trim();
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const formule = document.getElementById('formule').value, message = document.getElementById('message').value.trim();
+  if (!prenom || !nom || !email || (parcoursDe(choisie).length && !formule)) return;
+  ecrireLocal('ogravel-membre', {prenom, nom, email});
+  if (!config.inscriptions_url) { dlg.close(); emailPrerempli(choisie, prenom, nom, formule, message); return; }
+  const etat = document.getElementById('inscription-etat'), envoyer = document.getElementById('inscription-envoyer');
+  envoyer.disabled = true; etat.textContent = 'Envoi de la demande…';
+  const jeton = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()).replace(/-/g, '');
+  try {
+    const r = await fetch(config.inscriptions_url, {method: 'POST', body: JSON.stringify({action: 'inscrire', date: choisie.date, prenom, nom, email, parcours: formule, message, jeton})}).then(x => x.json());
+    if (!r.ok) throw new Error(r.erreur || 'refusée');
+    const miennes = lireLocal('ogravel-demandes', {});
+    miennes[choisie.date] = {email, jeton: r.deja && miennes[choisie.date] ? miennes[choisie.date].jeton : jeton, prenom, nom, quand: Date.now()};
+    ecrireLocal('ogravel-demandes', miennes);
+    inscrits[choisie.date] = r.inscrits || inscrits[choisie.date] || [];
+    etat.textContent = r.deja ? '✅ Vous aviez déjà fait cette demande.' : '✅ Demande envoyée. Un e-mail de confirmation de demande arrive à ' + email + '.';
+    rafraichirSorties();
+    setTimeout(() => dlg.open && dlg.close(), 3500);
+  } catch (err) {
+    envoyer.disabled = false;
+    etat.textContent = "La demande n'est pas partie (" + err.message + '). ';
+    const repli = el('button', {type: 'button', class: 'lien-texte', text: 'Envoyer plutôt par e-mail'});
+    repli.addEventListener('click', () => { dlg.close(); emailPrerempli(choisie, prenom, nom, formule, message); });
+    etat.append(repli);
+  }
 });
+async function desinscrire(s, mienne, bouton) {
+  if (!confirm('Annuler votre demande pour « ' + (s.title || 'la sortie') + ' » du ' + dateLongue(jour(s.date)) + ' ?\nLe président sera prévenu.')) return;
+  bouton.disabled = true; bouton.textContent = 'Annulation…';
+  try {
+    const r = await fetch(config.inscriptions_url, {method: 'POST', body: JSON.stringify({action: 'desinscrire', date: s.date, email: mienne.email, jeton: mienne.jeton})}).then(x => x.json());
+    if (!r.ok && !/aucune demande/.test(r.erreur || '')) throw new Error(r.erreur || 'refusée');
+    const miennes = lireLocal('ogravel-demandes', {}); delete miennes[s.date]; ecrireLocal('ogravel-demandes', miennes);
+    inscrits[s.date] = r.inscrits || [];
+    rafraichirSorties();
+  } catch (err) {
+    alert("La désinscription n'a pas marché (" + err.message + '). Réessayez plus tard, ou écrivez au président.');
+    bouton.disabled = false; bouton.textContent = 'Me désinscrire';
+  }
+}
+function montrerInscrits(s) {
+  const d = document.getElementById('liste-inscrits'), liste = inscrits[s.date] || [];
+  document.getElementById('liste-sortie').textContent = (s.title || 'Sortie ÔGravel') + ' — ' + dateLongue(jour(s.date)) + ' · ' + liste.length + (liste.length > 1 ? ' inscrits' : ' inscrit');
+  document.getElementById('liste-noms').replaceChildren(...liste.map(x => el('li', {text: x.prenom + ' ' + x.nom + (x.canal === 'mail' ? '  ✉️' : '')})));
+  d.showModal();
+}
 
 /* ---------- Parcours ---------- */
 /* Bouton « GPX » : donne le fichier à une appli du téléphone (Komoot, Garmin, OsmAnd…).
@@ -1234,6 +1356,7 @@ async function demarrer() {
     }
     sorties.sort((a, b) => a.date.localeCompare(b.date));
     rendreProchaine(); rendreSorties();
+    chargerInscrits();
   } catch { document.getElementById('sorties').textContent = 'Sorties momentanément indisponibles.'; }
   try { const p = await json('parcours.json'); rendreParcours(Array.isArray(p.parcours) ? p.parcours : []); }
   catch { rendreParcours([]); }

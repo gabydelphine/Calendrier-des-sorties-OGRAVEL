@@ -2,6 +2,8 @@
   "_aide": "Réglages de l'appli ÔGravel. Modifier les adresses ici, l'appli se met à jour toute seule.",
   "photos_url": "https://photos.app.goo.gl/xDjK9YYXGkt55fAh7",
   "inscription_email": "thierry.schiavi@aliceadsl.fr",
+  "_inscriptions_url": "Programme Google du compte ogravelinscription@gmail.com (projet « ÔGravel inscriptions ») : demandes d'inscription, liste des inscrits, e-mails au président et confirmations. Vide = ancien e-mail prérempli.",
+  "inscriptions_url": "https://script.google.com/macros/s/AKfycbxLwAzupua7Nw7krKiZbjYSJ7uqyxjmvJeZUa0ZHmWecsFhDxakuOKB2a8VU43E2MI/exec",
   "_complets": "Dates (AAAA-MM-JJ) des sorties complètes : le bouton « Je m'inscris » y est remplacé par « Complet ».",
   "complets": [
     "2026-10-17"
