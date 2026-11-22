@@ -498,7 +498,9 @@ function boutonInscription(s) {
     if (fini) return el('span', {class: 'complet', text: 'Inscriptions clôturées'});
     return el('span', {class: 'inscrire'},
       el('a', {class: 'bouton', href: h.url, target: '_blank', rel: 'noopener', text: "Je m'inscris par HelloAsso"}),
-      prixDuJour(h) ? el('small', {class: 'prix', text: prixDuJour(h)}) : null);
+      prixDuJour(h) || Number.isFinite(h.places_restantes) ? el('small', {class: 'prix', text: [prixDuJour(h),
+        // Places restantes : seulement quand HelloAsso en annonce (événement à nombre de places limité).
+        Number.isFinite(h.places_restantes) && h.places_restantes > 0 ? '🎟️ ' + h.places_restantes + (h.places_restantes > 1 ? ' places restantes' : ' place restante') : ''].filter(Boolean).join(' · ')}) : null);
   }
   if ((config.complets || []).includes(s.date))
     return el('span', {class: 'complet', text: 'Complet'});
