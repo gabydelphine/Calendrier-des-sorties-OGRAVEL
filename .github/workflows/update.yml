@@ -30,4 +30,4 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A app/gpx 2>/dev/null; git add events.json ogravel.ics app/parcours.json $(ls app/photos.json 2>/dev/null) $(ls sorties-historique.json gpx-cache.json 2>/dev/null)
-          git diff --cached --quiet || (git commit -m "Actualiser les sorties" && git push)
+          git diff --cached --quiet || (git commit -m "Actualiser les sorties" && git pull --rebase --autostash origin main && git push)
