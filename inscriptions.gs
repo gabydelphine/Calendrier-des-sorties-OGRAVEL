@@ -249,7 +249,7 @@ function champ_(texte, nom) {
 function lireMails() {
   const libelle = GmailApp.getUserLabelByName(LIBELLE_TRAITE) || GmailApp.createLabel(LIBELLE_TRAITE);
   rangerDesinscrits_();
-  const fils = GmailApp.search('in:inbox subject:(inscription OR désinscription OR desinscription) newer_than:7d', 0, 50);
+  const fils = GmailApp.search('in:inbox subject:(inscription OR inscrits OR désinscription OR desinscription) newer_than:7d', 0, 50);
   if (!fils.length) return;
   const verrou = LockService.getScriptLock();
   verrou.waitLock(30000);
@@ -286,6 +286,8 @@ function traiterMail_(msg) {
   if (!m || !emailValide_(email)) return incompris_(msg, email, 'la date de la sortie (JJ/MM/AAAA) est absente de l\'objet');
   const annee = m[3].length === 2 ? '20' + m[3] : m[3];
   const date = annee + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[1]).slice(-2);
+  // « Inscrits ÔGravel JJ/MM/AAAA » : liste envoyée par le président (ou un administrateur).
+  if (/\binscrits\b/.test(sujetSimple)) return listePresident_(msg, email, date, corps);
   if (desinscription) {
     const r = annuler_(date, email, {email: email, canal: 'mail'});
     if (!r.ok) incompris_(msg, email, 'aucune demande à ton adresse pour la sortie du ' + m[0]);
@@ -309,6 +311,62 @@ function incompris_(msg, email, raison) {
            'Nom : …', 'Prénom : …', 'Parcours : …', '',
            'Pour annuler : même mail avec l\'objet « Désinscription ' + NOM_CLUB + ' JJ/MM/AAAA ».', '',
            'Pour toute question, réponds à ce message : il arrivera chez le président.', '', NOM_CLUB].join('\n')});
+}
+
+/* ---------- Mail type du président : ajouter / retirer des inscrits ----------
+ * Objet : « Inscrits ÔGravel JJ/MM/AAAA ». Une personne par ligne :
+ *   + Prénom Nom ; e-mail (facultatif) ; parcours (facultatif)   → ajout
+ *   - Prénom Nom                                                   → retrait
+ * Les autres lignes (bonjour, signature…) sont ignorées. Réponse : un récapitulatif.
+ * Autorisés : le président, plus les adresses de la propriété du script ADMINS_MAIL (séparées par des virgules). */
+function simple_(t) { return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+
+function listePresident_(msg, email, date, corps) {
+  const admins = [PRESIDENT.email].concat(String(PropertiesService.getScriptProperties().getProperty('ADMINS_MAIL') || '').split(','))
+    .map(x => x.trim().toLowerCase()).filter(Boolean);
+  if (admins.indexOf(email) < 0) return incompris_(msg, email, 'ce mail type est réservé au président');
+  const sortie = sorties_()[date];
+  const destinataire = email;
+  if (!sortie) {
+    MailApp.sendEmail({to: destinataire, name: NOM_CLUB, subject: NOM_CLUB + ' – Liste non prise en compte : ' + msg.getSubject(),
+      body: 'Il n\'y a pas de sortie ÔGravel le ' + date.split('-').reverse().join('/') + ' dans le calendrier. Vérifie la date de l\'objet.\n\n' + NOM_CLUB});
+    return;
+  }
+  const f = feuille_();
+  const bilan = [];
+  // On ne lit que le message lui-même, pas l'historique cité en dessous.
+  const lignes = corps.split(/\r?\n/).map(l => l.trim()).filter(l => !/^>/.test(l));
+  lignes.forEach(ligne => {
+    const mt = ligne.match(/^([+\-–])\s*([A-Za-zÀ-ÿ].*)$/);  // « -- » de signature ignoré
+    if (!mt) return;
+    const morceaux = mt[2].split(/\s*;\s*/);
+    const mots = propre_(morceaux[0], 100).split(' ').filter(Boolean);
+    const prenom = mots.shift() || '', nom = mots.join(' ');
+    const qui = (prenom + ' ' + nom).trim();
+    if (!prenom) return;
+    const existante = lignes_().find(l => l.date_sortie === date && l.statut === 'demande' && simple_(l.prenom + ' ' + l.nom) === simple_(qui));
+    if (mt[1] === '+') {
+      if (!nom) { bilan.push('⚠️ ' + qui + ' : il manque le nom, ligne ignorée'); return; }
+      if (existante) { bilan.push('= ' + qui + ' : déjà inscrit(e)'); return; }
+      const mail = (morceaux[1] || '').trim().toLowerCase();
+      const parcours = propre_(morceaux[2] || (!emailValide_(mail) ? morceaux[1] : '') || '', 80);
+      const maintenant = new Date();
+      f.appendRow([maintenant, date, sortie.titre, prenom, nom, emailValide_(mail) ? mail : '', parcours, '',
+                   'président', '', 'demande', maintenant]);
+      if (emailValide_(mail)) mailMembre_('demande', {date: date, prenom: prenom, nom: nom, email: mail}, sortie);
+      bilan.push('✅ ' + qui + ' ajouté(e)' + (emailValide_(mail) ? ' (confirmation envoyée à ' + mail + ')' : ''));
+    } else {
+      if (!existante) { bilan.push('⚠️ ' + qui + ' : introuvable dans les inscrits'); return; }
+      f.getRange(existante.ligne, COLONNES.indexOf('statut') + 1, 1, 2).setValues([['desinscrit', new Date()]]);
+      rangerDesinscrits_();
+      bilan.push('❌ ' + qui + ' retiré(e)');
+    }
+  });
+  const liste = listePublique_()[date] || [];
+  MailApp.sendEmail({to: destinataire, name: NOM_CLUB, subject: NOM_CLUB + ' – Liste mise à jour – ' + sortie.titre + ' du ' + dateLongue_(date),
+    body: [bilan.length ? bilan.join('\n') : 'Aucune ligne commençant par + ou - n\'a été trouvée.', '',
+           'Inscrits (' + liste.length + ') :', liste.map(x => '• ' + x.prenom + ' ' + x.nom).join('\n') || '(aucun)', '',
+           'Rappel : une personne par ligne, « + Prénom Nom ; e-mail ; parcours » pour ajouter, « - Prénom Nom » pour retirer.', '', NOM_CLUB].join('\n')});
 }
 
 /** À lancer une fois à la main : crée le tableau et le déclencheur des mails. */
