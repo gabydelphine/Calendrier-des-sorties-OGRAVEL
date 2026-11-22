@@ -497,7 +497,7 @@ function boutonInscription(s) {
     const fini = h.etat === 'cloture' || (h.date_limite && new Date() > new Date(h.date_limite));
     if (fini) return el('span', {class: 'complet', text: 'Inscriptions clôturées'});
     return el('span', {class: 'inscrire'},
-      el('a', {class: 'bouton', href: h.url, target: '_blank', rel: 'noopener', text: "Je m'inscris"}),
+      el('a', {class: 'bouton', href: h.url, target: '_blank', rel: 'noopener', text: "Je m'inscris par HelloAsso"}),
       prixDuJour(h) ? el('small', {class: 'prix', text: prixDuJour(h)}) : null);
   }
   if ((config.complets || []).includes(s.date))
