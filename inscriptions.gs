@@ -14,6 +14,8 @@
 const SITE = 'https://gabydelphine.github.io/Calendrier-des-sorties-OGRAVEL/';
 const PRESIDENT = {nom: 'Thierry Schiavi', email: 'thierry.schiavi@aliceadsl.fr'};
 const NOM_CLUB = 'ÔGravel';
+// Adresse publique de ce programme (application Web) : lien « Annuler ma demande » des e-mails.
+const URL_APPLI = 'https://script.google.com/macros/s/AKfycbxLwAzupua7Nw7krKiZbjYSJ7uqyxjmvJeZUa0ZHmWecsFhDxakuOKB2a8VU43E2MI/exec';
 // Empreinte SHA-256 du code administrateur (le même que dans l'appli).
 const CODE_ADMIN = '093cbcc5e317423d1034794a14f940b88a8912725d6f8a7f1867e2c4abc73e62';
 const LIBELLE_TRAITE = 'ÔGravel traité';
@@ -120,8 +122,53 @@ function reponse_(objet) {
   return ContentService.createTextOutput(JSON.stringify(objet)).setMimeType(ContentService.MimeType.JSON);
 }
 
-function doGet() {
+function doGet(e) {
+  const p = (e && e.parameter) || {};
+  if (p.annuler) return pageAnnulation_(String(p.annuler), p.ok === '1');
   return reponse_({maj: new Date().toISOString(), inscrits: listePublique_()});
+}
+
+/* ---------- Clés : la colonne « jeton » contient la clé du lien e-mail puis celles des appareils ---------- */
+function nouveauSecret_() { return Utilities.getUuid().replace(/-/g, ''); }
+function jetons_(l) { return String(l.jeton || '').split(',').map(x => x.trim()).filter(Boolean); }
+/** Clé du lien « Annuler ma demande » d'une ligne (créée si besoin, pour les lignes anciennes ou saisies à la main). */
+function secretDe_(l) {
+  const j = jetons_(l);
+  if (j.length) return j[0];
+  const s = nouveauSecret_();
+  feuille_().getRange(l.ligne, COLONNES.indexOf('jeton') + 1).setValue(s);
+  return s;
+}
+function lienAnnulation_(secret) { return URL_APPLI + '?annuler=' + secret; }
+
+function page_(titre, texte, bouton) {
+  const h = '<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<div style="font-family:system-ui,sans-serif;max-width:480px;margin:40px auto;padding:0 18px;color:#2b2b2b">' +
+    '<h2 style="color:#8b2f3c">' + titre + '</h2><p style="font-size:1.05rem;line-height:1.5">' + texte + '</p>' +
+    (bouton ? '<p><a href="' + bouton.url + '" target="_top" style="display:inline-block;background:#8b2f3c;color:#fff;padding:12px 20px;border-radius:10px;text-decoration:none;font-weight:600">' + bouton.texte + '</a></p>' : '') +
+    '<p style="color:#888;margin-top:30px">' + NOM_CLUB + '</p></div>';
+  return HtmlService.createHtmlOutput(h).setTitle(NOM_CLUB + ' – ' + titre).addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+function echapperHtml_(t) { return String(t || '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c])); }
+
+/** Lien « Annuler ma demande » : 1er clic = page de confirmation (les robots anti-spam qui
+ *  ouvrent les liens n'annulent donc rien), 2e clic = annulation. */
+function pageAnnulation_(secret, confirme) {
+  const verrou = LockService.getScriptLock();
+  verrou.waitLock(20000);
+  try {
+    const l = lignes_().find(x => x.statut === 'demande' && jetons_(x).indexOf(secret) >= 0);
+    if (!l) return page_('Demande introuvable', 'Cette demande est déjà annulée, ou le lien n\'est plus valable.');
+    const quoi = '« ' + echapperHtml_(l.sortie) + ' » du ' + dateLongue_(l.date_sortie);
+    if (!confirme) {
+      return page_('Annuler ma demande', echapperHtml_(l.prenom + ' ' + l.nom) + ', veux-tu vraiment annuler ta demande d\'inscription à la sortie ' + quoi + ' ?',
+                   {url: lienAnnulation_(secret) + '&ok=1', texte: 'Oui, annuler ma demande'});
+    }
+    annuler_(l.date_sortie, l.email, {jeton: secret, canal: 'lien'});
+    return page_('Demande annulée', 'Ta demande pour la sortie ' + quoi + ' est annulée. Le président est prévenu, et un e-mail de confirmation t\'est envoyé.');
+  } finally {
+    verrou.releaseLock();
+  }
 }
 
 /* ---------- Demandes ---------- */
@@ -143,13 +190,18 @@ function demander_(d) {
   const f = feuille_();
   const existante = lignes_().find(l => l.date_sortie === d.date && l.email === d.email && l.statut === 'demande');
   if (existante) {
-    // Déjà demandée : on rattache simplement ce téléphone, sans renvoyer de mails.
-    if (d.jeton && !existante.jeton) f.getRange(existante.ligne, COLONNES.indexOf('jeton') + 1).setValue(d.jeton);
+    // Déjà demandée (autre téléphone, ordinateur…) : on rattache cet appareil, sans renvoyer de mails.
+    const j = jetons_(existante);
+    if (d.jeton && j.indexOf(d.jeton) < 0) {
+      if (!j.length) j.push(nouveauSecret_());
+      f.getRange(existante.ligne, COLONNES.indexOf('jeton') + 1).setValue(j.concat(d.jeton).join(','));
+    }
     return {ok: true, deja: true};
   }
   const maintenant = new Date();
+  d.secret = nouveauSecret_();
   f.appendRow([maintenant, d.date, sortie.titre, d.prenom, d.nom, d.email, d.parcours || '', d.message || '',
-               d.canal, d.jeton || '', 'demande', maintenant]);
+               d.canal, [d.secret, d.jeton].filter(Boolean).join(','), 'demande', maintenant]);
   mailPresident_('demande', d, sortie);
   mailMembre_('demande', d, sortie);
   return {ok: true};
@@ -159,8 +211,18 @@ function demander_(d) {
 function annuler_(date, email, qui) {
   const l = lignes_().find(x => x.date_sortie === date && x.email === email && x.statut === 'demande');
   if (!l) return {ok: false, erreur: 'aucune demande trouvée'};
-  const autorise = qui.admin || (qui.jeton && l.jeton && qui.jeton === l.jeton) || (qui.email && qui.email === l.email);
-  if (!autorise) return {ok: false, erreur: 'désinscription possible seulement depuis le téléphone utilisé pour la demande'};
+  const autorise = qui.admin || (qui.jeton && jetons_(l).indexOf(qui.jeton) >= 0) || (qui.email && qui.email === l.email);
+  if (!autorise) {
+    // Appareil inconnu : on envoie à l'adresse de la demande un lien pour confirmer l'annulation.
+    if (qui.envoyerLien) {
+      MailApp.sendEmail({to: l.email, replyTo: PRESIDENT.email, name: NOM_CLUB,
+        subject: NOM_CLUB + ' – Confirme l\'annulation de ta demande – ' + l.sortie,
+        body: ['Bonjour ' + l.prenom + ',', '', 'Pour annuler ta demande d\'inscription à la sortie « ' + l.sortie + ' » du ' + dateLongue_(date) + ', clique ici :',
+               lienAnnulation_(secretDe_(l)), '', 'Si tu n\'as rien demandé, ignore simplement ce message.', '', NOM_CLUB].join('\n')});
+      return {ok: false, lien: true, erreur: 'un e-mail de confirmation a été envoyé à ' + l.email};
+    }
+    return {ok: false, erreur: 'désinscription impossible depuis cet appareil'};
+  }
   const f = feuille_();
   f.getRange(l.ligne, COLONNES.indexOf('statut') + 1, 1, 2).setValues([['desinscrit', new Date()]]);
   rangerDesinscrits_();
@@ -189,7 +251,7 @@ function doPost(e) {
                      message: propre_(d.message, 1000), canal: 'appli', jeton: propre_(d.jeton, 64)});
     } else if (d.action === 'desinscrire') {
       const admin = d.code && empreinte_(String(d.code).trim().toLowerCase()) === CODE_ADMIN;
-      r = annuler_(date, email, {jeton: propre_(d.jeton, 64), admin: admin, canal: 'appli'});
+      r = annuler_(date, email, {jeton: propre_(d.jeton, 64), admin: admin, canal: 'appli', envoyerLien: true});
     } else {
       return reponse_({ok: false, erreur: 'action inconnue'});
     }
@@ -206,7 +268,7 @@ function mailPresident_(type, d, sortie) {
   const quoi = type === 'demande' ? 'Demande d\'inscription' : 'Désinscription';
   const corps = [
     'Bonjour ' + PRESIDENT.nom.split(' ')[0] + ',', '',
-    quoi + (d.canal === 'mail' ? ' reçue par e-mail' : ' faite dans l\'appli') + ' :', '',
+    quoi + (d.canal === 'mail' ? ' reçue par e-mail' : d.canal === 'lien' ? ' faite avec le lien de l\'e-mail de confirmation' : ' faite dans l\'appli') + ' :', '',
     'Sortie : ' + titre,
     'Participant : ' + d.prenom + ' ' + d.nom,
     'E-mail : ' + d.email,
@@ -227,8 +289,9 @@ function mailMembre_(type, d, sortie) {
     '⚠️ Ce message confirme seulement la réception de ta demande : ce n\'est pas une inscription.',
     'Ton inscription sera validée quand le président t\'enverra les traces de la sortie.',
     'Si tu ne reçois pas les traces, rapproche-toi du président, ' + PRESIDENT.nom + ' (il suffit de répondre à ce message).', '',
-    'Pour annuler ta demande : bouton « Me désinscrire » dans l\'appli, ou e-mail à cette adresse avec l\'objet',
-    '« Désinscription ' + NOM_CLUB + ' ' + d.date.split('-').reverse().join('/') + ' ».', '',
+    'Pour annuler ta demande, depuis n\'importe quel appareil :',
+    d.secret ? lienAnnulation_(d.secret) : '(bouton « Me désinscrire » dans l\'appli)',
+    'ou e-mail à cette adresse avec l\'objet « Désinscription ' + NOM_CLUB + ' ' + d.date.split('-').reverse().join('/') + ' ».', '',
     'Sportivement,', NOM_CLUB,
   ] : [
     'Bonjour ' + d.prenom + ',', '',
@@ -350,10 +413,10 @@ function listePresident_(msg, email, date, corps) {
       if (existante) { bilan.push('= ' + qui + ' : déjà inscrit(e)'); return; }
       const mail = (morceaux[1] || '').trim().toLowerCase();
       const parcours = propre_(morceaux[2] || (!emailValide_(mail) ? morceaux[1] : '') || '', 80);
-      const maintenant = new Date();
+      const maintenant = new Date(), secret = nouveauSecret_();
       f.appendRow([maintenant, date, sortie.titre, prenom, nom, emailValide_(mail) ? mail : '', parcours, '',
-                   'président', '', 'demande', maintenant]);
-      if (emailValide_(mail)) mailMembre_('demande', {date: date, prenom: prenom, nom: nom, email: mail}, sortie);
+                   'président', secret, 'demande', maintenant]);
+      if (emailValide_(mail)) mailMembre_('demande', {date: date, prenom: prenom, nom: nom, email: mail, secret: secret}, sortie);
       bilan.push('✅ ' + qui + ' ajouté(e)' + (emailValide_(mail) ? ' (confirmation envoyée à ' + mail + ')' : ''));
     } else {
       if (!existante) { bilan.push('⚠️ ' + qui + ' : introuvable dans les inscrits'); return; }
