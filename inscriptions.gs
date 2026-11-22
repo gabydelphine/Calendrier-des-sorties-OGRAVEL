@@ -58,6 +58,28 @@ function texteDate_(v) {
   return String(v || '');
 }
 
+/** Les demandes annulées (par le membre, ou « desinscrit » écrit à la main) quittent la
+ *  feuille « Demandes » pour la feuille « Désinscriptions » : on garde la trace sans encombrer. */
+function rangerDesinscrits_() {
+  const f = feuille_();
+  const n = f.getLastRow() - 1;
+  if (n < 1) return;
+  const valeurs = f.getRange(2, 1, n, COLONNES.length).getValues();
+  const iStatut = COLONNES.indexOf('statut');
+  const a_ranger = [];
+  valeurs.forEach((v, i) => { if (String(v[iStatut]).trim().toLowerCase().replace('é', 'e') === 'desinscrit') a_ranger.push(i + 2); });
+  if (!a_ranger.length) return;
+  const classeur = f.getParent();
+  let archive = classeur.getSheetByName('Désinscriptions');
+  if (!archive) {
+    archive = classeur.insertSheet('Désinscriptions');
+    archive.getRange(1, 1, 1, COLONNES.length).setValues([COLONNES]).setFontWeight('bold');
+    archive.setFrozenRows(1);
+  }
+  a_ranger.forEach(r => archive.appendRow(valeurs[r - 2]));
+  a_ranger.reverse().forEach(r => f.deleteRow(r));
+}
+
 /* ---------- Sorties du calendrier ---------- */
 function sorties_() {
   const cache = CacheService.getScriptCache();
@@ -141,6 +163,7 @@ function annuler_(date, email, qui) {
   if (!autorise) return {ok: false, erreur: 'désinscription possible seulement depuis le téléphone utilisé pour la demande'};
   const f = feuille_();
   f.getRange(l.ligne, COLONNES.indexOf('statut') + 1, 1, 2).setValues([['desinscrit', new Date()]]);
+  rangerDesinscrits_();
   const sortie = sorties_()[date] || {titre: l.sortie, lieu: ''};
   const d = {date: date, prenom: l.prenom, nom: l.nom, email: l.email, parcours: l.parcours, canal: qui.canal || l.canal};
   mailPresident_('desinscription', d, sortie);
@@ -225,6 +248,7 @@ function champ_(texte, nom) {
 
 function lireMails() {
   const libelle = GmailApp.getUserLabelByName(LIBELLE_TRAITE) || GmailApp.createLabel(LIBELLE_TRAITE);
+  rangerDesinscrits_();
   const fils = GmailApp.search('in:inbox subject:(inscription OR désinscription OR desinscription) newer_than:7d', 0, 50);
   if (!fils.length) return;
   const verrou = LockService.getScriptLock();
@@ -290,6 +314,7 @@ function incompris_(msg, email, raison) {
 /** À lancer une fois à la main : crée le tableau et le déclencheur des mails. */
 function installer() {
   feuille_();
+  rangerDesinscrits_();
   ScriptApp.getProjectTriggers().filter(t => t.getHandlerFunction() === 'lireMails').forEach(t => ScriptApp.deleteTrigger(t));
   ScriptApp.newTrigger('lireMails').timeBased().everyMinutes(10).create();
   Logger.log('Tableau : ' + SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty('TABLEAU')).getUrl());
