@@ -546,7 +546,15 @@ function rendreSorties() {
 const dlg = document.getElementById('inscription');
 function lireLocal(cle, defaut) { try { return JSON.parse(localStorage.getItem(cle)) || defaut; } catch { return defaut; } }
 function ecrireLocal(cle, v) { try { localStorage.setItem(cle, JSON.stringify(v)); } catch {} }
-function maDemande(date) { return lireLocal('ogravel-demandes', {})[date] || null; }
+function maDemande(date) {
+  const locale = lireLocal('ogravel-demandes', {})[date];
+  if (locale) return locale;
+  // Inscrit depuis un autre appareil (ou par e-mail) : reconnu par son prénom et son nom.
+  const m = lireLocal('ogravel-membre', {});
+  if (m.prenom && m.nom && (inscrits[date] || []).some(x => simplifier(x.prenom + ' ' + x.nom) === simplifier(m.prenom + ' ' + m.nom)))
+    return {email: m.email, prenom: m.prenom, nom: m.nom, jeton: null, reconnu: true};
+  return null;
+}
 function rafraichirSorties() { rendreProchaine(); rendreSorties(); }
 async function chargerInscrits() {
   if (!config.inscriptions_url) return;
@@ -615,7 +623,7 @@ document.getElementById('form-inscription').addEventListener('submit', async ev 
     miennes[choisie.date] = {email, jeton: r.deja && miennes[choisie.date] ? miennes[choisie.date].jeton : jeton, prenom, nom, quand: Date.now()};
     ecrireLocal('ogravel-demandes', miennes);
     inscrits[choisie.date] = r.inscrits || inscrits[choisie.date] || [];
-    etat.textContent = r.deja ? '✅ Vous aviez déjà fait cette demande.' : '✅ Demande envoyée. Un e-mail de confirmation de demande arrive à ' + email + '.';
+    etat.textContent = r.deja ? '✅ Vous étiez déjà inscrit : cet appareil est maintenant relié à votre inscription.' : '✅ Demande envoyée. Un e-mail de confirmation de demande arrive à ' + email + '.';
     rafraichirSorties();
     setTimeout(() => dlg.open && dlg.close(), 3500);
   } catch (err) {
@@ -630,7 +638,13 @@ async function desinscrire(s, mienne, bouton) {
   if (!confirm('Annuler votre demande pour « ' + (s.title || 'la sortie') + ' » du ' + dateLongue(jour(s.date)) + ' ?\nLe président sera prévenu.')) return;
   bouton.disabled = true; bouton.textContent = 'Annulation…';
   try {
-    const r = await fetch(config.inscriptions_url, {method: 'POST', body: JSON.stringify({action: 'desinscrire', date: s.date, email: mienne.email, jeton: mienne.jeton})}).then(x => x.json());
+    const r = await fetch(config.inscriptions_url, {method: 'POST', body: JSON.stringify({action: 'desinscrire', date: s.date, email: mienne.email, jeton: mienne.jeton || ''})}).then(x => x.json());
+    if (r.lien) {
+      // Appareil non relié à l'inscription : confirmation par le lien envoyé dans la boîte mail.
+      alert('Pour confirmer la désinscription, ouvrez l\'e-mail qui vient de vous être envoyé à ' + mienne.email + ' et touchez le lien.');
+      bouton.disabled = false; bouton.textContent = 'Me désinscrire';
+      return;
+    }
     if (!r.ok && !/aucune demande/.test(r.erreur || '')) throw new Error(r.erreur || 'refusée');
     const miennes = lireLocal('ogravel-demandes', {}); delete miennes[s.date]; ecrireLocal('ogravel-demandes', miennes);
     inscrits[s.date] = r.inscrits || [];
