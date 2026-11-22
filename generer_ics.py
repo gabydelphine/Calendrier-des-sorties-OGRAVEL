@@ -70,6 +70,9 @@ def main():
         h = billet(event, liste)
         url = 'https://ogravel.com/calendrier/'
         description = 'Horaires et précisions communiqués par l’association ÔGravel.\\nhttps://ogravel.com/calendrier/'
+        parcours = [c.get('libelle') for c in event.get('parcours') or [] if c.get('libelle')]
+        if parcours:
+            description = 'Parcours prévus :\\n' + '\\n'.join('• ' + echapper(c) for c in parcours) + '\\n\\n' + description
         if h:
             url = h.get('url') or url
             if h.get('etat') == 'cloture':

@@ -12,6 +12,8 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 
+from parcours_sortie import extraire_parcours, libelle
+
 URL = "https://ogravel.com/calendrier/"
 TODAY = datetime.date.today()
 
@@ -119,7 +121,20 @@ def extraire(soup, today=TODAY):
         title = following[1] if len(following) > 1 else (
             following[0] if following else "Sortie ÔGravel"
         )
+        # Descriptif : les lignes suivantes, jusqu'à la date d'après.
+        description = []
+        for value in section[i + 1 + len(following):]:
+            if DATE_PATTERN.fullmatch(value):
+                break
+            description.append(value)
+        description = "\n".join(description)[:1500]
         event = {"date": first.isoformat(), "title": title, "location": location}
+        if description:
+            event["description"] = description
+        # Distances et D+ annoncés : choix du formulaire d'inscription de l'appli.
+        parcours = extraire_parcours(title, description)
+        if parcours:
+            event["parcours"] = [dict(c, libelle=libelle(c)) for c in parcours]
         if last != first:
             event["end_date"] = last.isoformat()
         events.append(event)
