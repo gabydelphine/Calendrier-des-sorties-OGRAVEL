@@ -503,7 +503,8 @@ function boutonInscription(s) {
   if ((config.complets || []).includes(s.date))
     return el('span', {class: 'complet', text: 'Complet'});
   const liste = inscrits[s.date] || [];
-  const compteur = liste.length ? el('button', {type: 'button', class: 'compteur', 'aria-label': liste.length + ' inscrit(s) : voir la liste', text: '👥 ' + liste.length}) : null;
+  // Compteur toujours visible (même à 0), dès que les inscriptions passent par l'appli.
+  const compteur = config.inscriptions_url ? el('button', {type: 'button', class: 'compteur', 'aria-label': liste.length + ' inscrit(s) : voir la liste', text: '👥 ' + liste.length}) : null;
   if (compteur) compteur.addEventListener('click', () => montrerInscrits(s));
   const mienne = maDemande(s.date);
   if (mienne && config.inscriptions_url) {
@@ -642,7 +643,8 @@ async function desinscrire(s, mienne, bouton) {
 function montrerInscrits(s) {
   const d = document.getElementById('liste-inscrits'), liste = inscrits[s.date] || [];
   document.getElementById('liste-sortie').textContent = (s.title || 'Sortie ÔGravel') + ' — ' + dateLongue(jour(s.date)) + ' · ' + liste.length + (liste.length > 1 ? ' inscrits' : ' inscrit');
-  document.getElementById('liste-noms').replaceChildren(...liste.map(x => el('li', {text: x.prenom + ' ' + x.nom + (x.canal === 'mail' ? '  ✉️' : '')})));
+  document.getElementById('liste-noms').replaceChildren(...(liste.length ? liste.map(x => el('li', {text: x.prenom + ' ' + x.nom + (x.canal === 'mail' ? '  ✉️' : '')}))
+    : [el('li', {text: "Aucun inscrit pour l'instant."})]));
   d.showModal();
 }
 
