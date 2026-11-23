@@ -2,6 +2,11 @@
   "_aide": "Rempli par gpx_drive.py depuis le dossier gpx du Google Drive ÔGravel.",
   "parcours": [
     {
+      "date": "2026-11-24",
+      "nom": "Special ride Super Lune",
+      "en_attente": true
+    },
+    {
       "date": "2026-11-14",
       "nom": "Special rides Pech-David",
       "distance_km": 40,
