@@ -7,7 +7,10 @@ Règles (demandées par le club) :
 - le D+ annoncé est rattaché à la distance qu'il suit (ou qu'il précède : « Challenge D+ 2000 m : 93 km ») ;
 - chaque distance prend le type (Family, Special, Challenge) écrit juste avant ;
 - les kilomètres « en commun », « aller », ou d'un aller/retour facultatif ne sont pas des parcours ;
-- sans distance écrite : un choix par type cité (Family, Special), sinon aucun.
+- sans distance écrite : un choix par type cité (Family, Special), sinon aucun ;
+- « Family » ne vaut que pour la distance qui le suit ;
+- mots clés (pour les mails) : hors Family, la plus longue distance est « Long », la plus
+  courte « Court », celles du milieu « Moyen » (2 choix : Long et Court ; 1 choix : aucun).
 """
 import re
 
@@ -22,6 +25,8 @@ RE_DPLUS_APRES = [
     re.compile(r"^[^\n]{0,90}?\bD\s*\+\s*:?\s*(\d[\d\s.]*?)\s*m\b", re.I),
     re.compile(r"^[^\n]{0,25}?\+\s*(\d[\d\s.]*?)\s*m\b", re.I),
     re.compile(r"^[^\n]{0,30}?\b(\d[\d\s.]*?)\s*m\s+de\s+D\s*\+", re.I),
+    # « 90km 900D+ », « 58 km (600 m D+) »
+    re.compile(r"^\s*[:(\-–]?\s*(\d[\d\s.]*?)\s*m?\s*D\s*\+", re.I),
 ]
 RE_DPLUS_AVANT = re.compile(r"\bD\s*\+\s*:?\s*(\d[\d\s.]*?)\s*m\b[^\n]*$", re.I)
 
@@ -37,9 +42,30 @@ def _dplus(v):
     return re.sub(r"[\s.]", "", v)
 
 
-def _type(texte, pos):
-    trouves = list(RE_TYPE.finditer(texte, 0, pos))
+def _type(texte, pos, debut=0):
+    """Type écrit avant la distance. « Family » ne compte que s'il est juste devant
+    (après la distance précédente) : « family 20 km, 90 km » → seul 20 km est Family."""
+    trouves = [t for t in RE_TYPE.finditer(texte, 0, pos)
+               if t.group(1).lower() != "family" or t.start() >= debut]
     return trouves[-1].group(1).capitalize() if trouves else ""
+
+
+def _valeur(km):
+    """Premier nombre d'une distance (« 20-30 » → 20) pour classer les choix."""
+    try:
+        return float(re.split(r"-", km)[0].replace(",", "."))
+    except ValueError:
+        return 0.0
+
+
+def ajouter_niveaux(choix):
+    """Mots clés Long / Moyen / Court (hors Family), de la plus longue à la plus courte."""
+    autres = sorted([c for c in choix if c.get("km") and c.get("type") != "Family"],
+                    key=lambda c: -_valeur(c["km"]))
+    if len(autres) >= 2:
+        for i, c in enumerate(autres):
+            c["niveau"] = "Long" if i == 0 else "Court" if i == len(autres) - 1 else "Moyen"
+    return choix
 
 
 def extraire_parcours(titre, description):
@@ -80,7 +106,7 @@ def extraire_parcours(titre, description):
                 d = RE_DPLUS_AVANT.search(ligne)
                 if d:
                     dplus = _dplus(d.group(1))
-        sorte = _type(texte, m.start())
+        sorte = _type(texte, m.start(), mentions[i - 1].end() if i else 0)
         for v in valeurs:
             km = "-".join(_km(x) for x in re.split(r"\s*[-–]\s*", v))
             c = {"type": sorte, "km": km}
@@ -90,7 +116,7 @@ def extraire_parcours(titre, description):
                 choix.append(c)
     if choix:
         # Type manquant (« 2 circuits : 53 km… ») : on reprend celui du titre, sinon rien.
-        return choix
+        return ajouter_niveaux(choix)
     types = []
     for t in RE_TYPE.findall(texte):
         t = t.capitalize()
@@ -100,8 +126,10 @@ def extraire_parcours(titre, description):
 
 
 def libelle(c):
-    """« Special 58 km · D+ 1081 m » ; « Family » sans distance."""
+    """« Court – Special 58 km · D+ 1081 m » ; « Family 20 km » ; « Family » sans distance."""
     morceaux = [c.get("type") or ("Parcours" if not c.get("km") else "")]
+    if c.get("niveau"):
+        morceaux.insert(0, c["niveau"] + " –")
     if c.get("km"):
         morceaux.append(c["km"] + " km")
     texte = " ".join(x for x in morceaux if x)

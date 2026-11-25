@@ -92,7 +92,8 @@ function sorties_() {
     const r = UrlFetchApp.fetch(SITE + 'events.json?v=' + Date.now(), {muteHttpExceptions: true});
     if (r.getResponseCode() === 200) {
       (JSON.parse(r.getContentText()).events || []).forEach(e => {
-        if (e.date && !liste[e.date]) liste[e.date] = {titre: e.title || 'Sortie ' + NOM_CLUB, lieu: e.location || ''};
+        if (e.date && !liste[e.date]) liste[e.date] = {titre: e.title || 'Sortie ' + NOM_CLUB, lieu: e.location || '',
+                                                       parcours: (e.parcours || []).filter(c => c.libelle)};
       });
     }
   } catch (e) {}
@@ -204,6 +205,8 @@ function demander_(d) {
     }
     return {ok: true, deja: true};
   }
+  const lu = choisirParcours_(d.parcours, sortie.parcours);
+  if (lu && lu !== d.parcours) { d.parcoursEcrit = d.parcours; d.parcours = lu; }
   const maintenant = new Date();
   d.secret = nouveauSecret_();
   f.appendRow([maintenant, d.date, sortie.titre, d.prenom, d.nom, d.email, d.parcours || '', d.message || '',
@@ -278,7 +281,7 @@ function mailPresident_(type, d, sortie) {
     'Sortie : ' + titre,
     'Participant : ' + d.prenom + ' ' + d.nom,
     'E-mail : ' + d.email,
-    d.parcours ? 'Parcours : ' + d.parcours : null,
+    d.parcours ? 'Parcours : ' + d.parcours + (d.parcoursEcrit ? '   (écrit : « ' + d.parcoursEcrit + ' »)' : '') : null,
     d.message ? '\nMessage : ' + d.message : null,
     d.alerte ? '\n⚠️ ' + d.alerte : null,
     '', 'Nombre de demandes pour cette sortie : ' + ((listePublique_()[d.date] || []).length),
@@ -407,6 +410,36 @@ function dateDuSujet_(texte) {
   return {date: connue || candidates[0] || (a + 1) + '-' + jjmm, texte: brut};
 }
 
+/** Parcours écrit librement (« circuit court », « le long », « moyen », « family », « 58 », « 58 km »)
+ *  → libellé exact d'un des parcours prévus. Mots clés : Long = le plus long, Court = le plus court,
+ *  Moyen = celui du milieu (s'il n'y en a pas, le plus court). Renvoie '' si rien ne correspond. */
+function choisirParcours_(texte, liste) {
+  liste = liste || [];
+  const t = simple_(texte);
+  if (!t || !liste.length) return '';
+  const exact = liste.find(c => simple_(c.libelle) === t);
+  if (exact) return exact.libelle;
+  const km = c => parseFloat(String(c.km || '').split('-')[0].replace(',', '.')) || 0;
+  const family = liste.filter(c => c.type === 'Family');
+  const autres = liste.filter(c => c.type !== 'Family').sort((a, b) => km(b) - km(a));
+  if (/\bfamil(y|le|ial)/.test(t) && family.length) return family[0].libelle;
+  const motCle = /\b(long|longue|grand)\b/.test(t) ? 'long' : /\b(moyen|moyenne|intermediaire|milieu)\b/.test(t) ? 'moyen'
+               : /\b(court|courte|petit|petite)\b/.test(t) ? 'court' : '';
+  if (motCle && autres.length) {
+    if (motCle === 'long') return autres[0].libelle;
+    if (motCle === 'court') return autres[autres.length - 1].libelle;
+    const moyen = autres.find(c => c.niveau === 'Moyen');
+    return (moyen || autres[autres.length - 1]).libelle;   // pas de moyen : le plus court
+  }
+  // Une distance écrite (« 58 », « 58 km ») : le parcours le plus proche (à 15 % près).
+  const n = (t.match(/\d+(?:[.,]\d+)?/g) || []).map(x => parseFloat(x.replace(',', '.'))).find(x => x >= 5 && x <= 400);
+  if (n) {
+    const proche = liste.filter(c => c.km).sort((a, b) => Math.abs(km(a) - n) - Math.abs(km(b) - n))[0];
+    if (proche && Math.abs(km(proche) - n) <= Math.max(3, km(proche) * 0.15)) return proche.libelle;
+  }
+  return '';
+}
+
 /** Première ligne utile d'un mail sans étiquettes : « Nom Prénom [parcours…] ».
  *  L'ordre est vérifié avec le nom affiché de l'expéditeur quand c'est possible. */
 function lireLigneLibre_(corps, nomAffiche) {
@@ -433,7 +466,7 @@ function incompris_(msg, email, raison) {
     body: ['Bonjour,', '', 'Nous n\'avons pas pu prendre en compte ton message (' + raison + ').', '',
            'Merci de renvoyer le mail type :', '',
            'Objet : Inscription ' + NOM_CLUB + ' JJ/MM/AAAA   (la date de la sortie)',
-           'Nom : …', 'Prénom : …', 'Parcours : …', '',
+           'Nom : …', 'Prénom : …', 'Parcours : …   (long, moyen, court, family ou la distance)', '',
            'Pour annuler : même mail avec l\'objet « Désinscription ' + NOM_CLUB + ' JJ/MM/AAAA ».', '',
            'Pour toute question, réponds à ce message : il arrivera chez le président.', '', NOM_CLUB].join('\n')});
 }
@@ -474,7 +507,8 @@ function listePresident_(msg, email, date, corps) {
       if (!nom) { bilan.push('⚠️ ' + qui + ' : il manque le nom, ligne ignorée'); return; }
       if (existante) { bilan.push('= ' + qui + ' : déjà inscrit(e)'); return; }
       const mail = (morceaux[1] || '').trim().toLowerCase();
-      const parcours = propre_(morceaux[2] || (!emailValide_(mail) ? morceaux[1] : '') || '', 80);
+      const ecrit = propre_(morceaux[2] || (!emailValide_(mail) ? morceaux[1] : '') || '', 80);
+      const parcours = choisirParcours_(ecrit, sortie.parcours) || ecrit;
       const maintenant = new Date(), secret = nouveauSecret_();
       f.appendRow([maintenant, date, sortie.titre, prenom, nom, emailValide_(mail) ? mail : '', parcours, '',
                    'président', secret, 'demande', maintenant]);
