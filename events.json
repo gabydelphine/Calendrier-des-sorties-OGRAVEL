@@ -26,13 +26,15 @@
           "type": "Special",
           "km": "58",
           "dplus": "1081",
-          "libelle": "Special 58 km · D+ 1081 m"
+          "niveau": "Court",
+          "libelle": "Court – Special 58 km · D+ 1081 m"
         },
         {
           "type": "Special",
           "km": "90",
           "dplus": "1689",
-          "libelle": "Special 90 km · D+ 1689 m"
+          "niveau": "Long",
+          "libelle": "Long – Special 90 km · D+ 1689 m"
         }
       ]
     }
