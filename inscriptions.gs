@@ -115,6 +115,12 @@ function listePublique_() {
     if (l.statut !== 'demande' || l.date_sortie < auj) return;
     (res[l.date_sortie] = res[l.date_sortie] || []).push({prenom: l.prenom, nom: l.nom, canal: l.canal});
   });
+  // Le président, organisateur, est toujours présent : il figure en tête de chaque sortie à venir.
+  const [prenomP, ...nomP] = PRESIDENT.nom.split(' ');
+  Object.keys(sorties_()).filter(d => d >= auj).forEach(d => {
+    const liste = (res[d] || []).filter(x => simple_(x.prenom + ' ' + x.nom) !== simple_(PRESIDENT.nom));
+    res[d] = [{prenom: prenomP, nom: nomP.join(' '), canal: 'organisateur'}].concat(liste);
+  });
   return res;
 }
 
@@ -274,6 +280,7 @@ function mailPresident_(type, d, sortie) {
     'E-mail : ' + d.email,
     d.parcours ? 'Parcours : ' + d.parcours : null,
     d.message ? '\nMessage : ' + d.message : null,
+    d.alerte ? '\n⚠️ ' + d.alerte : null,
     '', 'Nombre de demandes pour cette sortie : ' + ((listePublique_()[d.date] || []).length),
     '', '— Message automatique ' + NOM_CLUB,
   ].filter(x => x !== null).join('\n');
@@ -312,7 +319,7 @@ function champ_(texte, nom) {
 function lireMails() {
   const libelle = GmailApp.getUserLabelByName(LIBELLE_TRAITE) || GmailApp.createLabel(LIBELLE_TRAITE);
   rangerDesinscrits_();
-  const fils = GmailApp.search('in:inbox subject:(inscription OR inscrits OR désinscription OR desinscription) newer_than:7d', 0, 50);
+  const fils = GmailApp.search('in:inbox subject:(inscription OR inscriptions OR inscrire OR inscris OR inscrit OR inscrits OR désinscription OR desinscription OR désinscrire OR desinscrire) newer_than:7d', 0, 50);
   if (!fils.length) return;
   const verrou = LockService.getScriptLock();
   verrou.waitLock(30000);
@@ -339,16 +346,15 @@ function lireMails() {
 function traiterMail_(msg) {
   const sujet = msg.getSubject() || '';
   const sujetSimple = sujet.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-  if (!/gravel/.test(sujetSimple)) return;
+  if (!/inscri/.test(sujetSimple)) return;   // le mot « gravel » n'est plus exigé : l'essentiel est la date
   const desinscription = /desinscri/.test(sujetSimple);
   const expediteur = msg.getFrom();
   const email = ((expediteur.match(/<([^>]+)>/) || [])[1] || expediteur).trim().toLowerCase();
   const nomAffiche = (expediteur.replace(/<[^>]*>/, '').replace(/"/g, '').trim());
   const corps = msg.getPlainBody() || '';
-  const m = sujet.match(/(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/) || corps.match(/date\s*:\s*(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/i);
-  if (!m || !emailValide_(email)) return incompris_(msg, email, 'la date de la sortie (JJ/MM/AAAA) est absente de l\'objet');
-  const annee = m[3].length === 2 ? '20' + m[3] : m[3];
-  const date = annee + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[1]).slice(-2);
+  const lue = dateDuSujet_(sujet) || dateDuSujet_((corps.match(/date\s*:\s*([^\n]+)/i) || [])[1] || '');
+  if (!lue || !emailValide_(email)) return incompris_(msg, email, 'la date de la sortie (JJ/MM/AAAA) est absente de l\'objet');
+  const date = lue.date, m = [lue.texte];
   // « Inscrits ÔGravel JJ/MM/AAAA » : liste envoyée par le président (ou un administrateur).
   if (/\binscrits\b/.test(sujetSimple)) return listePresident_(msg, email, date, corps);
   if (desinscription) {
@@ -357,11 +363,67 @@ function traiterMail_(msg) {
     return;
   }
   let prenom = propre_(champ_(corps, 'pr[ée]nom'), 50), nom = propre_(champ_(corps, 'nom'), 50);
-  if (!prenom && !nom && nomAffiche) { const p = nomAffiche.split(/\s+/); prenom = p.shift(); nom = p.join(' '); }
+  let parcours = propre_(champ_(corps, 'parcours'), 80), alerte = '';
+  // « Nom : Fauvel Maurice » sans ligne « Prénom » : on coupe en deux.
+  if (!prenom && nom.indexOf(' ') > 0) { const p = nom.split(' '); nom = p.shift(); prenom = p.join(' '); }
+  if (!prenom && !nom) {
+    // Mail sans étiquettes, par exemple « Fauvel Maurice Circuit court » : première ligne utile
+    // = Nom Prénom (ordre du mail type), puis le parcours.
+    const g = lireLigneLibre_(corps, nomAffiche);
+    if (g) {
+      prenom = g.prenom; nom = g.nom; if (!parcours) parcours = g.parcours;
+      alerte = 'Mail hors format, à vérifier : « ' + g.ligne + ' » → ' + prenom + ' ' + nom + (g.parcours ? ', parcours « ' + g.parcours + ' »' : '');
+    } else if (nomAffiche && nomAffiche.indexOf('@') < 0) {
+      const p = nomAffiche.split(/\s+/); prenom = p.shift(); nom = p.join(' ');
+      alerte = 'Mail hors format : nom pris dans l\'expéditeur (« ' + nomAffiche + ' »), à vérifier';
+    }
+  }
   if (!prenom || !nom) return incompris_(msg, email, 'il manque ton prénom ou ton nom');
-  const r = demander_({date: date, prenom: prenom, nom: nom, email: email, parcours: propre_(champ_(corps, 'parcours'), 80),
-                       message: propre_(champ_(corps, 'message'), 1000), canal: 'mail'});
+  const r = demander_({date: date, prenom: prenom, nom: nom, email: email, parcours: parcours,
+                       message: propre_(champ_(corps, 'message'), 1000), canal: 'mail', alerte: alerte});
   if (!r.ok) incompris_(msg, email, r.erreur);
+}
+
+/** Date de la sortie écrite dans l'objet : 19/12/2026, 19/12/26, 19-12, 19/12 ou « 19 décembre (2026) ».
+ *  Sans année : la sortie du calendrier à cette date la plus proche à venir. */
+function dateDuSujet_(texte) {
+  const t = simple_(texte);
+  const MOIS = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin', 'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre'];
+  let j, mo, an, brut;
+  let m = t.match(/(\d{1,2})\s*[\/.\-]\s*(\d{1,2})(?:\s*[\/.\-]\s*(\d{2,4}))?/);
+  if (m) { j = +m[1]; mo = +m[2]; an = m[3]; brut = m[0]; }
+  else {
+    m = t.match(new RegExp('(\\d{1,2})(?:er)?\\s+(' + MOIS.join('|') + ')(?:\\s+(\\d{4}))?'));
+    if (!m) return null;
+    j = +m[1]; mo = MOIS.indexOf(m[2]) + 1; an = m[3]; brut = m[0];
+  }
+  if (!(j >= 1 && j <= 31 && mo >= 1 && mo <= 12)) return null;
+  const jjmm = ('0' + mo).slice(-2) + '-' + ('0' + j).slice(-2);
+  if (an) return {date: (an.length === 2 ? '20' + an : an) + '-' + jjmm, texte: brut};
+  const auj = Utilities.formatDate(new Date(), 'Europe/Paris', 'yyyy-MM-dd');
+  const a = +auj.slice(0, 4);
+  const candidates = [a + '-' + jjmm, (a + 1) + '-' + jjmm].filter(d => d >= auj);
+  const connue = candidates.find(d => sorties_()[d]);
+  return {date: connue || candidates[0] || (a + 1) + '-' + jjmm, texte: brut};
+}
+
+/** Première ligne utile d'un mail sans étiquettes : « Nom Prénom [parcours…] ».
+ *  L'ordre est vérifié avec le nom affiché de l'expéditeur quand c'est possible. */
+function lireLigneLibre_(corps, nomAffiche) {
+  const ignorer = /^(bonjour|bonsoir|salut|hello|coucou|merci|cordialement|bien\s|a\s+bientot|sportivement|envoye|sent|le\s.+a\s+ecrit|--)/;
+  const lignes = corps.split(/\r?\n/).map(l => l.trim()).filter(l => l && !/^>/.test(l));
+  for (const ligne of lignes) {
+    if (ignorer.test(simple_(ligne)) || /[:@]/.test(ligne)) continue;
+    const mots = propre_(ligne, 120).replace(/[,;]/g, ' ').split(/\s+/).filter(Boolean);
+    if (mots.length < 2 || !/^[A-Za-zÀ-ÿ'’-]+$/.test(mots[0]) || !/^[A-Za-zÀ-ÿ'’-]+$/.test(mots[1])) continue;
+    const affiche = simple_(nomAffiche).split(' ');
+    let nom = mots[0], prenom = mots[1];
+    // L'expéditeur s'affiche « Maurice Fauvel » et la ligne commence par Maurice : ordre Prénom Nom.
+    if (affiche.length > 1 && affiche[0] === simple_(mots[0]) && affiche.indexOf(simple_(mots[1])) > 0) { prenom = mots[0]; nom = mots[1]; }
+    const majuscule = t => t.toLowerCase().replace(/(^|[-'’])(\S)/g, (x, sep, c) => sep + c.toUpperCase());
+    return {ligne: propre_(ligne, 120), prenom: majuscule(prenom), nom: nom === nom.toUpperCase() ? nom : majuscule(nom), parcours: mots.slice(2).join(' ')};
+  }
+  return null;
 }
 
 function incompris_(msg, email, raison) {
