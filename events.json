@@ -1,21 +1,7 @@
 {
-  "updated": "2026-11-26",
+  "updated": "2026-11-27",
   "source": "https://ogravel.com/calendrier/",
   "events": [
-    {
-      "date": "2026-11-26",
-      "title": "Special ride nocturne",
-      "location": "Toulouse",
-      "description": "Nocturne ride (si ciel dégagé), Argoulets\n38,16 km / +257m / 45 % route",
-      "parcours": [
-        {
-          "type": "Special",
-          "km": "38,16",
-          "dplus": "257",
-          "libelle": "Special 38,16 km · D+ 257 m"
-        }
-      ]
-    },
     {
       "date": "2026-12-19",
       "title": "Pèlerinage en Montagne Noire",
